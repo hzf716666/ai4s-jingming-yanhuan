@@ -19,6 +19,11 @@ export default defineConfig({
       "@ai4s/sdk": r("../../packages/sdk/src/index.ts"),
     },
   },
+  server: {
+    fs: {
+      allow: [r("."), r("../../"), "E:\\openscience\\jingming-yanhuan", "E:\\tb\\jingming-yanhuan"],
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",

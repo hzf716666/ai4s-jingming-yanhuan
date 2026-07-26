@@ -20,7 +20,7 @@ pub async fn latest_release() -> Result<ReleaseInfo, String> {
 
 fn fetch_latest_release() -> Result<ReleaseInfo, String> {
     let body = reqwest::blocking::Client::builder()
-        .user_agent("Open Science Desktop update checker")
+        .user_agent("景明研环 update checker")
         .build()
         .map_err(|e| format!("could not create HTTP client: {e}"))?
         .get(RELEASES_ATOM_URL)

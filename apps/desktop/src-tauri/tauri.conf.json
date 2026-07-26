@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Open Science",
+  "productName": "景明研环",
   "version": "0.2.5",
   "identifier": "com.ai4s.workbench",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Open Science",
+        "title": "景明研环",
         "width": 1440,
         "height": 900,
         "minWidth": 1000,
