@@ -405,6 +405,7 @@ fn v1(stream: &mut TcpStream, req: &Request, ctx: &Ctx, rest: &str) {
         }
         ("GET", ["fs", "list"]) => fs_list(stream, req, ctx),
         ("GET", ["fs", "read"]) => fs_read(stream, req, ctx),
+        ("POST", ["fs", "write"]) => fs_write(stream, req, ctx),
         // Read-only projects + runs (local state the sidecar doesn't own) so the
         // web client can see existing projects and run history.
         ("GET", ["projects"]) => match crate::project::list_projects(ctx.app.clone()) {
@@ -622,6 +623,25 @@ fn fs_read(stream: &mut TcpStream, req: &Request, ctx: &Ctx) {
     match std::fs::read(&full) {
         Ok(bytes) => respond(stream, 200, mime, &bytes),
         Err(e) => respond_json(stream, 404, &err_json(&e.to_string())),
+    }
+}
+
+/// Write text content to a workspace file (gateway `POST /v1/fs/write`).
+/// The body is the raw text to write; `?path` and `?root`/`?dir` scope it.
+fn fs_write(stream: &mut TcpStream, req: &Request, ctx: &Ctx) {
+    let rel = req.query_get("path").unwrap_or_default();
+    if rel.is_empty() {
+        respond_json(stream, 400, "{\"error\":\"missing path\"}");
+        return;
+    }
+    let base = match fs_base(ctx, req) {
+        Ok(b) => b,
+        Err(e) => return respond_json(stream, 400, &err_json(&e)),
+    };
+    let content = String::from_utf8_lossy(&req.body);
+    match crate::artifact_file::write_workspace_file_to(&base, &rel, &content) {
+        Ok(()) => respond_json(stream, 200, "{\"ok\":true}"),
+        Err(e) => respond_json(stream, 400, &err_json(&e)),
     }
 }
 

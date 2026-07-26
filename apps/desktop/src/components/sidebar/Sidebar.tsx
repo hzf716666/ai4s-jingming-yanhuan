@@ -35,7 +35,7 @@ import { useIsMobile } from "@/lib/useIsMobile";
 import { isGatewayWeb } from "@/lib/webMode";
 import { StatusPills } from "./StatusPills";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import logo from "@/assets/logo.webp";
+import { CubeLogo } from "@/components/brand";
 
 interface Row {
   id: string;
@@ -92,6 +92,7 @@ export function Sidebar({ project }: { project: Project }) {
     Object.keys(runningSessions).map((sid) => rootSessionOf(sessionParents, sid)),
   );
   const isAnyRunning = Object.keys(runningSessions).length > 0;
+
   const showUpdateBadge = useUpdateStore((s) => s.showBadge);
   const {
     sidebarCollapsed,
@@ -399,27 +400,17 @@ export function Sidebar({ project }: { project: Project }) {
         <>
         <div className={cn("px-4 pb-3", overlayTitlebar ? "pt-1" : "pt-4")}>
           <div className="flex min-w-0 items-baseline gap-1.5">
-            {/* Brand = home: clicking the logo/name returns to the main page.
-                When any session is running the brand glows — a subtle breathing
-                cue that the AI is thinking. */}
+            {/* Brand = home: clicking the logo/name returns to the main page. */}
             <button
               onClick={() => navigate("/live")}
               aria-label={t("sidebar.home")}
               title={t("sidebar.home")}
-              className={cn(
-                "flex min-w-0 items-baseline gap-1.5 rounded-sm outline-none",
-                isAnyRunning && "animate-brand-glow",
-              )}
+              className="flex min-w-0 items-center gap-2 rounded-sm outline-none"
             >
-              <img src={logo} alt="" className="h-[18px] w-auto shrink-0 self-center" />
-              {/* eslint-disable-next-line i18next/no-literal-string -- product brand name, not translated across locales (see AGENTS.md) */}
-              <div
-                className={cn(
-                  "truncate font-serif text-[17px] font-semibold leading-none tracking-tight",
-                  isAnyRunning ? "animate-brand-text-pulse" : "text-text",
-                )}
-              >
-                Open Science
+              <CubeLogo size={28} running={isAnyRunning} className="self-center" />
+              {/* eslint-disable-next-line i18next/no-literal-string -- product brand name */}
+              <div className="truncate font-serif text-[17px] font-semibold leading-none tracking-tight text-text">
+                景明研环
               </div>
             </button>
             {!overlayTitlebar && (

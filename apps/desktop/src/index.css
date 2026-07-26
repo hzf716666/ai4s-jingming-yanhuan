@@ -323,35 +323,4 @@ body {
   animation: fade-in 150ms ease-out 150ms backwards;
 }
 
-/* AI thinking indicator — pulsing glow on the brand area when a session is
-   actively running. A soft "breathing" ring communicates the agent is working
-   without being distracting. Uses color-mix so the glow adapts to every theme
-   (warm terracotta, light blue, dark blue). */
-@keyframes brand-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
-  }
-  50% {
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
-  }
-}
-.animate-brand-glow {
-  animation: brand-glow 1.8s ease-in-out infinite;
-}
 
-/* Subtle text pulse that pairs with brand-glow: the brand text gently shifts
-   toward the accent color when the AI is thinking, reinforcing the "alive" cue
-   without overwhelming the layout. */
-@keyframes brand-text-pulse {
-  0%,
-  100% {
-    color: var(--text);
-  }
-  50% {
-    color: color-mix(in srgb, var(--text) 55%, var(--accent) 45%);
-  }
-}
-.animate-brand-text-pulse {
-  animation: brand-text-pulse 1.8s ease-in-out infinite;
-}

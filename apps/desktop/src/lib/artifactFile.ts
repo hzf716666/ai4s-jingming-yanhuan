@@ -155,12 +155,33 @@ export async function listDir(rel: string, root?: FileRoot, dir?: string): Promi
   return invoke<DirEntry[]>("list_dir", { rel, root });
 }
 
-/** Write text to a root-relative path (desktop only; throws in browser). */
+/** Write text to a root-relative path. On the desktop, calls the Tauri
+ *  backend directly. In the web client, POSTs to the gateway's `/v1/fs/write`
+ *  endpoint (requires the gateway to be in "full" mode). */
 export async function writeWorkspaceFile(
   path: string,
   content: string,
   root?: FileRoot,
 ): Promise<void> {
+  if (isGatewayWeb) {
+    const t = gatewayToken();
+    const url =
+      `${gatewayOrigin()}/v1/fs/write?path=${encodeURIComponent(path)}` +
+      `${root ? `&root=${root}` : ""}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        ...(t ? { Authorization: `Bearer ${t}` } : {}),
+      },
+      body: content,
+    });
+    if (!res.ok) {
+      const err: { error?: string } = await res.json().catch(() => ({}));
+      throw new Error(err.error ?? `HTTP ${res.status}`);
+    }
+    return;
+  }
   if (!isTauri) throw new Error("not running in the desktop app");
   const { invoke } = await import("@tauri-apps/api/core");
   await invoke("write_workspace_file", { path, content, root });

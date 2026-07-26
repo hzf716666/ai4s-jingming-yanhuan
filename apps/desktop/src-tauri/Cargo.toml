@@ -43,3 +43,15 @@ objc2-app-kit = { version = "0.3", default-features = false, features = [
     "NSView",
     "NSWindow",
 ] }
+
+# Windows-specific dependencies for taskbar icon fix.
+# Tauri v2 only sets ICON_SMALL (titlebar) but the taskbar needs ICON_BIG.
+# In dev mode (bundle.active=false) the icon isn't even embedded in the exe,
+# so we load it from file at runtime and set both via Win32 API.
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_System_LibraryLoader",
+] }

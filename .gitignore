@@ -61,6 +61,10 @@ runtime/skills/external/
 # Bundled goal plugin (fetched by scripts/dev/fetch-goal-plugin.sh)
 runtime/goal-plugin/
 
+# Local temporary files
+pasted.txt
+run_jingming.bat
+
 # Local demo recordings (too large for git)
 videos/
 

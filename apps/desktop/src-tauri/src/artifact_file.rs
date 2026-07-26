@@ -432,6 +432,27 @@ pub(crate) fn dir_entries(root: &Path, rel: &str) -> Result<Vec<DirEntry>, Strin
     Ok(out)
 }
 
+/// Core write logic shared by the Tauri command and the gateway. Writes
+/// `content` to `rel_path` under `root`, creating parent dirs as needed.
+/// Rejects absolute paths, `..` components, and paths that escape the root.
+pub(crate) fn write_workspace_file_to(root: &Path, rel_path: &str, content: &str) -> Result<(), String> {
+    let rel = Path::new(rel_path);
+    if rel.is_absolute()
+        || rel
+            .components()
+            .any(|c| !matches!(c, std::path::Component::Normal(_)))
+    {
+        return Err("path must be a plain workspace-relative path".into());
+    }
+    let full = root.join(rel);
+    if let Some(parent) = full.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    std::fs::write(&full, content).map_err(|e| format!("write failed: {e}"))?;
+    crate::git_snapshot::request_snapshot(root);
+    Ok(())
+}
+
 /// Write text to a root-relative path (used to save notebooks). Rejects
 /// absolute paths and any `..` component; missing parent dirs are created.
 #[tauri::command(async)]
@@ -442,21 +463,7 @@ pub fn write_workspace_file(
     root: Option<String>,
 ) -> Result<(), String> {
     let scope = scope_root(&app, root.as_deref())?;
-    let rel = Path::new(&path);
-    if rel.is_absolute()
-        || rel
-            .components()
-            .any(|c| !matches!(c, std::path::Component::Normal(_)))
-    {
-        return Err("path must be a plain workspace-relative path".into());
-    }
-    let full = scope.join(rel);
-    if let Some(parent) = full.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
-    }
-    std::fs::write(&full, content).map_err(|e| format!("write failed: {e}"))?;
-    crate::git_snapshot::request_snapshot(&scope);
-    Ok(())
+    write_workspace_file_to(&scope, &path, &content)
 }
 
 /// Pick local files via the native open dialog and copy them into the agent

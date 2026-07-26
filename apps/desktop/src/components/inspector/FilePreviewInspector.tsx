@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Code2, Download, Eye, ExternalLink, FileSearch, History, Loader2, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Code2, Download, Eye, ExternalLink, FileSearch, History, Loader2, Save, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { FilePreviewInspector as FilePreviewInspectorT, FileRoot } from "@ai4s/shared";
 import { previewKindForName, type PreviewKind } from "@/lib/artifacts";
@@ -9,13 +9,14 @@ import {
   previewUrl,
   probeLargeFile,
   readArtifact,
+  writeWorkspaceFile,
   type LargeFilePointer,
 } from "@/lib/artifactFile";
 import { isGatewayWeb } from "@/lib/webMode";
 import { useRuntimeStore } from "@/lib/runtime";
 import { parseTableFile } from "@/lib/csv";
 import { formatNumber } from "@/i18n/format";
-import { CodeViewer } from "@/components/code-viewer/CodeViewer";
+import { CodeEditor } from "@/components/code-editor/CodeEditor";
 import { MarkdownViewer } from "@/components/markdown-viewer/MarkdownViewer";
 import { ProvenancePanel } from "./ProvenancePanel";
 import { TablePreview } from "./TablePreview";
@@ -78,6 +79,54 @@ export function FilePreviewInspector({
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<"preview" | "code">(kind === "text" ? "code" : "preview");
   const [showHistory, setShowHistory] = useState(false);
+  // ---- editor state (text files are directly editable) ----
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const editorContentRef = useRef<string | null>(null);
+  const savedTextRef = useRef<string | null>(text);
+
+  // Keep savedTextRef in sync with the last-saved/loaded text so handleSave
+  // always compares against the latest value, never a stale closure.
+  useEffect(() => {
+    savedTextRef.current = text;
+  }, [text]);
+
+  // Reset dirty and editor content when a new file loads.
+  useEffect(() => {
+    setDirty(false);
+    editorContentRef.current = null;
+  }, [data.path]);
+
+  const handleEditorChange = useCallback((newValue: string) => {
+    editorContentRef.current = newValue;
+    setDirty(newValue !== (savedTextRef.current ?? ""));
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    const content = editorContentRef.current;
+    if (content === null) return;
+    if (content === savedTextRef.current) return; // no changes
+    setSaving(true);
+    try {
+      await writeWorkspaceFile(data.path, content, data.root);
+      setText(content);
+      setDirty(false);
+    } catch (e) {
+      console.error("Save failed:", e);
+    } finally {
+      setSaving(false);
+    }
+  }, [data.path, data.root]);
+
+  const handleClose = useCallback(() => {
+    if (editorContentRef.current !== null && editorContentRef.current !== savedTextRef.current) {
+      const discard = window.confirm(
+        `You have unsaved changes to "${data.filename}". Discard them?`,
+      );
+      if (!discard) return;
+    }
+    onClose();
+  }, [data.filename, onClose]);
 
   useEffect(() => {
     let cancelled = false;
@@ -185,6 +234,21 @@ export function FilePreviewInspector({
         <span className="rounded bg-surface-2 px-1.5 py-0.5 text-xs text-muted">
           {t(`filePreview.artifactKind.${data.artifact}`)}
         </span>
+        {dirty && (
+          <span className="rounded bg-warn/10 px-1.5 py-0.5 text-xs font-medium text-warn">
+            Unsaved
+          </span>
+        )}
+        {dirty && (
+          <button
+            className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-accent hover:bg-surface-2 disabled:opacity-40"
+            onClick={() => void handleSave()}
+            disabled={saving}
+            title="Ctrl+S"
+          >
+            <Save size={12} /> {saving ? "Saving…" : "Save"}
+          </button>
+        )}
         {canToggle && (
           <div className="ml-2 flex items-center gap-1 rounded-input bg-surface-2 p-0.5">
             {/* eslint-disable-next-line i18next/no-literal-string -- "preview" is an internal tab id, not display text (the visible label is t("filePreview.tabs.preview")) */}
@@ -216,7 +280,7 @@ export function FilePreviewInspector({
           {isGatewayWeb ? <Download size={14} strokeWidth={1.5} /> : <ExternalLink size={14} strokeWidth={1.5} />}
         </button>
         {controls}
-        <button className="text-text hover:opacity-60" aria-label={t("shell.closeInspector")} onClick={onClose}>
+        <button className="text-text hover:opacity-60" aria-label={t("shell.closeInspector")} onClick={handleClose}>
           <X size={14} strokeWidth={1.5} />
         </button>
       </header>
@@ -247,6 +311,8 @@ export function FilePreviewInspector({
             filename={data.filename}
             path={data.path}
             language={data.language}
+            onEditorChange={handleEditorChange}
+            onSave={handleSave}
           />
         )}
       </div>
@@ -263,6 +329,8 @@ function Body({
   filename,
   path,
   language,
+  onEditorChange,
+  onSave,
 }: {
   kind: PreviewKind;
   url: string | null;
@@ -272,6 +340,8 @@ function Body({
   filename: string;
   path: string;
   language?: string;
+  onEditorChange: (value: string) => void;
+  onSave: () => void;
 }) {
   const { t } = useTranslation(["inspector", "common"]);
   if (kind === "docx" || kind === "xlsx" || kind === "pptx") {
@@ -334,8 +404,8 @@ function Body({
   if (kind === "molecule") {
     if (showCode) {
       return text !== null ? (
-        <div className="p-3">
-          <CodeViewer code={text} language={language} />
+        <div className="h-full p-3">
+          <CodeEditor key={path} value={text} onChange={onEditorChange} path={path} language={language} onSave={onSave} />
         </div>
       ) : (
         <Note text={t("filePreview.sourceDesktopOnly")} />
@@ -350,8 +420,8 @@ function Body({
   if (kind === "genome") {
     if (showCode) {
       return text !== null ? (
-        <div className="p-3">
-          <CodeViewer code={text} language={language} />
+        <div className="h-full p-3">
+          <CodeEditor key={path} value={text} onChange={onEditorChange} path={path} language={language} onSave={onSave} />
         </div>
       ) : (
         <Note text={t("filePreview.sourceDesktopOnly")} />
@@ -366,8 +436,8 @@ function Body({
   if (kind === "markdown") {
     if (showCode) {
       return text !== null ? (
-        <div className="p-3">
-          <CodeViewer code={text} language="markdown" />
+        <div className="h-full p-3">
+          <CodeEditor key={path} value={text} onChange={onEditorChange} path={path} language="markdown" onSave={onSave} />
         </div>
       ) : (
         <Note text={t("filePreview.sourceDesktopOnly")} />
@@ -387,8 +457,8 @@ function Body({
   }
   if (kind === "html" && showCode) {
     return text !== null ? (
-      <div className="p-3">
-        <CodeViewer code={text} language="html" />
+      <div className="h-full p-3">
+        <CodeEditor key={path} value={text} onChange={onEditorChange} path={path} language="html" onSave={onSave} />
       </div>
     ) : (
       <Note text={t("filePreview.sourceDesktopOnly")} />
@@ -458,8 +528,8 @@ function Body({
     );
   }
   return text !== null ? (
-    <div className="p-3">
-      <CodeViewer code={text} language={language} />
+    <div className="h-full p-3">
+      <CodeEditor key={path} value={text} onChange={onEditorChange} path={path} language={language} onSave={onSave} />
     </div>
   ) : (
     <Note text={t("filePreview.desktopOnly")} />

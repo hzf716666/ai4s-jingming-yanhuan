@@ -25,6 +25,8 @@ mod science_mcp;
 mod tools;
 #[cfg(target_os = "macos")]
 mod macos;
+#[cfg(target_os = "windows")]
+mod windows;
 mod updates;
 mod uv;
 
@@ -67,6 +69,18 @@ pub fn run() {
             }
             // Bring the remote-access gateway back up if the user left it enabled.
             gateway::autostart(app.handle());
+
+            // Fix taskbar icon on Windows.
+            // Tauri v2 only sets ICON_SMALL (titlebar), but the taskbar needs ICON_BIG.
+            // In dev mode (bundle.active=false) the icon isn't embedded in the exe,
+            // so we load it from file and set both via Win32 API.
+            #[cfg(target_os = "windows")]
+            if let Some(window) = app.get_webview_window("main") {
+                if let Ok(hwnd) = window.hwnd() {
+                    windows::apply_taskbar_icon(hwnd.0 as windows_sys::Win32::Foundation::HWND);
+                }
+            }
+
             Ok(())
         })
         // The transparent + vibrancy window loses tao's traffic-light inset on
