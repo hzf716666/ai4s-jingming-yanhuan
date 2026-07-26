@@ -1,6 +1,6 @@
 <div align="center">
 
-[![景明研环 — Local-first AI research workbench](./docs/assets/banner.webp)](https://github.com/ai4s-research/open-science)
+[![景明研环 — Local-first AI research workbench](./docs/assets/banner.webp)](https://github.com/hzf716666/ai4s-jingming-yanhuan)
 
 # 景明研环
 
@@ -141,7 +141,7 @@ Formerly Open Science. Claude Science 및 유사한 AI-for-science 워크벤치�
 
 ## 설치
 
-[Releases](https://github.com/ai4s-research/open-science/releases/latest)에서 최신 설치 파일을 받으세요.
+[Releases](https://github.com/hzf716666/ai4s-jingming-yanhuan/releases/latest)에서 최신 설치 파일을 받으세요.
 
 - **macOS**: `.dmg` / `.app`, Apple Silicon 및 Intel, macOS 13 Ventura 이상.
 - **Windows**: NSIS `.exe` 및 `.msi`, Windows 10/11 x64.
@@ -158,7 +158,7 @@ Windows에서는 SmartScreen에서 **More info -> Run anyway**를 선택합니�
 ## 소스에서 빌드
 
 ```bash
-git clone https://github.com/ai4s-research/open-science
+git clone https://github.com/hzf716666/ai4s-jingming-yanhuan
 cd open-science
 pnpm install
 bash scripts/dev/fetch-opencode.sh
@@ -210,7 +210,7 @@ pnpm lint
   year    = {2026},
   version = {0.2.5},
   doi     = {10.5281/zenodo.21522590},
-  url     = {https://github.com/ai4s-research/open-science},
+  url     = {https://github.com/hzf716666/ai4s-jingming-yanhuan},
   license = {MIT}
 }
 ```

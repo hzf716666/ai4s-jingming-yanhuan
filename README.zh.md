@@ -1,6 +1,6 @@
 <div align="center">
 
-[![景明研环 — 本地优先 AI 科研桌面工作台](./docs/assets/banner.webp)](https://github.com/ai4s-research/open-science)
+[![景明研环 — 本地优先 AI 科研桌面工作台](./docs/assets/banner.webp)](https://github.com/hzf716666/ai4s-jingming-yanhuan)
 
 # 景明研环
 
@@ -168,7 +168,7 @@
 
 ## 安装
 
-从 [Releases 页面](https://github.com/ai4s-research/open-science/releases/latest) 下载最新安装包。
+从 [Releases 页面](https://github.com/hzf716666/ai4s-jingming-yanhuan/releases/latest) 下载最新安装包。
 
 - **macOS**：`.dmg` / `.app`，Apple Silicon 和 Intel，要求 macOS 13 Ventura 或更高。
 - **Windows**：NSIS `.exe` 和 `.msi`，Windows 10/11 x64。
@@ -202,7 +202,7 @@ sudo rpm -i OpenScience_*.rpm
 - Tauri 在当前系统需要的 macOS、Windows 或 Linux 依赖
 
 ```bash
-git clone https://github.com/ai4s-research/open-science
+git clone https://github.com/hzf716666/ai4s-jingming-yanhuan
 cd open-science
 pnpm install
 
@@ -269,7 +269,7 @@ pnpm lint
   year    = {2026},
   version = {0.2.5},
   doi     = {10.5281/zenodo.21522590},
-  url     = {https://github.com/ai4s-research/open-science},
+  url     = {https://github.com/hzf716666/ai4s-jingming-yanhuan},
   license = {MIT}
 }
 ```

@@ -1,6 +1,6 @@
 <div align="center">
 
-[![景明研环 — Local-first AI research workbench](./docs/assets/banner.webp)](https://github.com/ai4s-research/open-science)
+[![景明研环 — Local-first AI research workbench](./docs/assets/banner.webp)](https://github.com/hzf716666/ai4s-jingming-yanhuan)
 
 # 景明研环
 
@@ -141,7 +141,7 @@ Ein-Klick-MCP-Konnektoren: Literatursuche, biomedizinische Datenbanken, Material
 
 ## Installation
 
-Lade den neuesten Installer von [Releases](https://github.com/ai4s-research/open-science/releases/latest).
+Lade den neuesten Installer von [Releases](https://github.com/hzf716666/ai4s-jingming-yanhuan/releases/latest).
 
 - **macOS**: `.dmg` / `.app`, Apple Silicon und Intel, macOS 13 Ventura oder neuer.
 - **Windows**: NSIS `.exe` und `.msi`, Windows 10/11 x64.
@@ -158,7 +158,7 @@ Unter Windows in SmartScreen **More info -> Run anyway** wählen.
 ## Aus dem Quellcode bauen
 
 ```bash
-git clone https://github.com/ai4s-research/open-science
+git clone https://github.com/hzf716666/ai4s-jingming-yanhuan
 cd open-science
 pnpm install
 bash scripts/dev/fetch-opencode.sh
@@ -210,7 +210,7 @@ Wenn Sie 景明研环 in Ihrer Forschung verwenden, zitieren Sie es bitte wie fo
   year    = {2026},
   version = {0.2.5},
   doi     = {10.5281/zenodo.21522590},
-  url     = {https://github.com/ai4s-research/open-science},
+  url     = {https://github.com/hzf716666/ai4s-jingming-yanhuan},
   license = {MIT}
 }
 ```

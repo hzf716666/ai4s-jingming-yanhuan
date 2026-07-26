@@ -1,6 +1,6 @@
 <div align="center">
 
-[![景明研环 — Local-first AI research workbench](./docs/assets/banner.webp)](https://github.com/ai4s-research/open-science)
+[![景明研环 — Local-first AI research workbench](./docs/assets/banner.webp)](https://github.com/hzf716666/ai4s-jingming-yanhuan)
 
 # 景明研环
 
@@ -200,7 +200,7 @@ For a neutral positioning note, see
 ## Install
 
 Download the latest installer from the
-[Releases page](https://github.com/ai4s-research/open-science/releases/latest).
+[Releases page](https://github.com/hzf716666/ai4s-jingming-yanhuan/releases/latest).
 
 - **macOS**: `.dmg` / `.app`, Apple Silicon and Intel, macOS 13 Ventura or later.
 - **Windows**: NSIS `.exe` and `.msi`, Windows 10/11 x64.
@@ -235,7 +235,7 @@ Prerequisites:
 - macOS, Windows, or Linux system dependencies required by Tauri
 
 ```bash
-git clone https://github.com/ai4s-research/open-science
+git clone https://github.com/hzf716666/ai4s-jingming-yanhuan
 cd open-science
 pnpm install
 
@@ -314,7 +314,7 @@ If you use 景明研环 in your research, please cite it:
   year    = {2026},
   version = {0.2.5},
   doi     = {10.5281/zenodo.21522590},
-  url     = {https://github.com/ai4s-research/open-science},
+  url     = {https://github.com/hzf716666/ai4s-jingming-yanhuan},
   license = {MIT}
 }
 ```

@@ -1,0 +1,28 @@
+  Compiling writeable v0.6.3
+   Compiling siphasher v1.0.3
+   Compiling utf8_iter v1.0.4
+   Compiling fastrand v2.4.1
+   Compiling icu_normalizer_data v2.2.0
+   Compiling icu_properties_data v2.2.0
+   Compiling stable_deref_trait v1.2.1
+error when starting dev server:          ] 0/466: cfg-if,…
+Error: Port 5173 is already in use
+    at Server.onError (file:///E:/tb/jingming-yanhuan/node_modules/.pnpm/vite@5.4.21_@types+node@26.1.0/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:45596:18)
+    at Server.emit (node:events:508:28)
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 1: vite --port 5173 --strictPort
+   Compiling smallvec v1.15.2
+   Compiling phf_shared v0.13.1
+   Compiling bytes v1.12.0
+   Compiling thiserror v2.0.18
+   Compiling zmij v1.0.21
+   Compiling log v0.4.33
+   Compiling parking_lot_core v0.9.12
+   Compiling serde v1.0.228
+   Compiling scopeguard v1.2.0
+       Error The "beforeDevCommand" terminated with a non-zero status code.
+E:\openscience\jingming-yanhuan\apps\desktop:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ai4s/desktop@0.2.5 tauri: `tauri "dev"`
+Exit status 1
+PS E:\openscience\jingming-yanhuan>
