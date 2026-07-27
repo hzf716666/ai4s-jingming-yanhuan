@@ -25,6 +25,7 @@ import {
 import { useRuntimeStore, type AgentMode } from "@/lib/runtime";
 import { ModelPicker } from "@/components/thread/ModelPicker";
 import { WorkspaceChip } from "@/components/thread/WorkspaceChip";
+import { VoiceButton } from "@/components/voice/VoiceButton";
 import { useUiStore } from "@/lib/store";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/cn";
@@ -756,6 +757,15 @@ export function Composer({
         )}
         <span className="flex-1" />
         {showModelPicker && <ModelPicker />}
+        <VoiceButton
+          onTranscribed={(text) => {
+            // 停止录音时，将最终识别文本追加到现有内容后面
+            setValue((v) => (v ? `${v} ${text}` : text));
+            taRef.current?.focus();
+          }}
+          language="auto"
+          disabled={disabled}
+        />
         {working && onStop ? (
           // Same spot, same shape, one action: the send button becomes Stop
           // while the agent works — always live, even though the input is not.

@@ -293,6 +293,16 @@
     "unmet": "bloqueado",
     "limited": "límite alcanzado"
   },
+  "voice": {
+    "start": "Iniciar entrada de voz",
+    "requesting": "Solicitando micrófono…",
+    "recording": "Grabando… {{seconds}}s — clic para detener",
+    "processing": "Transcribiendo…",
+    "error": "Voz no disponible",
+    "noPermission": "Permiso de micrófono denegado.",
+    "downloadingModel": "Descargando modelo de voz…",
+    "modelReady": "Modelo de voz listo"
+  },
   "message": {
     "copy": "Copiar",
     "copied": "Copiado",

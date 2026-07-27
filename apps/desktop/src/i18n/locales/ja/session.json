@@ -285,6 +285,16 @@
     "unmet": "ブロック",
     "limited": "上限に到達"
   },
+  "voice": {
+    "start": "音声入力を開始",
+    "requesting": "マイクの権限をリクエスト中…",
+    "recording": "録音中… {{seconds}}秒 — クリックで停止",
+    "processing": "文字起こし中…",
+    "error": "音声利用不可",
+    "noPermission": "マイクの権限が拒否されました。",
+    "downloadingModel": "音声モデルをダウンロード中…",
+    "modelReady": "音声モデルの準備完了"
+  },
   "message": {
     "copy": "コピー",
     "copied": "コピーしました",

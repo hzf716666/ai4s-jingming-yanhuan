@@ -293,6 +293,16 @@
     "unmet": "blockiert",
     "limited": "Limit erreicht"
   },
+  "voice": {
+    "start": "Spracheingabe starten",
+    "requesting": "Mikrofon wird angefordert…",
+    "recording": "Aufnahme… {{seconds}}s — zum Stoppen klicken",
+    "processing": "Transkribiere…",
+    "error": "Spracheingabe nicht verfügbar",
+    "noPermission": "Mikrofonberechtigung verweigert.",
+    "downloadingModel": "Sprachmodell wird heruntergeladen…",
+    "modelReady": "Sprachmodell bereit"
+  },
   "message": {
     "copy": "Kopieren",
     "copied": "Kopiert",

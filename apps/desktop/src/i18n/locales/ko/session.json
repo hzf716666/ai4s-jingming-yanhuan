@@ -285,6 +285,16 @@
     "unmet": "차단됨",
     "limited": "한도 도달"
   },
+  "voice": {
+    "start": "음성 입력 시작",
+    "requesting": "마이크 권한 요청 중…",
+    "recording": "녹음 중… {{seconds}}초 — 클릭하여 중지",
+    "processing": "텍스트 변환 중…",
+    "error": "음성 사용 불가",
+    "noPermission": "마이크 권한이 거부되었습니다.",
+    "downloadingModel": "음성 모델 다운로드 중…",
+    "modelReady": "음성 모델 준비 완료"
+  },
   "message": {
     "copy": "복사",
     "copied": "복사됨",

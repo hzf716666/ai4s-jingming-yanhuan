@@ -29,12 +29,14 @@ mod macos;
 mod windows;
 mod updates;
 mod uv;
+mod voice;
 
 use jupyter::JupyterState;
 use kernel::KernelState;
 use preview_server::PreviewState;
 use provenance::ProvenanceState;
 use runtime::RuntimeState;
+use voice::VoiceState;
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -60,6 +62,7 @@ pub fn run() {
         .manage(ProvenanceState::default())
         .manage(runs::RunState::default())
         .manage(gateway::GatewayState::default())
+        .manage(VoiceState::default())
         .setup(|app| {
             // Watch the active workspace so changes made outside the app (an
             // external editor, a detached process) still enqueue a debounced
@@ -69,6 +72,7 @@ pub fn run() {
             }
             // Bring the remote-access gateway back up if the user left it enabled.
             gateway::autostart(app.handle());
+            voice::init(app.handle());
 
             // Fix taskbar icon on Windows.
             // Tauri v2 only sets ICON_SMALL (titlebar), but the taskbar needs ICON_BIG.
@@ -180,7 +184,11 @@ pub fn run() {
             large_file::probe_large_file,
             tools::detect_tools,
             updates::latest_release,
-            debug_log::log_debug
+            debug_log::log_debug,
+            voice::transcribe_audio,
+            voice::voice_status,
+            voice::set_voice_model,
+            voice::voice_model_download
         ])
         .build(tauri::generate_context!())
         .expect("error while building AI4S Workbench")

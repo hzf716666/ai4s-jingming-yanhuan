@@ -285,6 +285,16 @@
     "unmet": "受阻",
     "limited": "达到上限"
   },
+  "voice": {
+    "start": "开始语音输入",
+    "requesting": "请求麦克风权限…",
+    "recording": "录音中… {{seconds}}秒 — 点击停止",
+    "processing": "转写中…",
+    "error": "语音不可用",
+    "noPermission": "麦克风权限被拒绝。",
+    "downloadingModel": "下载语音模型中…",
+    "modelReady": "语音模型就绪"
+  },
   "message": {
     "copy": "复制",
     "copied": "已复制",

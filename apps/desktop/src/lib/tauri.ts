@@ -850,3 +850,82 @@ export async function configureOpenCode(
     return { ok: false, reason: "error", message: e instanceof Error ? e.message : String(e) };
   }
 }
+
+// ---- Voice input (whisper.cpp sidecar) ----
+
+/** Result of a local voice transcription call. */
+export interface TranscribeResult {
+  text: string;
+  /** Wall-clock seconds the sidecar took (null when skipped). */
+  durationSecs: number | null;
+}
+
+/** Current voice-input subsystem status. */
+export interface VoiceStatus {
+  available: boolean;
+  modelsDownloaded: string[];
+  activeModel: string;
+  downloading: boolean;
+}
+
+/**
+ * Run the bundled whisper.cpp sidecar on a 16 kHz mono WAV file and return
+ * the transcribed text. Blocks while inference runs (~1-3 s for tiny model).
+ * Throws in browser dev; the caller should guard with `isTauri`.
+ */
+export async function transcribeAudio(
+  audioPath: string,
+  language?: string,
+): Promise<TranscribeResult> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<TranscribeResult>("transcribe_audio", {
+    path: audioPath,
+    language: language ?? null,
+  });
+}
+
+/**
+ * Which whisper models are downloaded, which is active, and whether a
+ * download is in progress. Null in browser dev.
+ */
+export async function voiceStatus(): Promise<VoiceStatus | null> {
+  if (!isTauri) return null;
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<VoiceStatus>("voice_status");
+}
+
+/**
+ * Switch the active whisper model size ("tiny" | "base" | "small").
+ * The model must already be downloaded.
+ */
+export async function setVoiceModel(model: string): Promise<void> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("set_voice_model", { model });
+}
+
+/**
+ * Download a whisper model from HuggingFace. Emits `voice:progress` Tauri
+ * events: { model, downloadedBytes, totalBytes, done }.
+ */
+export async function downloadVoiceModel(model: string): Promise<void> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("voice_model_download", { model });
+}
+
+/**
+ * Subscribe to model-download progress. Returns the unlisten function.
+ * Event payload: { model: string, downloadedBytes: number, totalBytes: number, done: boolean }
+ */
+export async function watchVoiceProgress(
+  cb: (p: { model: string; downloadedBytes: number; totalBytes: number; done: boolean }) => void,
+): Promise<() => void> {
+  if (!isTauri) return () => {};
+  const { listen } = await import("@tauri-apps/api/event");
+  return listen<{ model: string; downloadedBytes: number; totalBytes: number; done: boolean }>(
+    "voice:progress",
+    (e) => cb(e.payload),
+  );
+}

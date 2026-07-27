@@ -293,6 +293,16 @@
     "unmet": "bloqué",
     "limited": "limite atteinte"
   },
+  "voice": {
+    "start": "Démarrer la saisie vocale",
+    "requesting": "Demande du microphone…",
+    "recording": "Enregistrement… {{seconds}}s — cliquer pour arrêter",
+    "processing": "Transcription…",
+    "error": "Saisie vocale indisponible",
+    "noPermission": "Autorisation du microphone refusée.",
+    "downloadingModel": "Téléchargement du modèle vocal…",
+    "modelReady": "Modèle vocal prêt"
+  },
   "message": {
     "copy": "Copier",
     "copied": "Copié",
