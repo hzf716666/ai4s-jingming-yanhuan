@@ -51,7 +51,7 @@ struct VoiceInner {
 
 /// Directory where whisper models are cached, e.g.
 /// ~/Library/Application Support/com.ai4s.workbench/runtime/models/
-fn model_dir(app: &AppHandle) -> Result<PathBuf, String> {
+pub fn model_dir(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(runtime::runtime_root(app)?.join("models"))
 }
 
@@ -73,7 +73,7 @@ fn model_size_file(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(model_dir(app)?.join("model-size.txt"))
 }
 
-fn read_model_size(app: &AppHandle) -> String {
+pub fn read_model_size(app: &AppHandle) -> String {
     model_size_file(app)
         .ok()
         .and_then(|p| std::fs::read_to_string(p).ok())
@@ -82,7 +82,7 @@ fn read_model_size(app: &AppHandle) -> String {
         .unwrap_or_else(|| DEFAULT_MODEL.to_string())
 }
 
-fn save_model_size(app: &AppHandle, size: &str) -> Result<(), String> {
+pub fn save_model_size(app: &AppHandle, size: &str) -> Result<(), String> {
     let file = model_size_file(app)?;
     if let Some(parent) = file.parent() {
         std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;

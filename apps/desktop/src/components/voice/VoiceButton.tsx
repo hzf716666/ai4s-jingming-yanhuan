@@ -18,7 +18,10 @@ import { useVoiceRecorder } from "./useVoiceRecorder";
 import { useWebSpeechRecorder, hasWebSpeechSupport } from "./useWebSpeechRecorder";
 
 export interface VoiceButtonProps {
+  /** Called with final transcription when recording stops. */
   onTranscribed: (text: string) => void;
+  /** Called with accumulated text during recording (for real-time display). */
+  onPartial?: (text: string) => void;
   language?: string;
   disabled?: boolean;
 }
@@ -50,7 +53,7 @@ function WaveformBars({ level, active }: { level: number; active: boolean }) {
 }
 
 export function VoiceButton({
-  onTranscribed, language, disabled,
+  onTranscribed, onPartial, language, disabled,
 }: VoiceButtonProps) {
   const { t } = useTranslation("session");
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +65,7 @@ export function VoiceButton({
   // ---- Desktop mode (whisper.cpp) ----
   const whisper = useVoiceRecorder({
     language,
-    onPartial: undefined, // don't show partial text in input
+    onPartial: onPartial ? (appended, full) => onPartial(full) : undefined,
     onFinal: useCallback(
       (text: string) => { if (text.trim()) onTranscribed(text.trim()); },
       [onTranscribed],
@@ -76,7 +79,7 @@ export function VoiceButton({
   // ---- Browser mode (Web Speech API) ----
   const webSpeech = useWebSpeechRecorder({
     language,
-    onPartial: undefined,
+    onPartial: onPartial ? (appended, full) => onPartial(full) : undefined,
     onFinal: useCallback(
       (text: string) => { if (text.trim()) onTranscribed(text.trim()); },
       [onTranscribed],

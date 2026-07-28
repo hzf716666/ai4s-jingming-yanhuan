@@ -762,6 +762,10 @@ export function Composer({
             setValue((v) => (v ? `${v} ${text}` : text));
             taRef.current?.focus();
           }}
+          onPartial={(text) => {
+            // Show streaming text in input for real-time feedback
+            setValue(text);
+          }}
           language="auto"
           disabled={disabled}
         />

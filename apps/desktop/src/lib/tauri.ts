@@ -929,3 +929,108 @@ export async function watchVoiceProgress(
     (e) => cb(e.payload),
   );
 }
+
+// ---- Streaming voice input (sherpa-onnx) ----
+
+/** Current streaming voice subsystem status. */
+export interface StreamingVoiceStatus {
+  available: boolean;
+  modelDownloaded: boolean;
+  activeModel: string;
+  isStreaming: boolean;
+  sessionCount: number;
+}
+
+/** Get streaming voice subsystem status. */
+export async function streamingVoiceStatus(): Promise<StreamingVoiceStatus | null> {
+  if (!isTauri) return null;
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<StreamingVoiceStatus>("streaming_voice_status");
+}
+
+/** Download a sherpa-onnx streaming model. Emits `voice-stream:progress` events. */
+export async function downloadStreamingModel(model: string): Promise<void> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("download_streaming_model", { model });
+}
+
+/** Start a new streaming voice session. Returns the session ID and sample rate. */
+export interface StartStreamingResult {
+  sessionId: string;
+  sampleRate: number;
+}
+
+export async function startStreamingSession(): Promise<StartStreamingResult> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<StartStreamingResult>("start_streaming_session");
+}
+
+/**
+ * Send an audio chunk to the streaming session.
+ * @param sessionId - The session ID returned by startStreamingSession
+ * @param samples - Float32 array of audio samples (16kHz mono, normalized to [-1, 1])
+ */
+export async function acceptAudioChunk(sessionId: string, samples: number[]): Promise<void> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("accept_audio_chunk", { sessionId, samples });
+}
+
+/** Get partial transcription from an active session. */
+export async function getStreamingPartial(sessionId: string): Promise<string> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string>("get_streaming_partial", { sessionId });
+}
+
+/** End a streaming session and get the final transcription. */
+export async function endStreamingSession(sessionId: string): Promise<string> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string>("end_streaming_session", { sessionId });
+}
+
+/** Cancel a streaming session without getting final result. */
+export async function cancelStreamingSession(sessionId: string): Promise<void> {
+  if (!isTauri) throw new Error("not running in the desktop app");
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("cancel_streaming_session", { sessionId });
+}
+
+/** Payload for voice-stream:partial event */
+export interface StreamingPartialPayload {
+  sessionId: string;
+  text: string;
+  elapsedMs: number;
+}
+
+/** Payload for voice-stream:final event */
+export interface StreamingFinalPayload {
+  sessionId: string;
+  text: string;
+  elapsedMs: number;
+}
+
+/**
+ * Subscribe to streaming voice partial results. Returns the unlisten function.
+ */
+export async function watchStreamingPartial(
+  cb: (p: StreamingPartialPayload) => void,
+): Promise<() => void> {
+  if (!isTauri) return () => {};
+  const { listen } = await import("@tauri-apps/api/event");
+  return listen<StreamingPartialPayload>("voice-stream:partial", (e) => cb(e.payload));
+}
+
+/**
+ * Subscribe to streaming voice final results. Returns the unlisten function.
+ */
+export async function watchStreamingFinal(
+  cb: (p: StreamingFinalPayload) => void,
+): Promise<() => void> {
+  if (!isTauri) return () => {};
+  const { listen } = await import("@tauri-apps/api/event");
+  return listen<StreamingFinalPayload>("voice-stream:final", (e) => cb(e.payload));
+}

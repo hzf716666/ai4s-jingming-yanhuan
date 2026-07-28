@@ -30,6 +30,7 @@ mod windows;
 mod updates;
 mod uv;
 mod voice;
+mod voice_stream;
 
 use jupyter::JupyterState;
 use kernel::KernelState;
@@ -37,6 +38,7 @@ use preview_server::PreviewState;
 use provenance::ProvenanceState;
 use runtime::RuntimeState;
 use voice::VoiceState;
+use voice_stream::StreamingVoiceState;
 use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -63,6 +65,7 @@ pub fn run() {
         .manage(runs::RunState::default())
         .manage(gateway::GatewayState::default())
         .manage(VoiceState::default())
+        .manage(StreamingVoiceState::default())
         .setup(|app| {
             // Watch the active workspace so changes made outside the app (an
             // external editor, a detached process) still enqueue a debounced
@@ -73,6 +76,7 @@ pub fn run() {
             // Bring the remote-access gateway back up if the user left it enabled.
             gateway::autostart(app.handle());
             voice::init(app.handle());
+            voice_stream::init(app.handle());
 
             // Fix taskbar icon on Windows.
             // Tauri v2 only sets ICON_SMALL (titlebar), but the taskbar needs ICON_BIG.
@@ -188,7 +192,14 @@ pub fn run() {
             voice::transcribe_audio,
             voice::voice_status,
             voice::set_voice_model,
-            voice::voice_model_download
+            voice::voice_model_download,
+            voice_stream::streaming_voice_status,
+            voice_stream::download_streaming_model,
+            voice_stream::start_streaming_session,
+            voice_stream::accept_audio_chunk,
+            voice_stream::get_streaming_partial,
+            voice_stream::end_streaming_session,
+            voice_stream::cancel_streaming_session
         ])
         .build(tauri::generate_context!())
         .expect("error while building AI4S Workbench")
