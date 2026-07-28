@@ -759,7 +759,6 @@ export function Composer({
         {showModelPicker && <ModelPicker />}
         <VoiceButton
           onTranscribed={(text) => {
-            // 停止录音时，将最终识别文本追加到现有内容后面
             setValue((v) => (v ? `${v} ${text}` : text));
             taRef.current?.focus();
           }}

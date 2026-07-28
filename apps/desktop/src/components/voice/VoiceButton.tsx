@@ -1,13 +1,11 @@
 /**
- * Microphone button for the Composer. Toggles voice recording on/off.
+ * Microphone button for the Composer.
  *
- * States (shown inline with icon + text):
- *  - idle:          [mic]              — click to start
- *  - downloading:   [spinner] 45%      — model download in progress
- *  - requesting:    [spinner]          — waiting for mic permission dialog
- *  - recording:     [waveform] 12s     — live audio, click to stop
- *  - transcribing:  [spinner]          — final transcription
- *  - error:         [mic] Error text   — with retry hint
+ * Two backends selected automatically:
+ *  - **Desktop (Tauri)**: whisper.cpp sidecar — full offline ASR, waveform display.
+ *  - **Browser (Web)**: Web Speech API — built into Chrome/Edge, no installation.
+ *
+ * In browser mode, the button shows a simple recording indicator (no waveform).
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -17,23 +15,15 @@ import { cn } from "@/lib/cn";
 import { isGatewayWeb } from "@/lib/webMode";
 import { isTauri, logDebug } from "@/lib/tauri";
 import { useVoiceRecorder } from "./useVoiceRecorder";
+import { useWebSpeechRecorder, hasWebSpeechSupport } from "./useWebSpeechRecorder";
 
 export interface VoiceButtonProps {
   onTranscribed: (text: string) => void;
-  onPartialText?: (appended: string, full: string) => void;
   language?: string;
   disabled?: boolean;
 }
 
-function hasMicSupport(): boolean {
-  return !!(
-    typeof navigator !== "undefined" &&
-    navigator.mediaDevices &&
-    navigator.mediaDevices.getUserMedia
-  );
-}
-
-/** Waveform bars driven by real mic volume. */
+/** Waveform bars driven by real mic volume (desktop only). */
 function WaveformBars({ level, active }: { level: number; active: boolean }) {
   const bars = useMemo(() => [0, 1, 2, 3, 4], []);
   const maxH = 14;
@@ -60,53 +50,81 @@ function WaveformBars({ level, active }: { level: number; active: boolean }) {
 }
 
 export function VoiceButton({
-  onTranscribed, onPartialText, language, disabled,
+  onTranscribed, language, disabled,
 }: VoiceButtonProps) {
   const { t } = useTranslation("session");
   const [error, setError] = useState<string | null>(null);
-  const [micSupported] = useState(hasMicSupport);
-  const [lastPhase, setLastPhase] = useState("");
 
-  const onPartialStable = useCallback(
-    (a: string, f: string) => onPartialText?.(a, f), [onPartialText]);
-  const onFinalStable = useCallback(
-    (text: string) => { if (text.trim()) onTranscribed(text.trim()); }, [onTranscribed]);
-  const onErrorStable = useCallback((msg: string) => {
-    setError(msg);
-    void logDebug(`[voice] error: ${msg}`);
-  }, []);
+  // Determine which backend to use.
+  const useWhisper = isTauri;
+  const webSpeechAvail = hasWebSpeechSupport();
 
-  const { state, durationSecs, volumeLevel, downloadPct, start, stop } = useVoiceRecorder({
-    language, onPartial: onPartialStable, onFinal: onFinalStable, onError: onErrorStable,
+  // ---- Desktop mode (whisper.cpp) ----
+  const whisper = useVoiceRecorder({
+    language,
+    onPartial: undefined, // don't show partial text in input
+    onFinal: useCallback(
+      (text: string) => { if (text.trim()) onTranscribed(text.trim()); },
+      [onTranscribed],
+    ),
+    onError: useCallback((msg: string) => {
+      setError(msg);
+      void logDebug(`[voice] whisper error: ${msg}`);
+    }, []),
   });
 
-  // Log every state transition.
-  useEffect(() => {
-    if (state !== lastPhase) {
-      setLastPhase(state);
-      void logDebug(`[voice] phase: ${lastPhase} → ${state}`);
-    }
-  }, [state, lastPhase]);
+  // ---- Browser mode (Web Speech API) ----
+  const webSpeech = useWebSpeechRecorder({
+    language,
+    onPartial: undefined,
+    onFinal: useCallback(
+      (text: string) => { if (text.trim()) onTranscribed(text.trim()); },
+      [onTranscribed],
+    ),
+    onError: useCallback((msg: string) => {
+      setError(msg);
+      void logDebug(`[voice] web speech error: ${msg}`);
+    }, []),
+  });
 
-  // Clear error after 8 seconds so retry is possible.
+  // Pick the active backend.
+  const backend = useWhisper ? whisper : webSpeech;
+  const state = backend.state;
+  const isRecording = state === "recording";
+  const isProcessing = state === "transcribing" || state === "requesting" || state === "downloading";
+  const isError = state === "error" || !!error;
+
+  // Show a download percentage only for whisper's "downloading" phase.
+  const isDownloading = useWhisper && state === "downloading";
+  const downloadPct = useWhisper ? (whisper as any).downloadPct ?? 0 : 0;
+
+  // Duration (whisper only) or just a generic recording indicator.
+  const durationSecs = useWhisper ? whisper.durationSecs : 0;
+  // Volume level (whisper only).
+  const volumeLevel = useWhisper ? whisper.volumeLevel : 0;
+
+  // Clear error after 8 seconds.
   useEffect(() => {
     if (!error) return;
     const timer = setTimeout(() => setError(null), 8000);
     return () => clearTimeout(timer);
   }, [error]);
 
-  if (!isTauri || isGatewayWeb || !micSupported) return null;
-
-  const isDownloading = state === "downloading";
-  const isRecording = state === "recording";
-  const isProcessing = state === "transcribing" || state === "requesting";
-  const isError = state === "error" || !!error;
+  // Hide entirely if neither backend is available.
+  if (!useWhisper && !webSpeechAvail) return null;
+  if (isGatewayWeb && !webSpeechAvail) return null;
 
   const label = (() => {
-    if (isDownloading) return downloadPct > 0
-      ? `${t("voice.downloadingModel")} ${downloadPct}%`
-      : t("voice.downloadingModel");
-    if (isRecording) return t("voice.recording", { seconds: durationSecs });
+    if (isDownloading) {
+      return downloadPct > 0
+        ? `${t("voice.downloadingModel")} ${downloadPct}%`
+        : t("voice.downloadingModel");
+    }
+    if (isRecording) {
+      return useWhisper
+        ? t("voice.recording", { seconds: durationSecs })
+        : t("voice.recording", { seconds: 0 });
+    }
     if (isProcessing) return t("voice.requesting");
     if (isError) return error || t("voice.error");
     return t("voice.start");
@@ -115,16 +133,15 @@ export function VoiceButton({
   const handleClick = () => {
     if (disabled || isProcessing || isDownloading) return;
     if (isError) {
-      // Allow retry from error state.
       setError(null);
-      start();
+      backend.start();
       return;
     }
     if (isRecording) {
-      stop();
+      backend.stop();
     } else {
       setError(null);
-      start();
+      backend.start();
     }
   };
 
@@ -135,8 +152,13 @@ export function VoiceButton({
     </span>
   ) : isProcessing ? (
     <Loader2 size={15} className="animate-spin" />
-  ) : isRecording ? (
+  ) : isRecording && useWhisper ? (
     <WaveformBars level={volumeLevel} active={true} />
+  ) : isRecording ? (
+    <span className="flex items-center gap-1">
+      <Mic size={13} className="text-destructive" />
+      <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
+    </span>
   ) : isError ? (
     <AlertCircle size={15} />
   ) : (
@@ -160,7 +182,9 @@ export function VoiceButton({
       data-voicerecording={isRecording ? "true" : "false"}
     >
       {icon}
-      {isRecording && <span className="text-[11px] tabular-nums leading-none">{durationSecs}s</span>}
+      {isRecording && useWhisper && (
+        <span className="text-[11px] tabular-nums leading-none">{durationSecs}s</span>
+      )}
       {isError && error && (
         <span className="text-[10px] leading-tight max-w-[200px] truncate">{error}</span>
       )}
