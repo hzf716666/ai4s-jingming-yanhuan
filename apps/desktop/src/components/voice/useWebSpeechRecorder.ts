@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Web Speech API recorder for browser environments.
  * Provides real-time streaming transcription via interimResults.
  */
