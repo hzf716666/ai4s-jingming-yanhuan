@@ -24,8 +24,9 @@ export interface VoiceButtonProps {
 }
 
 /** Sea-wave animation driven by real mic volume (desktop only).
- *  Draws two overlapping sine waves on a tiny canvas — amplitude scales
- *  with `level` (0…1), colour is white/light to match the dark theme. */
+ *  Draws three overlapping sine waves on a tiny canvas — amplitude scales
+ *  with `level` (0…1). Colours auto-adapt to the current theme:
+ *  white for dark, black for light/warm. */
 function SeaWave({ level, active }: { level: number; active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
@@ -47,6 +48,11 @@ function SeaWave({ level, active }: { level: number; active: boolean }) {
     canvas.style.height = `${H}px`;
     ctx.scale(dpr, dpr);
 
+    // Detect theme: dark → white waves, light/warm → black waves.
+    const theme = document.documentElement.getAttribute("data-theme") ?? "dark";
+    const isDark = theme === "dark";
+    const fg = isDark ? "255,255,255" : "0,0,0";
+
     const draw = () => {
       tRef.current += 0.08;
       const t = tRef.current;
@@ -54,37 +60,37 @@ function SeaWave({ level, active }: { level: number; active: boolean }) {
 
       const mid = H / 2;
 
-      // Idle: very subtle tiny wave.
-      const idleAmp = active ? 0 : 0.3;
-      // Amplitude: idle ~0.3px, full voice ~14px.
-      const amp = idleAmp + level * 14;
+      // Idle: nearly flat line.
+      const idleAmp = active ? 0 : 0.1;
+      // Amplitude: idle ~0.3px, full voice ~18px.
+      const amp = idleAmp + level * 18;
 
       // Back wave — slowest, lowest opacity, largest wavelength.
-      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.strokeStyle = `rgba(${fg},0.25)`;
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       for (let x = 0; x <= W; x++) {
-        const y = mid + Math.sin(x * 0.1 + t * 0.4) * amp * 0.7;
+        const y = mid + Math.sin(x * 0.1 + t * 0.4) * amp * 0.8;
         x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
       }
       ctx.stroke();
 
       // Middle wave — medium speed, medium opacity, medium wavelength.
-      ctx.strokeStyle = "rgba(255,255,255,0.5)";
+      ctx.strokeStyle = `rgba(${fg},0.5)`;
       ctx.lineWidth = 1.3;
       ctx.beginPath();
       for (let x = 0; x <= W; x++) {
-        const y = mid + Math.sin(x * 0.18 + t * 0.9) * amp * 0.9;
+        const y = mid + Math.sin(x * 0.18 + t * 0.9) * amp;
         x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
       }
       ctx.stroke();
 
       // Front wave — fastest, brightest, shortest wavelength.
-      ctx.strokeStyle = "rgba(255,255,255,0.9)";
+      ctx.strokeStyle = `rgba(${fg},0.9)`;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       for (let x = 0; x <= W; x++) {
-        const y = mid + Math.sin(x * 0.25 - t) * amp;
+        const y = mid + Math.sin(x * 0.25 - t) * amp * 1.1;
         x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
       }
       ctx.stroke();
