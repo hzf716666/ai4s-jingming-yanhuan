@@ -8,7 +8,7 @@
  * In browser mode, the button shows a simple recording indicator (no waveform).
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/cn";
@@ -23,29 +23,84 @@ export interface VoiceButtonProps {
   disabled?: boolean;
 }
 
-/** Waveform bars driven by real mic volume (desktop only). */
-function WaveformBars({ level, active }: { level: number; active: boolean }) {
-  const bars = useMemo(() => [0, 1, 2, 3, 4], []);
-  const maxH = 14;
-  if (!active) {
-    return (
-      <span className="flex items-end gap-[2px]" style={{ height: maxH }}>
-        {bars.map((i) => (
-          <span key={i} className="w-[2px] rounded-full bg-current opacity-40" style={{ height: "4px" }} />
-        ))}
-      </span>
-    );
-  }
+/** Sea-wave animation driven by real mic volume (desktop only).
+ *  Draws two overlapping sine waves on a tiny canvas — amplitude scales
+ *  with `level` (0…1), colour is white/light to match the dark theme. */
+function SeaWave({ level, active }: { level: number; active: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+  const tRef = useRef(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // High-DPI scaling for crisp rendering.
+    const dpr = window.devicePixelRatio || 1;
+    const W = 64;
+    const H = 16;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = `${W}px`;
+    canvas.style.height = `${H}px`;
+    ctx.scale(dpr, dpr);
+
+    const draw = () => {
+      tRef.current += 0.08;
+      const t = tRef.current;
+      ctx.clearRect(0, 0, W, H);
+
+      const mid = H / 2;
+
+      // Idle: very subtle tiny wave.
+      const idleAmp = active ? 0 : 0.3;
+      // Amplitude: idle ~0.3px, full voice ~14px.
+      const amp = idleAmp + level * 14;
+
+      // Back wave — slowest, lowest opacity, largest wavelength.
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x++) {
+        const y = mid + Math.sin(x * 0.1 + t * 0.4) * amp * 0.7;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Middle wave — medium speed, medium opacity, medium wavelength.
+      ctx.strokeStyle = "rgba(255,255,255,0.5)";
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x++) {
+        const y = mid + Math.sin(x * 0.18 + t * 0.9) * amp * 0.9;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Front wave — fastest, brightest, shortest wavelength.
+      ctx.strokeStyle = "rgba(255,255,255,0.9)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x++) {
+        const y = mid + Math.sin(x * 0.25 - t) * amp;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      rafRef.current = requestAnimationFrame(draw);
+    };
+
+    rafRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [active, level]);
+
   return (
-    <span className="flex items-end gap-[2px]" style={{ height: maxH }}>
-      {bars.map((i) => {
-        const h = Math.max(3, Math.min(maxH, level * maxH * (0.4 + i * 0.25)));
-        return (
-          <span key={i} className="w-[2px] rounded-full bg-current transition-[height] duration-75 ease-out"
-            style={{ height: `${h}px` }} />
-        );
-      })}
-    </span>
+    <canvas
+      ref={canvasRef}
+      style={{ width: 64, height: 16, display: "block" }}
+    />
   );
 }
 
@@ -153,7 +208,7 @@ export function VoiceButton({
   ) : isProcessing ? (
     <Loader2 size={15} className="animate-spin" />
   ) : isRecording && useWhisper ? (
-    <WaveformBars level={volumeLevel} active={true} />
+    <SeaWave level={volumeLevel} active={true} />
   ) : isRecording ? (
     <span className="flex items-center gap-1">
       <Mic size={13} className="text-destructive" />

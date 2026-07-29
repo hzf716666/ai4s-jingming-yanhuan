@@ -6,7 +6,7 @@
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5174",
-    "beforeDevCommand": "",
+    "beforeDevCommand": "node node_modules/vite/bin/vite.js --port 5174 --strictPort",
     "beforeBuildCommand": "pnpm --filter @ai4s/desktop build"
   },
   "app": {
@@ -18,6 +18,11 @@
         "height": 900,
         "minWidth": 1000,
         "minHeight": 640,
+        "x": 240,
+        "y": 90,
+        "visible": true,
+        "fullscreen": false,
+        "decorations": true,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "zoomHotkeysEnabled": false,
@@ -32,6 +37,19 @@
     }
   },
   "bundle": {
-    "active": false
+    "active": true,
+    "externalBin": [
+      "binaries/opencode",
+      "binaries/uv",
+      "binaries/agent-browser"
+    ],
+    "resources": {
+      "../../../runtime/goal-plugin": "goal-plugin/",
+      "../../../runtime/skills/external/ai4s-skills": "skills/",
+      "../../../runtime/skills/external/anthropic-skills": "skills-office/",
+      "../../../runtime/skills/core": "skills-core/",
+      "../../../runtime/harness": "harness/",
+      "../../../examples/climate-trends": "examples/climate-trends/"
+    }
   }
 }

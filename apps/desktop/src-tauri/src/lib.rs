@@ -83,6 +83,18 @@ pub fn run() {
                 if let Ok(hwnd) = window.hwnd() {
                     windows::apply_taskbar_icon(hwnd.0 as windows_sys::Win32::Foundation::HWND);
                 }
+                // Force window size on every launch — the single-instance plugin
+                // may restore a previously shrunk window (15×15 bug).
+                let _ = window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
+                    width: 1440,
+                    height: 900,
+                }));
+                let _ = window.set_position(tauri::Position::Physical(tauri::PhysicalPosition {
+                    x: 240,
+                    y: 90,
+                }));
+                let _ = window.show();
+                let _ = window.set_focus();
             }
 
             Ok(())
@@ -99,6 +111,20 @@ pub fn run() {
                     | tauri::WindowEvent::ThemeChanged(_)
             ) {
                 macos::reapply_traffic_light_inset(_window);
+            }
+            // Force minimum window size on Windows to prevent 15×15 bug
+            #[cfg(target_os = "windows")]
+            if let tauri::WindowEvent::Resized(size) = _event {
+                if size.width < 100 || size.height < 100 {
+                    let _ = _window.set_size(tauri::Size::Physical(tauri::PhysicalSize {
+                        width: 1440,
+                        height: 900,
+                    }));
+                    let _ = _window.set_position(tauri::Position::Physical(tauri::PhysicalPosition {
+                        x: 240,
+                        y: 90,
+                    }));
+                }
             }
         })
         .invoke_handler(tauri::generate_handler![
