@@ -32,6 +32,7 @@ import { BandView } from "./BandView";
 import { QCodeView } from "./QCodeView";
 import { AnomalyMapView } from "./AnomalyMapView";
 import { PhaseView } from "./PhaseView";
+import { LatexPreview } from "./LatexPreview";
 import { useScrollMemory } from "@/lib/scrollMemory";
 import { cn } from "@/lib/cn";
 import { PaneTitlebarInset } from "./RightPane";
@@ -63,6 +64,7 @@ export function FilePreviewInspector({
   const needsUrl = kind === "pdf" || kind === "image" || kind === "html" || kind === "video";
   const needsText =
     kind === "table" || kind === "text" || kind === "html" || kind === "markdown" ||
+    kind === "latex" ||
     kind === "molecule" || kind === "genome" || kind === "qcode" || kind === "anomaly" ||
     kind === "phase";
   const needsBytes =
@@ -215,7 +217,7 @@ export function FilePreviewInspector({
   };
 
   const canToggle =
-    kind === "html" || kind === "markdown" || kind === "molecule" || kind === "genome";
+    kind === "html" || kind === "markdown" || kind === "latex" || kind === "molecule" || kind === "genome";
 
   // Where the user was in this file, restored when they come back to it —
   // history browsing keeps its own offset so the two don't clobber each other.
@@ -449,6 +451,27 @@ function Body({
       <div className="min-h-full px-6 py-8">
         <div className="mx-auto max-w-[760px] rounded-sm bg-white px-12 py-11 shadow-[0_1px_4px_rgba(0,0,0,.25)] max-sm:px-6 max-sm:py-7">
           <MarkdownViewer variant="document">{text}</MarkdownViewer>
+        </div>
+      </div>
+    ) : (
+      <Note text={t("filePreview.desktopOnly")} />
+    );
+  }
+  if (kind === "latex") {
+    if (showCode) {
+      return text !== null ? (
+        <div className="h-full p-3">
+          <CodeEditor key={path} value={text} onChange={onEditorChange} path={path} language="latex" onSave={onSave} />
+        </div>
+      ) : (
+        <Note text={t("filePreview.sourceDesktopOnly")} />
+      );
+    }
+    // LaTeX preview: white paper with rendered sections, math, lists, etc.
+    return text !== null ? (
+      <div className="min-h-full px-6 py-8">
+        <div className="mx-auto max-w-[760px] rounded-sm bg-white px-12 py-11 shadow-[0_1px_4px_rgba(0,0,0,.25)] max-sm:px-6 max-sm:py-7">
+          <LatexPreview source={text} />
         </div>
       </div>
     ) : (

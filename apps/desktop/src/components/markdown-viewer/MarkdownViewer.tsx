@@ -77,6 +77,55 @@ function normalizeMathDelimiters(markdown: string): string {
   );
 }
 
+// Unicode Greek letters → LaTeX commands. Borrowed from AutoResearchClaw's
+// _UNICODE_GREEK_TO_LATEX. Only converts characters that appear in math-like
+// context (surrounded by $...$ or standalone), leaving prose Greek untouched.
+const UNICODE_GREEK_TO_LATEX: Record<string, string> = {
+  "α": "\\alpha", "β": "\\beta", "γ": "\\gamma", "δ": "\\delta",
+  "ε": "\\epsilon", "ζ": "\\zeta", "η": "\\eta", "θ": "\\theta",
+  "ι": "\\iota", "κ": "\\kappa", "λ": "\\lambda", "μ": "\\mu",
+  "ν": "\\nu", "ξ": "\\xi", "ο": "o", "π": "\\pi",
+  "ρ": "\\rho", "σ": "\\sigma", "τ": "\\tau", "υ": "\\upsilon",
+  "φ": "\\phi", "χ": "\\chi", "ψ": "\\psi", "ω": "\\omega",
+  "Γ": "\\Gamma", "Δ": "\\Delta", "Θ": "\\Theta", "Λ": "\\Lambda",
+  "Ξ": "\\Xi", "Π": "\\Pi", "Σ": "\\Sigma", "Φ": "\\Phi",
+  "Ψ": "\\Psi", "Ω": "\\Omega",
+  "∂": "\\partial", "∇": "\\nabla", "∞": "\\infty",
+  "±": "\\pm", "∓": "\\mp", "×": "\\times", "÷": "\\div",
+  "≤": "\\leq", "≥": "\\geq", "≠": "\\neq", "≈": "\\approx",
+  "": "\\equiv", "∈": "\\in", "∉": "\\notin", "": "\\subset",
+  "⊃": "\\supset", "": "\\cup", "∩": "\\cap", "∅": "\\emptyset",
+  "∀": "\\forall", "∃": "\\exists", "¬": "\\neg", "∧": "\\wedge",
+  "∨": "\\vee", "⇒": "\\Rightarrow", "⇐": "\\Leftarrow", "⇔": "\\Leftrightarrow",
+  "→": "\\rightarrow", "←": "\\leftarrow", "": "\\leftrightarrow",
+  "": "\\sum", "∏": "\\prod", "∫": "\\int",
+  "√": "\\sqrt", "∝": "\\propto", "⊥": "\\perp", "∥": "\\parallel",
+  "∠": "\\angle", "°": "^{\\circ}", "′": "'", "″": "''",
+};
+
+const GREEK_RE = new RegExp(
+  `[${Object.keys(UNICODE_GREEK_TO_LATEX).join("")}]`,
+  "g",
+);
+
+/**
+ * Convert Unicode Greek/math symbols to LaTeX commands, but only inside
+ * math delimiters ($…$ / $$…$$) or when the character is surrounded by
+ * math-like context (adjacent to operators, numbers, or other Greek letters).
+ * Leaves prose Greek text (e.g. "α粒子") untouched.
+ */
+function unicodeGreekToLatex(markdown: string): string {
+  if (!GREEK_RE.test(markdown)) return markdown;
+  // Reset regex lastIndex after test
+  GREEK_RE.lastIndex = 0;
+
+  // Strategy: only convert inside $...$ and $$...$$ math zones.
+  // Outside math zones, leave Unicode Greek as-is (prose usage).
+  return markdown.replace(/(\$\$[\s\S]*?\$\$|\$[^\$\n]+?\$)/g, (mathZone) => {
+    return mathZone.replace(GREEK_RE, (ch) => UNICODE_GREEK_TO_LATEX[ch] ?? ch);
+  });
+}
+
 export function MarkdownViewer({
   children,
   className,
@@ -87,7 +136,9 @@ export function MarkdownViewer({
   variant?: Variant;
 }) {
   const s = STYLES[variant];
-  const normalized = useMemo(() => normalizeMathDelimiters(children), [children]);
+  // Apply Unicode Greek → LaTeX conversion first, then normalize delimiters
+  const withGreek = useMemo(() => unicodeGreekToLatex(children), [children]);
+  const normalized = useMemo(() => normalizeMathDelimiters(withGreek), [withGreek]);
   return (
     <div className={cn(s.root, className)}>
       <ReactMarkdown

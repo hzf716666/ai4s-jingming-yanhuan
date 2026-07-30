@@ -1,4 +1,4 @@
-@import "@fontsource/inter/400.css";
+﻿@import "@fontsource/inter/400.css";
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
 @import "@fontsource/source-serif-4/400.css";
@@ -332,4 +332,50 @@ body {
   100% { height: 4px;  opacity: 0.5; }
 }
 
+/* ─── KaTeX dark theme adaptation ─────────────────────────────────────
+   KaTeX ships with hardcoded dark text (#000). On the app's dark theme
+   (--bg #16151a) that's invisible. Invert to light text while keeping
+   the warm/light themes untouched. Uses a broad selector to cover all
+   KaTeX element classes without enumerating each one. */
+[data-theme="dark"] .katex,
+[data-theme="dark"] .katex * {
+  color: var(--text) !important;
+}
+[data-theme="dark"] .katex .frac-line,
+[data-theme="dark"] .katex .overline-line,
+[data-theme="dark"] .katex .underline-line,
+[data-theme="dark"] .katex .sqrt-line,
+[data-theme="dark"] .katex .rule,
+[data-theme="dark"] .katex .hline,
+[data-theme="dark"] .katex .dash-line,
+[data-theme="dark"] .katex .dot-line {
+  border-color: var(--text) !important;
+}
+[data-theme="dark"] .katex .fbox,
+[data-theme="dark"] .katex .fcolorbox {
+  border-color: var(--text) !important;
+}
+[data-theme="dark"] .katex .mtable .vertical-separator {
+  background-color: var(--text) !important;
+}
 
+/* Inside the white-paper LaTeX preview, formulas must stay dark regardless
+   of the app theme — the paper is always white, so dark KaTeX is correct. */
+.latex-preview .katex,
+.latex-preview .katex * {
+  color: #000 !important;
+}
+.latex-preview .katex .frac-line,
+.latex-preview .katex .overline-line,
+.latex-preview .katex .underline-line,
+.latex-preview .katex .sqrt-line,
+.latex-preview .katex .rule,
+.latex-preview .katex .hline,
+.latex-preview .katex .dash-line,
+.latex-preview .katex .dot-line {
+  border-color: #000 !important;
+}
+.latex-preview .katex .fbox,
+.latex-preview .katex .fcolorbox {
+  border-color: #000 !important;
+}

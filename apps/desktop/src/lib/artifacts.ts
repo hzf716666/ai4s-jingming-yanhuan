@@ -111,6 +111,7 @@ export type PreviewKind =
   | "video"
   | "table"
   | "markdown"
+  | "latex"
   | "text"
   | "docx"
   | "xlsx"
@@ -143,6 +144,7 @@ export function previewKind(ext: string): PreviewKind {
   if (["mp4", "webm", "mov", "m4v", "ogv"].includes(e)) return "video";
   if (e === "csv" || e === "tsv") return "table";
   if (e === "md" || e === "markdown") return "markdown";
+  if (e === "tex") return "latex";
   if (e === "docx" || e === "xlsx" || e === "pptx") return e;
   if (MESH_EXTS.includes(e)) return "mesh";
   if (FITS_EXTS.includes(e)) return "fits";

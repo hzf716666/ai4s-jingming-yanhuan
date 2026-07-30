@@ -43,7 +43,7 @@ export function useWebSpeechRecorder(
   const [state, setState] = useState<WebSpeechState>("idle");
   const [partialText, setPartialText] = useState("");
   const [durationSecs, setDurationSecs] = useState(0);
-  const [volumeLevel, setVolumeLevel] = useState(0);
+  const [volumeLevel, _setVolumeLevel] = useState(0);
 
   const recognitionRef = useRef<any>(null);
   const startTimeRef = useRef(0);

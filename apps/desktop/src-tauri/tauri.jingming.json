@@ -39,10 +39,11 @@
   "bundle": {
     "active": true,
     "externalBin": [
-      "binaries/opencode",
-      "binaries/uv",
-      "binaries/agent-browser"
-    ],
+        "binaries/opencode",
+        "binaries/uv",
+        "binaries/agent-browser",
+        "binaries/whisper-cli"
+      ],
     "resources": {
       "../../../runtime/goal-plugin": "goal-plugin/",
       "../../../runtime/skills/external/ai4s-skills": "skills/",
