@@ -54,7 +54,9 @@
     "mirrorPython": "Python 下载",
     "mirrorPypiPlaceholder": "https://pypi.tuna.tsinghua.edu.cn/simple",
     "mirrorPythonPlaceholder": "https://mirror.example.com/python-build-standalone",
-    "mirrorHint": "可选镜像,仅在设置 Python 工具(Jupyter、科学数据库)下载时使用,适合 pypi.org / github.com 访问缓慢的网络。留空则使用默认源。"
+    "mirrorHint": "可选镜像,仅在设置 Python 工具(Jupyter、科学数据库)下载时使用,适合 pypi.org / github.com 访问缓慢的网络。留空则使用默认源。",
+    "backendLabel": "后端",
+    "backendHint": "在 OpenCode（默认）和通义灵码之间切换 AI 代理后端"
   },
   "updates": {
     "title": "应用更新",

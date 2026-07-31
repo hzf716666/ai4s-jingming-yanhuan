@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   OpenCodeClient,
+  QoderClient,
   DEFAULT_OPENCODE_URL,
   type AgentInfo,
   type AgentRuntime,
@@ -59,6 +60,10 @@ const HIDDEN_KEY = "ai4s.hiddenExamples";
 // / recent models persist too, so the effort should as well). Sibling of the
 // model-preferences keys in components/settings/modelPreferences.
 const REASONING_KEY = "ai4s.models.variant.v1";
+// The selected AI backend: "opencode" (default) or "qoder".
+const BACKEND_KEY = "ai4s.backend.v1";
+
+export type BackendType = "opencode" | "qoder";
 
 function initialUrl(): string {
   if (typeof window === "undefined") return DEFAULT_OPENCODE_URL;
@@ -75,6 +80,11 @@ function initialHidden(): string[] {
 function initialReasoningVariant(): string | null {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(REASONING_KEY) || null;
+}
+function initialBackend(): BackendType {
+  if (typeof window === "undefined") return "opencode";
+  const stored = window.localStorage.getItem(BACKEND_KEY);
+  return (stored === "qoder" ? "qoder" : "opencode");
 }
 
 export interface Thread {
@@ -94,6 +104,10 @@ export interface PaneState {
 interface RuntimeState {
   status: RuntimeStatus;
   serverUrl: string;
+  /** The active AI backend: "opencode" (default) or "qoder". */
+  backend: BackendType;
+  /** Switch the active backend and reconnect. */
+  setBackend: (backend: BackendType) => Promise<void>;
   sessions: SessionMeta[];
   currentId: string | null;
   threads: Record<string, Thread>;
@@ -615,6 +629,15 @@ function activeVariant(state: RuntimeState): string | undefined {
 export const useRuntimeStore = create<RuntimeState>((set, get) => ({
   status: "offline",
   serverUrl: initialUrl(),
+  backend: initialBackend(),
+  setBackend: async (backend) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(BACKEND_KEY, backend);
+    }
+    set({ backend });
+    // Reconnect with the new backend
+    await get().connectRetry();
+  },
   sessions: [],
   currentId: null,
   threads: {},
@@ -910,13 +933,30 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
       // gets null and connects to a user-run passwordless server.
       password = await runtimePassword();
     }
-    const c = new OpenCodeClient({
-      baseUrl,
-      directory: directory ?? undefined,
-      password: password ?? undefined,
-    });
-    opencodeClient = c;
-    client = c;
+    // Create the appropriate client based on selected backend
+    const backend = get().backend;
+    let c: AgentRuntime;
+    if (backend === "qoder") {
+      // Qoder CN backend: reuses local qodercli login state (qodercliAuth).
+      // No PAT needed — same zero-config experience as OpenCode.
+      const qoderClient = new QoderClient({
+        cwd: directory ?? undefined,
+        usePAT: false, // false = qodercliAuth (reuses `qodercli login` session)
+        systemPrompt: "You are a helpful coding assistant.",
+      });
+      c = qoderClient;
+      client = c;
+    } else {
+      // OpenCode backend (default): uses HTTP+SSE API
+      const openCodeClient = new OpenCodeClient({
+        baseUrl,
+        directory: directory ?? undefined,
+        password: password ?? undefined,
+      });
+      opencodeClient = openCodeClient;
+      c = openCodeClient;
+      client = c;
+    }
     clientStatusUnsub = c.onStatus((status) => {
       void logDebug(`status → ${status}`);
       if (status === "connecting" && get().status === "ready") {
@@ -1249,7 +1289,11 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
         // Best-effort: deferred into a promise chain so no failure — even a
         // synchronous throw — can flip an otherwise successful connect.
         void Promise.resolve()
-          .then(() => c.clearDefaultCustomModelContextLimits())
+          .then(() => {
+            if (opencodeClient) {
+              opencodeClient.clearDefaultCustomModelContextLimits();
+            }
+          })
           .catch((err) =>
             logDebug(`context-limit cleanup skipped: ${err instanceof Error ? err.message : String(err)}`),
           );

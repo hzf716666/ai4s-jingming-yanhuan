@@ -1,4 +1,6 @@
 export { OpenCodeClient } from "./OpenCodeClient";
+export { QoderClient } from "./QoderClient";
+export type { QoderClientOptions } from "./QoderClient";
 export type { AgentRuntime } from "./runtime";
 export { BaseAgentRuntime } from "./base-runtime";
 export {

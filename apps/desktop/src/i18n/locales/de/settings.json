@@ -54,7 +54,9 @@
     "mirrorPython": "Python-Download",
     "mirrorPypiPlaceholder": "https://pypi.tuna.tsinghua.edu.cn/simple",
     "mirrorPythonPlaceholder": "https://mirror.example.com/python-build-standalone",
-    "mirrorHint": "Optionale Spiegelserver, nur beim Einrichten von Python-Tools (Jupyter, Wissenschaftsdatenbanken) in Netzwerken verwendet, in denen pypi.org / github.com langsam sind. Leer lassen für Standardwerte."
+    "mirrorHint": "Optionale Spiegelserver, nur beim Einrichten von Python-Tools (Jupyter, Wissenschaftsdatenbanken) in Netzwerken verwendet, in denen pypi.org / github.com langsam sind. Leer lassen für Standardwerte.",
+    "backendLabel": "Backend",
+    "backendHint": "Zwischen OpenCode (Standard) und Qoder CN als KI-Agent-Backend wechseln"
   },
   "updates": {
     "title": "App-Updates",

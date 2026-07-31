@@ -105,6 +105,8 @@ export function SettingsPage() {
   const disconnect = useRuntimeStore((s) => s.disconnect);
   const defaultModel = useRuntimeStore((s) => s.defaultModel);
   const loadCatalog = useRuntimeStore((s) => s.loadCatalog);
+  const backend = useRuntimeStore((s) => s.backend);
+  const setBackend = useRuntimeStore((s) => s.setBackend);
   const connected = status === "ready";
   const updateEnabled = useUpdateStore((s) => s.enabled);
   const setUpdateEnabled = useUpdateStore((s) => s.setEnabled);
@@ -783,6 +785,27 @@ export function SettingsPage() {
         {section === "runtime" && (
         <Section title={t("runtime.title")} hint={t("runtime.hint")} flush>
           <div className="divide-y divide-faint">
+            {/* Backend provider selection */}
+            <Row
+              title={t("runtime.backendLabel")}
+              hint={t("runtime.backendHint")}
+              control={
+                <select
+                  value={backend}
+                  onChange={(e) => {
+                    const newBackend = e.target.value as "opencode" | "qoder";
+                    void setBackend(newBackend);
+                  }}
+                  disabled={switching}
+                  aria-label={t("runtime.backendLabel")}
+                  className={chipCls("shrink-0")}
+                >
+                  <option value="opencode">OpenCode</option>
+                  <option value="qoder">Qoder CN</option>
+                </select>
+              }
+            />
+
             {/* Server URL + connection status */}
             <Row
               title={t("runtime.serverLabel")}
