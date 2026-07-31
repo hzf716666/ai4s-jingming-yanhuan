@@ -15,6 +15,9 @@ struct RuntimeLifecycle {
     child: Option<CommandChild>,
     url: Option<String>,
     port: Option<u16>,
+    qoder_child: Option<CommandChild>,
+    qoder_url: Option<String>,
+    qoder_port: Option<u16>,
 }
 
 /// One lock owns every sidecar lifecycle field. Keeping child/url/port in
@@ -39,6 +42,12 @@ pub(crate) fn runtime_root(app: &AppHandle) -> Result<PathBuf, String> {
 /// per-run Basic-auth password (`server_password`) itself.
 pub(crate) fn sidecar_url(state: &RuntimeState) -> Option<String> {
     state.lifecycle.lock().unwrap().url.clone()
+}
+
+/// The running Qoder sidecar's base URL (`http://127.0.0.1:<port>`), or None when
+/// the Qoder runtime is not started yet.
+pub(crate) fn sidecar_qoder_url(state: &RuntimeState) -> Option<String> {
+    state.lifecycle.lock().unwrap().qoder_url.clone()
 }
 
 fn xdg_config_home(app: &AppHandle) -> Result<PathBuf, String> {
@@ -954,6 +963,224 @@ pub async fn pick_folder(app: AppHandle) -> Result<Option<String>, String> {
     Ok(Some(path.to_string_lossy().to_string()))
 }
 
+/// Resolve the qoder-server.mjs script path.
+/// Tries multiple locations:
+/// 1. Next to the executable (production, bundled resource)
+/// 2. Project root runtime/ directory (dev mode)
+/// 3. Current working directory (fallback)
+fn resolve_qoder_script() -> Result<PathBuf, String> {
+    // Try executable-relative path first (production)
+    if let Ok(exe) = std::env::current_exe() {
+        let exe_dir = exe.parent().unwrap_or_else(|| std::path::Path::new("."));
+        // Check bundled resource location (mapped from runtime/qoder-sidecar → qoder-sidecar/)
+        let resource_path = exe_dir
+            .join("resources")
+            .join("qoder-sidecar")
+            .join("qoder-server.mjs");
+        if resource_path.exists() {
+            return Ok(resource_path);
+        }
+        // Check dev location relative to exe
+        let dev_path = exe_dir
+            .join("runtime")
+            .join("qoder-sidecar")
+            .join("qoder-server.mjs");
+        if dev_path.exists() {
+            return Ok(dev_path);
+        }
+    }
+
+    // Try current working directory (dev mode)
+    if let Ok(cwd) = std::env::current_dir() {
+        let path = cwd
+            .join("runtime")
+            .join("qoder-sidecar")
+            .join("qoder-server.mjs");
+        if path.exists() {
+            return Ok(path);
+        }
+    }
+
+    // Try compile-time project root (for development)
+    let env_root = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();
+    if !env_root.is_empty() {
+        let path = PathBuf::from(env_root)
+            .join("..")
+            .join("..")
+            .join("runtime")
+            .join("qoder-sidecar")
+            .join("qoder-server.mjs");
+        if path.exists() {
+            return Ok(path);
+        }
+    }
+
+    Err("Qoder sidecar script (qoder-server.mjs) not found. Ensure the runtime/qoder-sidecar/ directory exists.".into())
+}
+
+/// Wait for the sidecar to become healthy by polling its /health endpoint.
+/// Uses TCP connection check (lightweight) followed by HTTP health check.
+/// Returns Ok(()) when the server responds, or Err if it times out.
+async fn wait_for_sidecar_health(port: u16, timeout_secs: u64) -> Result<(), String> {
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(timeout_secs);
+    let mut interval = std::time::Duration::from_millis(200);
+
+    while std::time::Instant::now() < deadline {
+        // First check: can we open a TCP connection?
+        if let Ok(mut stream) = tokio::net::TcpStream::connect(format!("127.0.0.1:{port}")).await {
+            // Port is open — now do a proper HTTP health check
+            let request = format!(
+                "GET /health HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\nConnection: close\r\n\r\n"
+            );
+            use tokio::io::AsyncWriteExt;
+            use tokio::io::AsyncReadExt;
+            if stream.write_all(request.as_bytes()).await.is_ok() {
+                let mut buf = [0u8; 1024];
+                if let Ok(n) = stream.read(&mut buf).await {
+                    let response = String::from_utf8_lossy(&buf[..n]);
+                    if response.contains("200 OK") || response.contains("\"ok\"") || response.contains("\"status\"") {
+                        return Ok(());
+                    }
+                }
+            }
+        }
+        tokio::time::sleep(interval).await;
+        // Exponential backoff, max 1s
+        interval = interval.saturating_mul(2);
+        if interval > std::time::Duration::from_secs(1) {
+            interval = std::time::Duration::from_secs(1);
+        }
+    }
+
+    Err(format!(
+        "Qoder sidecar did not become healthy within {}s",
+        timeout_secs
+    ))
+}
+
+/// Spawn the Qoder sidecar (Node.js qoder-server.mjs).
+/// Uses port 4097 by default to avoid conflict with OpenCode (port 3000+).
+fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, String> {
+    let workspace = workspace_dir(app)?;
+    let port_str = port.to_string();
+
+    // Resolve the qoder-server.mjs script
+    let qoder_script = resolve_qoder_script()?;
+
+    // Verify node exists
+    let node_cmd = if cfg!(windows) { "node.exe" } else { "node" };
+
+    let home = std::env::var("HOME").unwrap_or_default();
+    let cmd = app
+        .shell()
+        .command(node_cmd)
+        .args([
+            qoder_script.to_string_lossy().to_string(),
+            "--port".to_string(),
+            port_str.clone(),
+            "--cwd".to_string(),
+            workspace.to_string_lossy().to_string(),
+        ])
+        .env("HOME", home)
+        // GUI-launched apps get a minimal PATH; give the sidecar the user's
+        // real tools (node, npm, qodercli, etc.) for Qoder SDK auth.
+        .env("PATH", enriched_path())
+        .current_dir(workspace);
+
+    // Apply the network-proxy setting so Qoder API calls work where direct
+    // connections are blocked.
+    let (proxy_mode, proxy_url) = read_proxy_setting(app);
+    let mut cmd = cmd;
+    for (k, v) in resolve_proxy_env(&proxy_mode, &proxy_url) {
+        cmd = cmd.env(k, v);
+    }
+
+    let (mut rx, child) = cmd.spawn().map_err(|e| format!("failed to spawn qoder sidecar: {e}"))?;
+
+    // Drain events so the child's stdout/stderr buffer never blocks it.
+    let app = app.clone();
+    tauri::async_runtime::spawn(async move {
+        use tauri_plugin_shell::process::CommandEvent;
+        while let Some(event) = rx.recv().await {
+            match event {
+                CommandEvent::Stderr(bytes) => {
+                    for line in String::from_utf8_lossy(&bytes).split(['\n', '\r']) {
+                        let line = line.trim();
+                        if !line.is_empty() {
+                            crate::debug_log::append(&app, &format!("[qoder-sidecar] {line}"));
+                        }
+                    }
+                }
+                CommandEvent::Error(e) => {
+                    crate::debug_log::append(&app, &format!("[qoder-sidecar] error: {e}"));
+                }
+                CommandEvent::Terminated(status) => {
+                    crate::debug_log::append(
+                        &app,
+                        &format!("[qoder-sidecar] terminated: code={:?} signal={:?}", status.code, status.signal),
+                    );
+                }
+                _ => {}
+            }
+        }
+    });
+    Ok(child)
+}
+
+/// Start the Qoder sidecar (idempotent). Returns its base URL.
+/// Uses port 4097 by default. Waits for the sidecar's health endpoint before returning.
+#[tauri::command(async)]
+pub async fn start_qoder_runtime(app: AppHandle, state: State<'_, RuntimeState>) -> Result<String, String> {
+    // Check if already running
+    {
+        let lifecycle = state.lifecycle.lock().unwrap();
+        if let (Some(_), Some(url)) = (&lifecycle.qoder_child, &lifecycle.qoder_url) {
+            // Verify it's actually healthy
+            let port = lifecycle.qoder_port.unwrap_or(4097);
+            drop(lifecycle);
+            if wait_for_sidecar_health(port, 3).await.is_ok() {
+                return Ok(url.clone());
+            }
+            // Not healthy — the old process is dead but state is stale, fall through to restart
+        }
+    }
+
+    // Repair any impossible partial state
+    {
+        let mut lifecycle = state.lifecycle.lock().unwrap();
+        if let Some(child) = lifecycle.qoder_child.take() {
+            let _ = child.kill();
+        }
+        lifecycle.qoder_url = None;
+    }
+
+    let port = {
+        let mut lifecycle = state.lifecycle.lock().unwrap();
+        *lifecycle.qoder_port.get_or_insert(4097)
+    };
+
+    let child = spawn_qoder_sidecar(&app, port)?;
+
+    // Wait for sidecar to become healthy (up to 15 seconds)
+    if let Err(e) = wait_for_sidecar_health(port, 15).await {
+        // Kill the failed sidecar
+        let mut lifecycle = state.lifecycle.lock().unwrap();
+        if let Some(c) = lifecycle.qoder_child.take() {
+            let _ = c.kill();
+        }
+        lifecycle.qoder_url = None;
+        return Err(e);
+    }
+
+    let url = format!("http://127.0.0.1:{port}");
+    {
+        let mut lifecycle = state.lifecycle.lock().unwrap();
+        lifecycle.qoder_child = Some(child);
+        lifecycle.qoder_url = Some(url.clone());
+    }
+    Ok(url)
+}
+
 /// Kill the bundled OpenCode if running.
 #[tauri::command]
 pub fn stop_runtime(state: State<'_, RuntimeState>) {
@@ -962,6 +1189,11 @@ pub fn stop_runtime(state: State<'_, RuntimeState>) {
         let _ = child.kill();
     }
     lifecycle.url = None;
+    // Also stop Qoder sidecar
+    if let Some(qoder_child) = lifecycle.qoder_child.take() {
+        let _ = qoder_child.kill();
+    }
+    lifecycle.qoder_url = None;
 }
 
 pub fn kill_child(state: &RuntimeState) {
@@ -970,6 +1202,10 @@ pub fn kill_child(state: &RuntimeState) {
         let _ = child.kill();
     }
     lifecycle.url = None;
+    if let Some(qoder_child) = lifecycle.qoder_child.take() {
+        let _ = qoder_child.kill();
+    }
+    lifecycle.qoder_url = None;
 }
 
 #[cfg(test)]

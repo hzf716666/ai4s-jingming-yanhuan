@@ -47,6 +47,7 @@
       "../../../runtime/skills/external/anthropic-skills": "skills-office/",
       "../../../runtime/skills/core": "skills-core/",
       "../../../runtime/harness": "harness/",
+      "../../../runtime/qoder-sidecar": "qoder-sidecar/",
       "../../../examples/climate-trends": "examples/climate-trends/"
     },
     "icon": [

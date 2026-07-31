@@ -35,6 +35,8 @@ import {
   setProxySetting as persistProxySetting,
   setWorkspace,
   startRuntime,
+  startQoderRuntime,
+  stopRuntime,
   workspacePath,
   type ApprovalMode,
   type ProjectInfo,
@@ -635,6 +637,29 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
       window.localStorage.setItem(BACKEND_KEY, backend);
     }
     set({ backend });
+    // Stop the old sidecar and start the new one when switching backends.
+    // The Rust sidecar is idempotent — calling start_runtime/start_qoder_runtime
+    // when already running just returns the existing URL.
+    if (isTauri) {
+      try {
+        await stopRuntime();
+      } catch {
+        // Best-effort: stop may fail during initial startup
+      }
+      try {
+        if (backend === "qoder") {
+          const url = await startQoderRuntime();
+          if (url) set({ serverUrl: url });
+        } else {
+          const url = await startRuntime();
+          if (url) set({ serverUrl: url });
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        set({ error: msg });
+        return;
+      }
+    }
     // Reconnect with the new backend
     await get().connectRetry();
   },
@@ -932,17 +957,31 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
       // The bundled sidecar requires per-run Basic auth; browser dev (no Tauri)
       // gets null and connects to a user-run passwordless server.
       password = await runtimePassword();
+      // Ensure the sidecar is running before connecting (idempotent on Rust side).
+      if (isTauri) {
+        const backend = get().backend;
+        try {
+          const url =
+            backend === "qoder"
+              ? await startQoderRuntime()
+              : await startRuntime();
+          if (url) set({ serverUrl: url });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          void logDebug(`connect: sidecar start failed: ${msg}`);
+        }
+      }
     }
     // Create the appropriate client based on selected backend
     const backend = get().backend;
     let c: AgentRuntime;
     if (backend === "qoder") {
-      // Qoder CN backend: reuses local qodercli login state (qodercliAuth).
-      // No PAT needed — same zero-config experience as OpenCode.
+      // Qoder CN backend: communicates with qoder-server.mjs sidecar via HTTP+SSE.
+      // Sidecar handles qodercliAuth (reuses `qodercli login` session).
+      // Note: baseUrl defaults to http://localhost:4097 if not specified.
       const qoderClient = new QoderClient({
-        cwd: directory ?? undefined,
-        usePAT: false, // false = qodercliAuth (reuses `qodercli login` session)
-        systemPrompt: "You are a helpful coding assistant.",
+        baseUrl: "http://localhost:4097",
+        directory: directory ?? undefined,
       });
       c = qoderClient;
       client = c;
@@ -1345,9 +1384,13 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
         return;
       }
       if (!isTauri) return;
-      void logDebug("bootstrap: starting bundled runtime");
+      const backend = get().backend;
+      void logDebug(`bootstrap: starting ${backend} runtime`);
       try {
-        const url = await startRuntime();
+        const url =
+          backend === "qoder"
+            ? await startQoderRuntime()
+            : await startRuntime();
         void logDebug(`bootstrap: runtime at ${url}`);
         if (url) set({ serverUrl: url });
       } catch (err) {

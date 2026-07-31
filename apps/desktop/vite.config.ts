@@ -20,6 +20,8 @@ export default defineConfig({
     },
   },
   server: {
+    host: "0.0.0.0",
+    port: 5173,
     fs: {
       allow: [r("."), r("../../"), "E:\\openscience\\jingming-yanhuan", "E:\\tb\\jingming-yanhuan"],
     },

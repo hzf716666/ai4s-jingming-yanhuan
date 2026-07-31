@@ -129,6 +129,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             runtime::start_runtime,
+            runtime::start_qoder_runtime,
             runtime::runtime_password,
             gateway::gateway_status,
             gateway::set_gateway_config,

@@ -5,12 +5,14 @@
  * Implements the same AgentRuntime interface so the frontend can switch
  * between backends without code changes.
  *
- * Uses the official @qoder-ai/qoder-agent-sdk which spawns qodercli as a
- * child process and communicates via JSONL protocol.
+ * Architecture:
+ * - Communicates with Node.js sidecar (qoder-server.mjs) via HTTP+SSE
+ * - Sidecar wraps @qoder-ai/qoder-agent-sdk and exposes OpenCode-compatible API
+ * - Frontend can run in Tauri WebView without Node.js context
  *
  * Authentication:
- * - qodercliAuth(): reuses local `qodercli login` state (recommended)
- * - accessTokenFromEnv(): reads QODER_PERSONAL_ACCESS_TOKEN env var
+ * - Sidecar reads QODER_PERSONAL_ACCESS_TOKEN env var (optional)
+ * - Or reuses local `qodercli login` state (recommended)
  */
 
 import type {
@@ -27,262 +29,429 @@ import type {
 import type { AgentRuntime } from "./runtime";
 import { BaseAgentRuntime } from "./base-runtime";
 
-/**
- * Qoder SDK module shape — imported dynamically to avoid hard dependency.
- * Uses `new Function` to bypass Vite's static import analysis.
- */
-interface QoderSDKModule {
-  query: (params: {
-    prompt: string;
-    options?: Record<string, unknown>;
-  }) => QoderQuery;
-  qodercliAuth: () => unknown;
-  accessTokenFromEnv: () => unknown;
-  listSessions: (options?: { limit?: number }) => Promise<QoderSDKSessionInfo[]>;
-  getSessionMessages: (params: {
-    sessionId: string;
-  }) => Promise<QoderSDKSessionMessage[]>;
-  deleteSession: (params: { sessionId: string }) => Promise<void>;
-}
-
-/** Query object returned by SDK query() — AsyncGenerator + control methods */
-interface QoderQuery extends AsyncIterable<QoderSDKMessage> {
-  interrupt(): Promise<unknown>;
-  close(): Promise<void>;
-  setModel(model?: string): Promise<void>;
-  setPermissionMode(mode: string): Promise<void>;
-  [Symbol.asyncDispose](): Promise<void>;
-}
-
-/** SDK message types — matches protocol/messages.d.ts */
-interface QoderSDKMessage {
-  type: string;
-  subtype?: string;
-  uuid?: string;
-  session_id?: string;
-  // assistant message
-  message?: {
-    role: string;
-    content: Array<{
-      type: string;
-      text?: string;
-      id?: string;
-      name?: string;
-      input?: unknown;
-      tool_use_id?: string;
-      [key: string]: unknown;
-    }>;
-    [key: string]: unknown;
-  };
-  // result message
-  duration_ms?: number;
-  is_error?: boolean;
-  num_turns?: number;
-  result?: string;
-  stop_reason?: string | null;
-  errors?: string[];
-  // system messages
-  status?: string;
-  state?: string;
-  title?: string;
-  source?: string;
-  tool_name?: string;
-  tool_use_id?: string;
-  decision_reason?: string;
-  decision_reason_type?: string;
-  error?: string;
-  // stream events
-  event?: {
-    type: string;
-    delta?: unknown;
-    content_block?: {
-      type: string;
-      text?: string;
-      [key: string]: unknown;
-    };
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
-}
-
-interface QoderSDKSessionInfo {
-  session_id: string;
-  title?: string;
-  created_at?: string;
-  updated_at?: string;
-  model?: string;
-}
-
-interface QoderSDKSessionMessage {
-  type: string;
-  subtype?: string;
-  uuid?: string;
-  message?: { role: string; content: unknown[] };
-  content?: Array<{ type: string; text?: string }>;
-  timestamp?: string;
-}
+/** Default sidecar port */
+const DEFAULT_QODER_URL = "http://localhost:4097";
 
 /**
  * Options for constructing a QoderClient.
  */
 export interface QoderClientOptions {
+  /** Sidecar base URL (default: http://localhost:4097). */
+  baseUrl?: string;
   /** Working directory for agent operations. */
-  cwd?: string;
-  /** Use PAT from environment variable (QODER_PERSONAL_ACCESS_TOKEN). */
-  usePAT?: boolean;
-  /** System prompt to set agent behavior. */
-  systemPrompt?: string;
-  /** Maximum conversation turns per session. */
-  maxTurns?: number;
+  directory?: string;
+  /** Custom fetch implementation (for testing). */
+  fetchImpl?: typeof fetch;
+  /** Connection timeout in milliseconds (default: 5000). */
+  connectTimeoutMs?: number;
+  /** Request timeout in milliseconds (default: 15000). */
+  requestTimeoutMs?: number;
 }
 
-/**
- * Session state tracked by QoderClient.
- */
-interface QoderSession {
-  id: string;
-  messages: HistoryMessage[];
-  createdAt: number;
-  title: string;
+/** Map tool status strings to our enum. */
+function mapToolStatus(status: string): ToolCallStatus {
+  switch (status) {
+    case "running":
+      return "running";
+    case "success":
+    case "completed":
+      return "success";
+    case "error":
+    case "failed":
+      return "failed";
+    default:
+      return "pending";
+  }
 }
 
 /**
  * QoderClient implements AgentRuntime for Qoder CN.
  *
- * Key differences from OpenCodeClient:
- * - Qoder SDK spawns qodercli as a child process (not HTTP server)
- * - Uses async iterators for streaming, not SSE
- * - Sessions managed via SDK session APIs
- * - Auth via qodercli login state or PAT
+ * Mirrors OpenCodeClient architecture:
+ * - HTTP client communicating with qoder-server.mjs sidecar
+ * - SSE event stream for real-time updates
+ * - Session management via HTTP API
  */
 export class QoderClient extends BaseAgentRuntime implements AgentRuntime {
-  private readonly options: QoderClientOptions;
-  private readonly sessions = new Map<string, QoderSession>();
-  private sdk: QoderSDKModule | null = null;
-  private sdkLoadError: string | null = null;
-  /** Active query handle for the current turn — used for interrupt/close. */
-  private activeQuery: QoderQuery | null = null;
+  private readonly baseUrl: string;
+  private readonly fetchImpl: typeof fetch;
+  private readonly directory: string | null;
+  private readonly connectTimeoutMs: number;
+  private readonly requestTimeoutMs: number;
+  private abort: AbortController | null = null;
+  private es: EventSource | null = null;
+  private closed = false;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly customFetch: boolean;
+  /** partID → accumulated text of a streaming text part. */
+  private readonly textStreams = new Map<string, { sessionId: string; text: string }>();
 
   constructor(opts: QoderClientOptions = {}) {
     super();
-    this.options = opts;
+    this.baseUrl = (opts.baseUrl ?? DEFAULT_QODER_URL).replace(/\/$/, "");
+    this.customFetch = !!opts.fetchImpl;
+    this.fetchImpl = (opts.fetchImpl ?? globalThis.fetch).bind(globalThis);
+    this.directory = opts.directory ?? null;
+    this.connectTimeoutMs = opts.connectTimeoutMs ?? 5000;
+    this.requestTimeoutMs = opts.requestTimeoutMs ?? 15000;
   }
 
-  /**
-   * Load the Qoder SDK dynamically at runtime.
-   * Uses `new Function` to bypass Vite's static import analysis.
-   */
-  private async loadSDK(): Promise<boolean> {
-    if (this.sdk) return true;
-    if (this.sdkLoadError) return false;
+  private headers(json = false): Record<string, string> {
+    const h: Record<string, string> = {};
+    if (json) h["Content-Type"] = "application/json";
+    return h;
+  }
 
+  private async fetchWithTimeout(
+    input: RequestInfo | URL,
+    init: RequestInit,
+    timeoutMs = this.requestTimeoutMs,
+  ): Promise<Response> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const dynamicImport = new Function("mod", "return import(mod)") as (
-        mod: string,
-      ) => Promise<unknown>;
-      const mod = await dynamicImport("@qoder-ai/qoder-agent-sdk");
-      this.sdk = mod as unknown as QoderSDKModule;
-      return true;
+      return await this.fetchImpl(input, { ...init, signal: controller.signal });
     } catch (err) {
-      this.sdkLoadError = err instanceof Error ? err.message : String(err);
-      console.warn("[QoderClient] Failed to load Qoder SDK:", this.sdkLoadError);
+      if (controller.signal.aborted) throw new Error("Timed out waiting for Qoder sidecar");
+      throw err;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  private eventUrl(): string {
+    const url = new URL("/event", this.baseUrl);
+    if (this.directory) {
+      url.searchParams.set("directory", this.directory);
+    }
+    return url.toString();
+  }
+
+  /** Append directory query param if set. */
+  private scopedUrl(path: string): string {
+    const url = new URL(path, this.baseUrl);
+    if (this.directory) {
+      url.searchParams.set("directory", this.directory);
+    }
+    return url.toString();
+  }
+
+  /** Open the SSE event stream. Resolves once the server acknowledges. */
+  async connect(): Promise<void> {
+    this.closed = false;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.setStatus("connecting");
+
+    // Prefer EventSource in a real webview/browser (reliable SSE)
+    const canUseEventSource = !this.customFetch && typeof EventSource !== "undefined";
+    if (canUseEventSource) {
+      return new Promise((resolve, reject) => {
+        let opened = false;
+        let finished = false;
+        const es = new EventSource(this.eventUrl());
+        this.es = es;
+        const timer = setTimeout(() => {
+          if (opened || finished) return;
+          finished = true;
+          this.setStatus("error");
+          es.close();
+          if (this.es === es) this.es = null;
+          reject(new Error("Timed out opening Qoder event stream"));
+        }, this.connectTimeoutMs);
+        es.onopen = () => {
+          if (finished) return;
+          opened = true;
+          finished = true;
+          clearTimeout(timer);
+          this.setStatus("ready");
+          resolve();
+        };
+        es.onmessage = (ev) => {
+          try {
+            this.normalize(JSON.parse(ev.data));
+          } catch {
+            /* ignore malformed frame */
+          }
+        };
+        es.onerror = () => {
+          if (!opened) {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            this.setStatus("error");
+            es.close();
+            this.es = null;
+            reject(new Error("Could not open Qoder event stream"));
+          } else {
+            // Self-heal with backoff
+            es.close();
+            if (this.es === es) {
+              this.es = null;
+              this.reconnectSoon();
+            }
+          }
+        };
+      });
+    }
+
+    // Fallback to streaming fetch (node/tests)
+    this.abort = new AbortController();
+    return new Promise((resolve, reject) => {
+      let opened = false;
+      const abort = this.abort!;
+      const timer = setTimeout(() => {
+        if (!opened) abort.abort(new Error("Timed out opening Qoder event stream"));
+      }, this.connectTimeoutMs);
+      this.fetchImpl(this.eventUrl(), {
+        headers: { Accept: "text/event-stream" },
+        signal: abort.signal,
+      })
+        .then(async (res) => {
+          clearTimeout(timer);
+          if (!res.ok || !res.body) {
+            this.setStatus("error");
+            reject(new Error(`Qoder sidecar /event returned ${res.status}`));
+            return;
+          }
+          this.setStatus("ready");
+          opened = true;
+          resolve();
+          await this.readStream(res.body);
+        })
+        .catch((err) => {
+          clearTimeout(timer);
+          if (!opened) {
+            this.setStatus("error");
+            reject(err instanceof Error ? err : new Error(String(err)));
+          } else {
+            this.setStatus("offline");
+          }
+        });
+    });
+  }
+
+  close(): void {
+    this.closed = true;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.es?.close();
+    this.es = null;
+    this.abort?.abort();
+    this.abort = null;
+    this.setStatus("offline");
+  }
+
+  /** Check if the sidecar is healthy. */
+  async checkHealth(): Promise<boolean> {
+    try {
+      const res = await this.fetchWithTimeout(`${this.baseUrl}/health`, {
+        method: "GET",
+      }, 3000);
+      return res.ok;
+    } catch {
       return false;
     }
   }
 
-  async connect(): Promise<void> {
+  /** Reopen the event stream after it died post-open, with backoff. */
+  private reconnectSoon(attempt = 0): void {
+    if (this.closed || this.reconnectTimer) return;
     this.setStatus("connecting");
-
-    const loaded = await this.loadSDK();
-    if (!loaded) {
-      this.setStatus("error");
-      throw new Error(
-        `Qoder SDK not available: ${this.sdkLoadError}. ` +
-          `Install with: pnpm add -w @qoder-ai/qoder-agent-sdk`,
-      );
-    }
-
-    // Validate auth by listing sessions
-    try {
-      await this.sdk!.listSessions({ limit: 1 });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn("[QoderClient] Auth check failed:", msg);
-      // Don't throw — let user try anyway; errors will surface on first prompt
-    }
-
-    this.setStatus("ready");
+    const delay = attempt === 0 ? 250 : Math.min(1000 * attempt, 3000);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      if (this.closed) return;
+      this.connect().catch(() => {
+        if (attempt + 1 < 8) this.reconnectSoon(attempt + 1);
+        else this.setStatus("error");
+      });
+    }, delay);
   }
 
-  close(): void {
-    // Close any active query
-    if (this.activeQuery) {
-      try {
-        this.activeQuery.close();
-      } catch {
-        /* ignore */
+  /** Read SSE stream from fetch response (fallback for non-EventSource environments). */
+  private async readStream(body: ReadableStream<Uint8Array>): Promise<void> {
+    const decoder = new TextDecoder();
+    const reader = body.getReader();
+    let buffer = "";
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              this.normalize(JSON.parse(line.slice(6)));
+            } catch {
+              /* ignore malformed line */
+            }
+          }
+        }
       }
-      this.activeQuery = null;
+    } catch {
+      if (!this.closed) {
+        this.reconnectSoon();
+      }
     }
-    this.sessions.clear();
-    this.setStatus("offline");
+  }
+
+  /** Normalize sidecar event to AgentRuntime event. */
+  private normalize(ev: unknown): void {
+    if (!ev || typeof ev !== "object") return;
+    const event = ev as Record<string, unknown>;
+
+    // text.updated — accumulate streaming text
+    if (event.type === "text.updated") {
+      const sessionId = event.sessionId as string | undefined;
+      const partId = event.partId as string | undefined;
+      const text = event.text as string | undefined;
+      if (sessionId && partId && typeof text === "string") {
+        const existing = this.textStreams.get(partId);
+        if (existing) {
+          existing.text += text;
+        } else {
+          this.textStreams.set(partId, { sessionId, text });
+        }
+        this.emit({
+          type: "text.updated",
+          sessionId,
+          partId,
+          text: this.textStreams.get(partId)?.text || text,
+        });
+      }
+      return;
+    }
+
+    // tool.updated — forward as-is
+    if (event.type === "tool.updated") {
+      this.emit({
+        type: "tool.updated",
+        sessionId: event.sessionId as string,
+        callId: event.callId as string,
+        tool: event.tool as string,
+        status: mapToolStatus(event.status as string),
+        input: event.input as Record<string, unknown> | undefined,
+        output: event.output as string | undefined,
+      });
+      return;
+    }
+
+    // session.idle — clear text streams for this session
+    if (event.type === "session.idle") {
+      const sessionId = event.sessionId as string;
+      // Clean up text streams for this session
+      for (const [partId, stream] of this.textStreams) {
+        if (stream.sessionId === sessionId) {
+          this.textStreams.delete(partId);
+        }
+      }
+      this.emit({
+        type: "session.idle",
+        sessionId,
+      });
+      return;
+    }
+
+    // error — forward as-is
+    if (event.type === "error") {
+      this.emit({
+        type: "error",
+        sessionId: event.sessionId as string,
+        message: event.message as string,
+      });
+      return;
+    }
+
+    // session.title_changed — not a standard AgentRuntime event
+    if (event.type === "session.title_changed") {
+      return;
+    }
+
+    // session.retry — not a standard AgentRuntime event
+    if (event.type === "session.retry") {
+      return;
+    }
+
+    // task.* events — not standard AgentRuntime events
+    if (event.type === "task.started" || event.type === "task.progress" || event.type === "task.notification") {
+      return;
+    }
+
+    // files.persisted — not a standard AgentRuntime event
+    if (event.type === "files.persisted") {
+      return;
+    }
   }
 
   async createSession(): Promise<string> {
-    const id = `qoder-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    const session: QoderSession = {
-      id,
-      messages: [],
-      createdAt: Date.now(),
-      title: "New Session",
-    };
-    this.sessions.set(id, session);
-    return id;
+    const res = await this.fetchWithTimeout(this.scopedUrl("/session"), {
+      method: "POST",
+      headers: this.headers(true),
+      body: "{}",
+    });
+    if (!res.ok) throw new Error(`Failed to create session: ${res.status}`);
+    const json = (await res.json()) as { id: string };
+    return json.id;
   }
 
   async listSessions(): Promise<SessionMeta[]> {
-    // Try to get real sessions from SDK
-    if (this.sdk) {
-      try {
-        const sdkSessions = await this.sdk.listSessions({ limit: 50 });
-        for (const s of sdkSessions) {
-          if (!this.sessions.has(s.session_id)) {
-            this.sessions.set(s.session_id, {
-              id: s.session_id,
-              messages: [],
-              createdAt: s.created_at ? new Date(s.created_at).getTime() : Date.now(),
-              title: s.title ?? "Qoder Session",
-            });
-          }
-        }
-      } catch {
-        // Fall through to local sessions
-      }
-    }
-
-    return Array.from(this.sessions.values()).map((s) => ({
+    const res = await this.fetchWithTimeout(this.scopedUrl("/experimental/session"), {
+      method: "GET",
+      headers: this.headers(),
+    });
+    if (!res.ok) throw new Error(`Failed to list sessions: ${res.status}`);
+    const sessions = (await res.json()) as Array<{
+      id: string;
+      title: string;
+      created?: number;
+      updated?: number;
+    }>;
+    return sessions.map((s) => ({
       id: s.id,
       title: s.title,
-      created: s.createdAt,
-      updated: s.createdAt,
+      created: s.created ?? Date.now(),
+      updated: s.updated ?? Date.now(),
     }));
   }
 
   async deleteSession(sessionId: string): Promise<void> {
-    // Try to delete from SDK
-    if (this.sdk) {
-      try {
-        await this.sdk.deleteSession({ sessionId });
-      } catch {
-        /* ignore SDK errors */
+    const res = await this.fetchWithTimeout(this.scopedUrl(`/session/${sessionId}`), {
+      method: "DELETE",
+      headers: this.headers(),
+    });
+    if (!res.ok) {
+      // Ignore 404 — session may not exist on server
+      if (res.status !== 404) {
+        throw new Error(`Failed to delete session: ${res.status}`);
       }
     }
-    this.sessions.delete(sessionId);
   }
 
   async getMessages(sessionId: string): Promise<HistoryMessage[]> {
-    const session = this.sessions.get(sessionId);
-    return session?.messages ?? [];
+    const res = await this.fetchWithTimeout(
+      this.scopedUrl(`/session/${sessionId}/message`),
+      {
+        method: "GET",
+        headers: this.headers(),
+      },
+    );
+    if (!res.ok) return [];
+    const messages = (await res.json()) as Array<{
+      info?: { role: string; id?: string };
+      parts?: Array<{ type: string; text?: string }>;
+    }>;
+    return messages.map((m) => ({
+      id: m.info?.id,
+      role: m.info?.role as "user" | "assistant",
+      parts: m.parts ?? [],
+    }));
   }
 
   async sendPrompt(
@@ -292,213 +461,102 @@ export class QoderClient extends BaseAgentRuntime implements AgentRuntime {
     _model?: string | null,
     _variant?: string | null,
   ): Promise<void> {
-    if (!this.sdk) {
-      throw new Error("Qoder SDK not loaded");
-    }
-
-    const session = this.sessions.get(sessionId);
-    if (!session) {
-      throw new Error(`Session not found: ${sessionId}`);
-    }
-
-    // Add user message to local history
-    const userMsg: HistoryMessage = {
-      role: "user",
-      parts: [{ type: "text", text }],
-    };
-    session.messages.push(userMsg);
-
-    // Build auth options
-    const auth = this.options.usePAT
-      ? this.sdk.accessTokenFromEnv()
-      : this.sdk.qodercliAuth();
-
-    // Execute query and stream responses
-    const query = this.sdk.query({
-      prompt: text,
-      options: {
-        auth,
-        cwd: this.options.cwd ?? process.cwd(),
-        systemPrompt: this.options.systemPrompt,
-        maxTurns: this.options.maxTurns,
-        sessionId,
+    const res = await this.fetchWithTimeout(
+      this.scopedUrl(`/session/${sessionId}/prompt_async`),
+      {
+        method: "POST",
+        headers: this.headers(true),
+        body: JSON.stringify({
+          parts: [{ type: "text", text }],
+        }),
       },
-    });
-
-    this.activeQuery = query;
-
-    let accumulatedText = "";
-    const partId = `part-${Date.now()}`;
-    let hasContent = false;
-
-    try {
-      for await (const message of query) {
-        // Handle assistant text content
-        if (message.type === "assistant" && message.message?.content) {
-          for (const block of message.message.content) {
-            if (block.type === "text" && block.text) {
-              accumulatedText += block.text;
-              hasContent = true;
-              this.emit({
-                type: "text.updated",
-                sessionId,
-                partId,
-                text: accumulatedText,
-              });
-            }
-            // Handle tool_use blocks in assistant message
-            if (block.type === "tool_use") {
-              this.emit({
-                type: "tool.updated",
-                sessionId,
-                callId: block.id ?? `tool-${Date.now()}`,
-                tool: block.name ?? "unknown",
-                status: "running" as ToolCallStatus,
-                input: block.input as Record<string, unknown> | undefined,
-              });
-            }
-            // Handle tool_result blocks
-            if (block.type === "tool_result") {
-              const output =
-                typeof block.content === "string"
-                  ? block.content
-                  : block.content
-                    ? JSON.stringify(block.content)
-                    : undefined;
-              this.emit({
-                type: "tool.updated",
-                sessionId,
-                callId: block.tool_use_id ?? block.id ?? `tool-${Date.now()}`,
-                tool: "unknown",
-                status: "success" as ToolCallStatus,
-                output,
-              });
-            }
-          }
-        }
-
-        // Handle stream events (partial assistant messages)
-        if (message.type === "stream_event" && message.event) {
-          const evt = message.event;
-          if (evt.type === "content_block_delta" && evt.content_block?.text) {
-            accumulatedText += evt.content_block.text;
-            hasContent = true;
-            this.emit({
-              type: "text.updated",
-              sessionId,
-              partId,
-              text: accumulatedText,
-            });
-          }
-        }
-
-        // Handle result messages
-        if (message.type === "result") {
-          if (message.subtype === "error" || message.is_error) {
-            const errorMsg = message.errors?.join("\n") ?? message.result ?? "Unknown error";
-            this.emit({
-              type: "error",
-              sessionId,
-              message: errorMsg,
-            });
-          }
-        }
-
-        // Handle system messages
-        if (message.type === "system") {
-          if (message.subtype === "permission_denied") {
-            this.emit({
-              type: "permission.asked",
-              sessionId,
-              requestId: message.uuid ?? `perm-${Date.now()}`,
-              tool: message.tool_name ?? "unknown",
-              message: message.decision_reason ?? message.error ?? "Permission denied",
-            } as unknown as never);
-          }
-          if (message.subtype === "session_state_changed" && message.state === "idle") {
-            // Session is idle — turn is complete
-          }
-        }
-      }
-
-      // Save assistant response to history
-      if (hasContent) {
-        session.messages.push({
-          role: "assistant",
-          parts: [{ type: "text", text: accumulatedText }],
-        });
-      }
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : String(err);
-      // Don't emit error if it's just from abort/close
-      if (!errorMsg.includes("abort") && !errorMsg.includes("closed")) {
-        this.emit({
-          type: "error",
-          sessionId,
-          message: `Qoder query failed: ${errorMsg}`,
-        });
-      }
-      throw err;
-    } finally {
-      this.activeQuery = null;
+    );
+    if (!res.ok) {
+      const errorData = (await res.json().catch(() => ({}))) as { error?: { message?: string } };
+      const errorMsg = errorData?.error?.message || `Failed to send prompt: ${res.status}`;
+      this.emit({
+        type: "error",
+        sessionId,
+        message: errorMsg,
+      });
+      throw new Error(errorMsg);
     }
-
-    // Emit session idle
-    this.emit({
-      type: "session.idle",
-      sessionId,
-    });
+    // Response will be streamed via SSE
   }
 
-  async abortSession(_sessionId: string): Promise<void> {
-    if (this.activeQuery) {
-      try {
-        await this.activeQuery.interrupt();
-      } catch {
-        /* ignore */
-      }
+  async abortSession(sessionId: string): Promise<void> {
+    const res = await this.fetchWithTimeout(
+      this.scopedUrl(`/session/${sessionId}/abort`),
+      {
+        method: "POST",
+        headers: this.headers(),
+      },
+    );
+    if (!res.ok) {
+      // Best-effort abort — non-critical if it fails
     }
   }
 
-  async revert(sessionId: string, messageID: string, _partID?: string): Promise<void> {
-    const session = this.sessions.get(sessionId);
-    if (!session) return;
-    const idx = session.messages.findIndex((m) => m.id === messageID);
-    if (idx >= 0) {
-      session.messages = session.messages.slice(0, idx);
-    }
+  async revert(_sessionId: string, _messageID: string, _partID?: string): Promise<void> {
+    throw new Error("Revert is not supported by the Qoder backend");
   }
 
   async unrevert(_sessionId: string): Promise<void> {
-    console.warn("[QoderClient] unrevert is not supported");
+    throw new Error("Unrevert is not supported by the Qoder backend");
   }
 
   async listSkills(): Promise<SkillInfo[]> {
-    return [];
+    const res = await this.fetchWithTimeout(this.scopedUrl("/api/skill"), {
+      method: "GET",
+      headers: this.headers(),
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: SkillInfo[] };
+    return json.data ?? [];
   }
 
   async listAgents(): Promise<AgentInfo[]> {
-    return [];
+    const res = await this.fetchWithTimeout(this.scopedUrl("/agent"), {
+      method: "GET",
+      headers: this.headers(),
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as AgentInfo[];
   }
 
   async listCommands(): Promise<CommandInfo[]> {
-    return [];
+    const res = await this.fetchWithTimeout(this.scopedUrl("/command"), {
+      method: "GET",
+      headers: this.headers(),
+    });
+    if (!res.ok) return [];
+    return (await res.json()) as CommandInfo[];
   }
 
   async getDefaultModel(): Promise<string | null> {
-    return "qoder/ultimate";
+    const res = await this.fetchWithTimeout(this.scopedUrl("/global/config"), {
+      method: "GET",
+      headers: this.headers(),
+    });
+    if (!res.ok) return "qoder/performance";
+    const json = (await res.json()) as { model?: string };
+    return json.model ?? "qoder/performance";
   }
 
-  async setDefaultModel(_model: string): Promise<void> {
-    console.warn("[QoderClient] setDefaultModel is handled via SDK options");
+  async setDefaultModel(model: string): Promise<void> {
+    await this.fetchWithTimeout(this.scopedUrl("/global/config"), {
+      method: "PATCH",
+      headers: this.headers(true),
+      body: JSON.stringify({ model }),
+    });
   }
 
   async runShell(_sessionId: string, _command: string, _agent?: string): Promise<void> {
-    console.warn("[QoderClient] runShell: Qoder SDK does not support direct shell execution");
+    throw new Error("Shell execution is not supported by the Qoder backend");
   }
 
   async runCommand(_sessionId: string, _command: string, _args?: string): Promise<void> {
-    console.warn("[QoderClient] runCommand: Qoder does not support slash commands");
+    throw new Error("Slash commands are not supported by the Qoder backend");
   }
 
   async listQuestions(_sessionId?: string): Promise<QuestionAskedEvent[]> {
@@ -510,14 +568,14 @@ export class QoderClient extends BaseAgentRuntime implements AgentRuntime {
   }
 
   async answerQuestion(_requestId: string, _answers: string[][]): Promise<void> {
-    console.warn("[QoderClient] answerQuestion: not supported");
+    throw new Error("Interactive questions are not supported by the Qoder backend");
   }
 
   async rejectQuestion(_requestId: string): Promise<void> {
-    console.warn("[QoderClient] rejectQuestion: not supported");
+    throw new Error("Interactive questions are not supported by the Qoder backend");
   }
 
   async replyPermission(_requestId: string, _reply: PermissionReply): Promise<void> {
-    console.warn("[QoderClient] replyPermission: not supported");
+    throw new Error("Permission prompts are not supported by the Qoder backend");
   }
 }

@@ -25,6 +25,20 @@ export async function startRuntime(): Promise<string | null> {
   return invoke<string>("start_runtime");
 }
 
+/** Start the Qoder CN sidecar (desktop only). Returns its base URL. */
+export async function startQoderRuntime(): Promise<string | null> {
+  if (!isTauri) return null;
+  const { invoke } = await import("@tauri-apps/api/core");
+  return invoke<string>("start_qoder_runtime");
+}
+
+/** Stop the running sidecar(s) (desktop only). Kills both OpenCode and Qoder. */
+export async function stopRuntime(): Promise<void> {
+  if (!isTauri) return;
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("stop_runtime");
+}
+
 /**
  * Per-run password the sidecar requires on every request (desktop only —
  * browser dev talks to a user-run, passwordless `opencode serve`). Held in
