@@ -130,6 +130,11 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             runtime::start_runtime,
             runtime::start_qoder_runtime,
+            runtime::save_qoder_token,
+            runtime::get_qoder_token,
+            runtime::clear_qoder_token,
+            runtime::login_qoder_via_cli,
+            runtime::qoder_cli_status,
             runtime::runtime_password,
             gateway::gateway_status,
             gateway::set_gateway_config,

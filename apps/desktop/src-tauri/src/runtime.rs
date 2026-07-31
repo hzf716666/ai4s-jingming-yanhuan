@@ -1058,6 +1058,45 @@ async fn wait_for_sidecar_health(port: u16, timeout_secs: u64) -> Result<(), Str
     ))
 }
 
+/// Path to the Qoder personal access token file in the app-private runtime root.
+fn qoder_token_file(app: &AppHandle) -> Result<PathBuf, String> {
+    Ok(runtime_root(app)?.join("qoder-token"))
+}
+
+/// Read the stored Qoder PAT token, if any. Returns None when no token is saved.
+fn read_qoder_token(app: &AppHandle) -> Option<String> {
+    let path = qoder_token_file(app).ok()?;
+    std::fs::read_to_string(path).ok().map(|t| t.trim().to_string()).filter(|t| !t.is_empty())
+}
+
+/// Restart the Qoder sidecar if running, so it picks up new config/token.
+fn restart_qoder_sidecar_if_running(
+    app: &AppHandle,
+    state: &RuntimeState,
+) -> Result<Option<String>, String> {
+    let mut lifecycle = state.lifecycle.lock().unwrap();
+    let Some(child) = lifecycle.qoder_child.take() else {
+        lifecycle.qoder_url = None;
+        return Ok(None);
+    };
+    lifecycle.qoder_url = None;
+    let _ = child.kill();
+    drop(lifecycle);
+
+    let port = {
+        let mut lifecycle = state.lifecycle.lock().unwrap();
+        *lifecycle.qoder_port.get_or_insert(4097)
+    };
+    let child = spawn_qoder_sidecar(app, port)?;
+    let url = format!("http://127.0.0.1:{port}");
+    {
+        let mut lifecycle = state.lifecycle.lock().unwrap();
+        lifecycle.qoder_child = Some(child);
+        lifecycle.qoder_url = Some(url.clone());
+    }
+    Ok(Some(url))
+}
+
 /// Spawn the Qoder sidecar (Node.js qoder-server.mjs).
 /// Uses port 4097 by default to avoid conflict with OpenCode (port 3000+).
 fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, String> {
@@ -1071,7 +1110,7 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
     let node_cmd = if cfg!(windows) { "node.exe" } else { "node" };
 
     let home = std::env::var("HOME").unwrap_or_default();
-    let cmd = app
+    let mut cmd = app
         .shell()
         .command(node_cmd)
         .args([
@@ -1087,10 +1126,15 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
         .env("PATH", enriched_path())
         .current_dir(workspace);
 
+    // Pass stored Qoder PAT token so the sidecar can authenticate.
+    // Falls back to qodercliAuth() when absent.
+    if let Some(token) = read_qoder_token(app) {
+        cmd = cmd.env("QODER_PERSONAL_ACCESS_TOKEN", token);
+    }
+
     // Apply the network-proxy setting so Qoder API calls work where direct
     // connections are blocked.
     let (proxy_mode, proxy_url) = read_proxy_setting(app);
-    let mut cmd = cmd;
     for (k, v) in resolve_proxy_env(&proxy_mode, &proxy_url) {
         cmd = cmd.env(k, v);
     }
@@ -1179,6 +1223,170 @@ pub async fn start_qoder_runtime(app: AppHandle, state: State<'_, RuntimeState>)
         lifecycle.qoder_url = Some(url.clone());
     }
     Ok(url)
+}
+
+/// Save the Qoder personal access token to the app-private runtime root and
+/// restart the Qoder sidecar so it picks up the new token immediately.
+#[tauri::command(async)]
+pub fn save_qoder_token(
+    app: AppHandle,
+    state: State<'_, RuntimeState>,
+    token: String,
+) -> Result<bool, String> {
+    let path = qoder_token_file(&app)?;
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir).map_err(|e| e.to_string())?;
+    }
+    std::fs::write(&path, token.trim()).map_err(|e| e.to_string())?;
+    tighten_private(&path);
+
+    // Restart Qoder sidecar so the new token takes effect.
+    let _ = restart_qoder_sidecar_if_running(&app, &state)?;
+    Ok(true)
+}
+
+/// Find the qodercli binary on the system PATH.
+fn find_qodercli() -> Option<PathBuf> {
+    let names: &[&str] = if cfg!(target_os = "windows") {
+        &["qodercli.cmd", "qodercli.exe", "qoder.cmd", "qoder.exe", "qodercli", "qoder"]
+    } else {
+        &["qodercli", "qoder"]
+    };
+
+    // Search PATH
+    if let Ok(path_var) = std::env::var("PATH") {
+        for dir in path_var.split(if cfg!(target_os = "windows") { ";" } else { ":" }) {
+            for name in names {
+                let candidate = PathBuf::from(dir).join(name);
+                if candidate.exists() {
+                    return Some(candidate);
+                }
+            }
+        }
+    }
+
+    // Also check common npm bin locations
+    if let Ok(home) = std::env::var("HOME") {
+        let candidates = [
+            format!("{home}/.npm-global/bin/qodercli"),
+            format!("{home}/.local/bin/qodercli"),
+            format!("{home}/bin/qodercli"),
+        ];
+        for c in candidates {
+            let p = PathBuf::from(c);
+            if p.exists() {
+                return Some(p);
+            }
+        }
+    }
+    None
+}
+
+/// Check whether the user has an existing qodercli login session on this
+/// machine (i.e. they previously ran `qodercli login`). The SDK stores
+/// credentials under ~/.qoder-cn/ (or ~/.qoder/).
+fn has_qodercli_login() -> bool {
+    let mut candidates: Vec<PathBuf> = Vec::new();
+    if let Ok(home) = std::env::var("HOME") {
+        candidates.push(PathBuf::from(&home).join(".qoder-cn"));
+        candidates.push(PathBuf::from(&home).join(".qoder"));
+    }
+    // Windows fallback
+    if let Ok(appdata) = std::env::var("APPDATA") {
+        candidates.push(PathBuf::from(appdata).join("qoder-cn"));
+        candidates.push(PathBuf::from(appdata).join("qoder"));
+    }
+
+    // Look for credential files inside those dirs
+    for dir in &candidates {
+        if dir.exists() {
+            // qodercli typically stores auth in a sub-file
+            for name in &["credentials", "auth.json", "token.json", "session.json"] {
+                if dir.join(name).exists() {
+                    return true;
+                }
+            }
+            // Also check if the dir has any JSON files (heuristic)
+            if let Ok(entries) = std::fs::read_dir(dir) {
+                for entry in entries.flatten() {
+                    if entry.path().extension().map_or(false, |e| e == "json") {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+
+/// Spawn `qodercli login` which opens the browser for OAuth authentication.
+/// Returns Ok(true) when the login completed successfully, Ok(false) when
+/// qodercli is not installed, and Err on failure.
+#[tauri::command(async)]
+pub fn login_qoder_via_cli(
+    app: AppHandle,
+    state: State<'_, RuntimeState>,
+) -> Result<bool, String> {
+    let Some(qodercli) = find_qodercli() else {
+        return Err("未检测到 qodercli，请先安装 Qoder CLI：https://qoder.com".to_string());
+    };
+
+    // Run `qodercli login` — this launches the browser for OAuth.
+    // We pass NO_BROWSER=0 to ensure browser opens, and wait for it to finish.
+    let output = std::process::Command::new(&qodercli)
+        .arg("login")
+        .env_remove("NO_BROWSER")
+        .output()
+        .map_err(|e| format!("执行 qodercli login 失败: {e}"))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("Qoder CLI 登录失败: {stderr}"));
+    }
+
+    // Verify the login actually succeeded by checking for credentials.
+    if !has_qodercli_login() {
+        return Err("Qoder CLI 登录似乎未完成，请在浏览器中完成登录".to_string());
+    }
+
+    // If Qoder sidecar is running, restart it so it picks up the new credentials
+    // via qodercliAuth().
+    let _ = restart_qoder_sidecar_if_running(&app, &state)?;
+
+    Ok(true)
+}
+
+/// Check whether qodercli is installed and whether a login session exists.
+/// Returns { installed: bool, loggedIn: bool }.
+#[tauri::command]
+pub fn qoder_cli_status() -> Result<serde_json::Value, String> {
+    let installed = find_qodercli().is_some();
+    let logged_in = has_qodercli_login();
+    Ok(serde_json::json!({
+        "installed": installed,
+        "loggedIn": logged_in,
+    }))
+}
+
+/// Check if a Qoder PAT token is configured OR a qodercli login session exists.
+#[tauri::command]
+pub fn get_qoder_token(app: AppHandle) -> Result<bool, String> {
+    let has_pat = read_qoder_token(&app).is_some();
+    let has_cli = has_qodercli_login();
+    Ok(has_pat || has_cli)
+}
+
+/// Clear the stored Qoder PAT token and restart the sidecar so it falls back
+/// to qodercliAuth() (or operates unauthenticated).
+#[tauri::command(async)]
+pub fn clear_qoder_token(app: AppHandle, state: State<'_, RuntimeState>) -> Result<bool, String> {
+    let path = qoder_token_file(&app)?;
+    if path.exists() {
+        std::fs::remove_file(&path).map_err(|e| e.to_string())?;
+    }
+
+    let _ = restart_qoder_sidecar_if_running(&app, &state)?;
+    Ok(true)
 }
 
 /// Kill the bundled OpenCode if running.

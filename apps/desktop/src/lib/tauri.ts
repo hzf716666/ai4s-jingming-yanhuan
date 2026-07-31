@@ -865,6 +865,67 @@ export async function configureOpenCode(
   }
 }
 
+// ---- Qoder CN token management ----
+
+/** Save a Qoder PAT token and restart the Qoder sidecar. */
+export async function saveQoderToken(token: string): Promise<boolean> {
+  if (!isTauri) return false;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return await invoke<boolean>("save_qoder_token", { token });
+  } catch {
+    return false;
+  }
+}
+
+/** Check whether a Qoder PAT token is currently configured (never returns the raw token). */
+export async function getQoderToken(): Promise<boolean> {
+  if (!isTauri) return false;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return await invoke<boolean>("get_qoder_token");
+  } catch {
+    return false;
+  }
+}
+
+/** Clear the stored Qoder PAT token and restart the sidecar. */
+export async function clearQoderToken(): Promise<boolean> {
+  if (!isTauri) return false;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return await invoke<boolean>("clear_qoder_token");
+  } catch {
+    return false;
+  }
+}
+
+/** Check qodercli installation and login status. */
+export interface QoderCliStatus {
+  installed: boolean;
+  loggedIn: boolean;
+}
+
+export async function qoderCliStatus(): Promise<QoderCliStatus> {
+  if (!isTauri) return { installed: false, loggedIn: false };
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return await invoke<QoderCliStatus>("qoder_cli_status");
+  } catch {
+    return { installed: false, loggedIn: false };
+  }
+}
+
+/**
+ * Launch `qodercli login` which opens the browser for OAuth.
+ * Returns true on success, throws with error message on failure.
+ */
+export async function loginQoderViaCli(): Promise<boolean> {
+  if (!isTauri) return false;
+  const { invoke } = await import("@tauri-apps/api/core");
+  return await invoke<boolean>("login_qoder_via_cli");
+}
+
 // ---- Voice input (whisper.cpp sidecar) ----
 
 /** Result of a local voice transcription call. */

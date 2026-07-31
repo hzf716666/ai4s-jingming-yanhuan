@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Check,
+  ChevronDown,
   ChevronRight,
   Download,
   ExternalLink,
@@ -55,6 +56,11 @@ import {
   type MirrorSetting,
   probeEndpointModels,
   type ProbedModel,
+  saveQoderToken,
+  getQoderToken,
+  clearQoderToken,
+  qoderCliStatus,
+  loginQoderViaCli,
 } from "@/lib/tauri";
 import { useSetupStore } from "@/lib/setup";
 import { RemoteComputeCard } from "@/components/settings/RemoteComputeCard";
@@ -168,6 +174,15 @@ export function SettingsPage() {
   // API keys typed for key-requiring connectors, keyed by connector id.
   const [connectorKeys, setConnectorKeys] = useState<Record<string, string>>({});
 
+  // Qoder CN auth management.
+  const [qoderAuthenticated, setQoderAuthenticated] = useState(false);
+  const [qoderAuthSource, setQoderAuthSource] = useState<"none" | "cli" | "pat">("none");
+  const [qoderCliInstalled, setQoderCliInstalled] = useState(false);
+  const [qoderCliLoggedIn, setQoderCliLoggedIn] = useState(false);
+  const [qoderTokenInput, setQoderTokenInput] = useState("");
+  const [qoderBusy, setQoderBusy] = useState(false);
+  const [qoderShowAdvanced, setQoderShowAdvanced] = useState(false);
+
   // Add-MCP-server form.
   const [mName, setMName] = useState("");
   const [mType, setMType] = useState<"local" | "remote">("local");
@@ -277,6 +292,27 @@ export function SettingsPage() {
       if (!c) setBrowserProfile((p) => (p === PRIVATE_BROWSER ? p : PRIVATE_BROWSER));
     });
   }, [connected, setupGeneration]);
+
+  // Load Qoder authentication status (PAT or CLI login).
+  useEffect(() => {
+    if (!isTauri) return;
+    void (async () => {
+      const [authed, cliStatus] = await Promise.all([
+        getQoderToken(),
+        qoderCliStatus(),
+      ]);
+      setQoderAuthenticated(authed);
+      setQoderCliInstalled(cliStatus.installed);
+      setQoderCliLoggedIn(cliStatus.loggedIn);
+      if (authed && cliStatus.loggedIn) {
+        setQoderAuthSource("cli");
+      } else if (authed) {
+        setQoderAuthSource("pat");
+      } else {
+        setQoderAuthSource("none");
+      }
+    })();
+  }, []);
 
   // The registered MCP entry is the source of truth for browser settings.
   const browserServer = mcpServers.find((s) => s.name === BROWSER_MCP_ID) ?? null;
@@ -612,6 +648,96 @@ export function SettingsPage() {
       }
       toast.success(t("toast.providerRemoved", { providerID }));
     });
+
+  // ---- Qoder CN auth handlers ----
+
+  const handleQoderCliLogin = async () => {
+    setQoderBusy(true);
+    try {
+      toast.success("正在打开浏览器登录 Qoder...");
+      const ok = await loginQoderViaCli();
+      if (ok) {
+        setQoderAuthenticated(true);
+        setQoderCliLoggedIn(true);
+        setQoderAuthSource("cli");
+        toast.success("Qoder 登录成功！");
+      }
+    } catch (e) {
+      toast.error(`${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setQoderBusy(false);
+    }
+  };
+
+  const handleImportCliLogin = async () => {
+    setQoderBusy(true);
+    try {
+      // Check again — user might have just run qodercli login externally
+      const status = await qoderCliStatus();
+      if (!status.loggedIn) {
+        toast.error("未检测到 Qoder CLI 登录，请先在终端运行 qodercli login");
+        return;
+      }
+      // If Qoder sidecar is running, it already uses qodercliAuth().
+      // Just update the UI state.
+      setQoderAuthenticated(true);
+      setQoderCliLoggedIn(true);
+      setQoderAuthSource("cli");
+      toast.success("已检测到 Qoder CLI 登录，服务已自动就绪");
+    } catch (e) {
+      toast.error(`${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setQoderBusy(false);
+    }
+  };
+
+  const saveQoder = async () => {
+    if (!qoderTokenInput.trim()) {
+      toast.error("请输入 Qoder Personal Access Token");
+      return;
+    }
+    setQoderBusy(true);
+    try {
+      const ok = await saveQoderToken(qoderTokenInput.trim());
+      if (ok) {
+        setQoderAuthenticated(true);
+        setQoderAuthSource("pat");
+        setQoderTokenInput("");
+        toast.success("Qoder Token 已保存，服务已重启");
+      } else {
+        toast.error("保存 Qoder Token 失败");
+      }
+    } catch (e) {
+      toast.error(`保存失败: ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setQoderBusy(false);
+    }
+  };
+
+  const clearQoder = async () => {
+    setQoderBusy(true);
+    try {
+      const ok = await clearQoderToken();
+      if (ok) {
+        // Re-check: if user also has CLI login, they're still authed
+        const cliStatus = await qoderCliStatus();
+        if (cliStatus.loggedIn) {
+          setQoderAuthenticated(true);
+          setQoderAuthSource("cli");
+          toast.success("PAT 已清除，CLI 登录仍然有效");
+        } else {
+          setQoderAuthenticated(false);
+          setQoderAuthSource("none");
+          toast.success("Qoder 认证已清除");
+        }
+        setQoderTokenInput("");
+      }
+    } catch (e) {
+      toast.error(`清除失败: ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setQoderBusy(false);
+    }
+  };
 
   // Ask the endpoint itself which models it serves (and their context windows
   // where reported — Ollama native, vLLM, OpenRouter). Results render as
@@ -1251,6 +1377,168 @@ export function SettingsPage() {
             </>
           )}
         </ProviderManagerCard>
+        )}
+
+        {/* ---- Qoder CN ---- */}
+        {section === "models" && isTauri && (
+        <Section
+          title="Qoder CN"
+          hint="一键登录阿里云 Qoder，或手动配置 Token"
+        >
+          <div className="space-y-4">
+            {/* Status row */}
+            <div className="flex items-center gap-2 text-[13px]">
+              {qoderAuthenticated ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-ok/10 px-2.5 py-0.5 text-xs font-medium text-ok">
+                  <Check size={12} />
+                  已认证 · {qoderAuthSource === "cli" ? "CLI 登录" : "Token"}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-warn/10 px-2.5 py-0.5 text-xs font-medium text-warn">
+                  <RefreshCw size={12} />
+                  未认证
+                </span>
+              )}
+              {!qoderAuthenticated && (
+                <span className="text-xs text-muted">
+                  Qoder CN 需要登录或 Token 才能使用 AI 功能
+                </span>
+              )}
+              {qoderAuthenticated && (
+                <span className="text-xs text-muted">
+                  {qoderAuthSource === "cli"
+                    ? "通过 qodercli 登录，服务可直接使用"
+                    : "通过 PAT Token 认证，服务已就绪"}
+                </span>
+              )}
+            </div>
+
+            {/* Primary action: one-click login */}
+            {!qoderAuthenticated && (
+              <div className="space-y-3">
+                {qoderCliInstalled ? (
+                  <button
+                    className="inline-flex h-9 items-center gap-2 rounded-md bg-ok px-4 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                    onClick={() => void handleQoderCliLogin()}
+                    disabled={qoderBusy}
+                  >
+                    {qoderBusy ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                    一键登录 Qoder（浏览器）
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-3 rounded-lg border border-dashed border-border px-4 py-3">
+                    <span className="text-xs text-muted">
+                      未检测到 qodercli。
+                      <a
+                        href="https://qoder.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-1 text-accent hover:underline"
+                      >
+                        安装 Qoder CLI
+                      </a>
+                      后可一键登录。或手动输入 Token：
+                    </span>
+                  </div>
+                )}
+
+                {/* Detect existing CLI login */}
+                {qoderCliInstalled && !qoderCliLoggedIn && (
+                  <button
+                    className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-xs text-muted transition-colors hover:text-text disabled:opacity-50"
+                    onClick={() => void handleImportCliLogin()}
+                    disabled={qoderBusy}
+                  >
+                    <Download size={12} />
+                    检测已有 CLI 登录
+                  </button>
+                )}
+
+                {qoderCliLoggedIn && !qoderAuthenticated && (
+                  <div className="flex items-center gap-2 rounded-md bg-ok/5 px-3 py-2 text-xs text-ok">
+                    <Check size={12} />
+                    检测到已有的 Qoder CLI 登录，
+                    <button
+                      className="underline underline-offset-2 hover:opacity-80"
+                      onClick={() => void handleImportCliLogin()}
+                      disabled={qoderBusy}
+                    >
+                      点击导入
+                    </button>
+                  </div>
+                )}
+
+                {/* Advanced: manual PAT */}
+                <div>
+                  <button
+                    className="inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-text"
+                    onClick={() => setQoderShowAdvanced(!qoderShowAdvanced)}
+                  >
+                    {qoderShowAdvanced ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                    高级：手动输入 Token
+                  </button>
+
+                  {qoderShowAdvanced && (
+                    <div className="mt-2 space-y-2">
+                      <input
+                        type="password"
+                        value={qoderTokenInput}
+                        onChange={(e) => setQoderTokenInput(e.target.value)}
+                        placeholder="输入 Qoder Personal Access Token"
+                        className="w-full rounded-md border border-border bg-background px-3 py-2 text-[13px] outline-none transition-colors focus:border-ok"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !qoderBusy) {
+                            void saveQoder();
+                          }
+                        }}
+                      />
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="inline-flex h-8 items-center gap-1.5 rounded-md bg-ok px-3 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                          onClick={() => void saveQoder()}
+                          disabled={qoderBusy || !qoderTokenInput.trim()}
+                        >
+                          {qoderBusy ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+                          保存 Token
+                        </button>
+                        <a
+                          href="https://qoder.com/account/integrations"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-xs text-muted transition-colors hover:text-text"
+                        >
+                          <ExternalLink size={12} />
+                          获取 Token
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Authenticated actions */}
+            {qoderAuthenticated && (
+              <div className="flex items-center gap-2">
+                {qoderAuthSource === "pat" && (
+                  <button
+                    className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-xs text-muted transition-colors hover:border-error hover:text-error"
+                    onClick={() => void clearQoder()}
+                    disabled={qoderBusy}
+                  >
+                    {qoderBusy ? <Loader2 size={12} className="animate-spin" /> : <Minus size={12} />}
+                    清除 Token
+                  </button>
+                )}
+                {qoderAuthSource === "cli" && (
+                  <span className="text-xs text-muted">
+                    登录状态由 qodercli 自动管理，30 分钟自动刷新
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </Section>
         )}
 
         {/* ---- MCP servers ---- */}

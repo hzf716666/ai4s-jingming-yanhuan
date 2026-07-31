@@ -9,6 +9,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Local npm config
+.npmrc
+
 # Node
 node_modules/
 dist/
