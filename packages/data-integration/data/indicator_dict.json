@@ -1,0 +1,202 @@
+{
+  "indicators": [
+    {
+      "name": "gdp",
+      "title": "GDP",
+      "type": "number",
+      "description": "国内生产总值。标准单位：亿元",
+      "constraints": {"minimum": 0},
+      "aliases": ["GDP", "国内生产总值", "地区生产总值", "生产总值"],
+      "sources": ["1-3", "2-5", "3-2"]
+    },
+    {
+      "name": "gdp_primary",
+      "title": "第一产业增加值",
+      "type": "number",
+      "description": "第一产业增加值。标准单位：亿元",
+      "constraints": {"minimum": 0},
+      "aliases": ["第一产业增加值", "第一产业", "primary_industry"],
+      "sources": ["1-3"]
+    },
+    {
+      "name": "gdp_secondary",
+      "title": "第二产业增加值",
+      "type": "number",
+      "description": "第二产业增加值。标准单位：亿元",
+      "constraints": {"minimum": 0},
+      "aliases": ["第二产业增加值", "第二产业", "secondary_industry"],
+      "sources": ["1-3"]
+    },
+    {
+      "name": "gdp_tertiary",
+      "title": "第三产业增加值",
+      "type": "number",
+      "description": "第三产业增加值。标准单位：亿元",
+      "constraints": {"minimum": 0},
+      "aliases": ["第三产业增加值", "第三产业", "tertiary_industry"],
+      "sources": ["1-3"]
+    },
+    {
+      "name": "gdp_per_capita",
+      "title": "人均GDP",
+      "type": "number",
+      "description": "人均国内生产总值。标准单位：元",
+      "constraints": {"minimum": 0},
+      "aliases": ["人均GDP", "人均生产总值", "per_capita_gdp"],
+      "sources": ["1-3"]
+    },
+    {
+      "name": "op_rev",
+      "title": "营业收入",
+      "type": "number",
+      "description": "技术收入+产品销售收入+商品销售收入构成。标准单位：千元",
+      "constraints": {"minimum": 0},
+      "aliases": ["营业收入", "总收入", "revenue"],
+      "sources": ["1-3", "2-5", "3-2", "4-5"]
+    },
+    {
+      "name": "gross_out",
+      "title": "工业总产值",
+      "type": "number",
+      "description": "工业总产值。标准单位：千元",
+      "constraints": {"minimum": 0},
+      "aliases": ["工业总产值", "工业产出", "industrial_output"],
+      "sources": ["2-5", "3-2"]
+    },
+    {
+      "name": "rd_exp",
+      "title": "R&D经费",
+      "type": "number",
+      "description": "研究与试验发展经费支出。标准单位：千元",
+      "constraints": {"minimum": 0},
+      "aliases": ["R&D经费", "研发经费", "RD支出", "rd_expenditure"],
+      "sources": ["4-5", "5-5"]
+    },
+    {
+      "name": "hightech_num",
+      "title": "高新技术企业数",
+      "type": "integer",
+      "description": "高新技术企业数量",
+      "constraints": {"minimum": 0},
+      "aliases": ["高新技术企业数", "高企数", "hightech_count"],
+      "sources": ["3-2", "4-5"]
+    },
+    {
+      "name": "tech_contract_amt",
+      "title": "技术合同成交额",
+      "type": "number",
+      "description": "技术合同成交金额。标准单位：千元",
+      "constraints": {"minimum": 0},
+      "aliases": ["技术合同成交额", "技术合同额", "tech_contract"],
+      "sources": ["6-2", "7-2"]
+    },
+    {
+      "name": "patent_grant",
+      "title": "专利授权数",
+      "type": "integer",
+      "description": "专利授权数量",
+      "constraints": {"minimum": 0},
+      "aliases": ["专利授权数", "专利授权", "patent_granted"],
+      "sources": ["5-5"]
+    },
+    {
+      "name": "empl_total",
+      "title": "入统企业数",
+      "type": "integer",
+      "description": "入统企业数量",
+      "constraints": {"minimum": 0},
+      "aliases": ["入统企业数", "企业数", "enterprise_count"],
+      "sources": ["1-3", "2-5"]
+    },
+    {
+      "name": "fiscal_rev",
+      "title": "财政收入",
+      "type": "number",
+      "description": "一般公共预算收入。标准单位：亿元",
+      "constraints": {"minimum": 0},
+      "aliases": ["财政收入", "一般公共预算收入", "fiscal_revenue"],
+      "sources": []
+    },
+    {
+      "name": "fiscal_exp",
+      "title": "财政支出",
+      "type": "number",
+      "description": "一般公共预算支出。标准单位：亿元",
+      "constraints": {"minimum": 0},
+      "aliases": ["财政支出", "一般公共预算支出", "fiscal_expenditure"],
+      "sources": []
+    },
+    {
+      "name": "export",
+      "title": "出口总额",
+      "type": "number",
+      "description": "出口总额。标准单位：千美元",
+      "constraints": {"minimum": 0},
+      "aliases": ["出口总额", "出口额", "export_total"],
+      "sources": []
+    },
+    {
+      "name": "fixed_asset_inv",
+      "title": "固定资产投资",
+      "type": "number",
+      "description": "固定资产投资额。标准单位：亿元",
+      "constraints": {"minimum": 0},
+      "aliases": ["固定资产投资", "固定资产投资额", "fixed_asset_investment"],
+      "sources": []
+    },
+    {
+      "name": "population",
+      "title": "人口",
+      "type": "number",
+      "description": "年末常住人口。标准单位：万人",
+      "constraints": {"minimum": 0},
+      "aliases": ["人口", "常住人口", "population_total"],
+      "sources": []
+    },
+    {
+      "name": "创新链强度_RD占比",
+      "title": "创新链强度_RD占比",
+      "type": "number",
+      "description": "派生指标: R&D经费 / 营业收入。论文出处: 陈杰杰(2026) p6",
+      "constraints": {"minimum": 0},
+      "aliases": ["创新链强度", "RD占比"],
+      "sources": ["derived"]
+    },
+    {
+      "name": "产业链强度_工业实化率",
+      "title": "产业链强度_工业实化率",
+      "type": "number",
+      "description": "派生指标: 工业总产值 / 营业收入。论文出处: 陈杰杰(2026) p6",
+      "constraints": {"minimum": 0},
+      "aliases": ["产业链强度", "工业实化率"],
+      "sources": ["derived"]
+    },
+    {
+      "name": "双螺旋协同度",
+      "title": "双螺旋协同度",
+      "type": "number",
+      "description": "派生指标: (R&D/营收) × (工业/营收)。论文出处: 陈杰杰(2026) p6",
+      "constraints": {"minimum": 0},
+      "aliases": ["双螺旋协同度", "双螺旋"],
+      "sources": ["derived"]
+    },
+    {
+      "name": "技术转移转化率",
+      "title": "技术转移转化率",
+      "type": "number",
+      "description": "派生指标: 技术合同成交额 / R&D。论文出处: 陈杰杰(2026) p2+p6",
+      "constraints": {"minimum": 0},
+      "aliases": ["技术转移转化率", "技术转化率"],
+      "sources": ["derived"]
+    },
+    {
+      "name": "企业主体地位",
+      "title": "企业主体地位",
+      "type": "number",
+      "description": "派生指标: 高企数 / 入统企业数。论文出处: 陈杰杰(2026) p6",
+      "constraints": {"minimum": 0},
+      "aliases": ["企业主体地位"],
+      "sources": ["derived"]
+    }
+  ]
+}

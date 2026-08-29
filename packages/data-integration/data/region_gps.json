@@ -1,0 +1,41 @@
+{
+  "regions": {
+    "北京": {"adcode": "110000", "lon": 116.4053, "lat": 39.9042, "level": "province"},
+    "天津": {"adcode": "120000", "lon": 117.2010, "lat": 39.0842, "level": "province"},
+    "上海": {"adcode": "310000", "lon": 121.4737, "lat": 31.2304, "level": "province"},
+    "重庆": {"adcode": "500000", "lon": 106.5516, "lat": 29.5630, "level": "province"},
+    "河北": {"adcode": "130000", "lon": 114.5149, "lat": 38.0428, "level": "province"},
+    "山西": {"adcode": "140000", "lon": 112.5789, "lat": 37.8134, "level": "province"},
+    "辽宁": {"adcode": "210000", "lon": 123.4292, "lat": 41.7968, "level": "province"},
+    "吉林": {"adcode": "220000", "lon": 125.3245, "lat": 43.8868, "level": "province"},
+    "黑龙江": {"adcode": "230000", "lon": 126.6616, "lat": 45.7423, "level": "province"},
+    "江苏": {"adcode": "320000", "lon": 118.7632, "lat": 32.0617, "level": "province"},
+    "浙江": {"adcode": "330000", "lon": 120.1528, "lat": 30.2674, "level": "province"},
+    "安徽": {"adcode": "340000", "lon": 117.2846, "lat": 31.8612, "level": "province"},
+    "福建": {"adcode": "350000", "lon": 119.2964, "lat": 26.0745, "level": "province"},
+    "江西": {"adcode": "360000", "lon": 115.9091, "lat": 28.6765, "level": "province"},
+    "山东": {"adcode": "370000", "lon": 117.0006, "lat": 36.6758, "level": "province"},
+    "河南": {"adcode": "410000", "lon": 113.6253, "lat": 34.7466, "level": "province"},
+    "湖北": {"adcode": "420000", "lon": 114.3403, "lat": 30.5492, "level": "province"},
+    "湖南": {"adcode": "430000", "lon": 112.9823, "lat": 28.1941, "level": "province"},
+    "广东": {"adcode": "440000", "lon": 113.2665, "lat": 23.1319, "level": "province"},
+    "海南": {"adcode": "460000", "lon": 110.1989, "lat": 20.0414, "level": "province"},
+    "四川": {"adcode": "510000", "lon": 104.0657, "lat": 30.6595, "level": "province"},
+    "贵州": {"adcode": "520000", "lon": 106.7056, "lat": 26.5850, "level": "province"},
+    "云南": {"adcode": "530000", "lon": 102.7096, "lat": 25.0480, "level": "province"},
+    "陕西": {"adcode": "610000", "lon": 108.9398, "lat": 34.3416, "level": "province"},
+    "甘肃": {"adcode": "620000", "lon": 103.8263, "lat": 36.0594, "level": "province"},
+    "青海": {"adcode": "630000", "lon": 101.7772, "lat": 36.6232, "level": "province"},
+    "内蒙古": {"adcode": "150000", "lon": 111.6705, "lat": 40.8183, "level": "province"},
+    "广西": {"adcode": "450000", "lon": 108.3200, "lat": 22.8240, "level": "province"},
+    "西藏": {"adcode": "540000", "lon": 91.1409, "lat": 29.6457, "level": "province"},
+    "宁夏": {"adcode": "640000", "lon": 106.2588, "lat": 38.4727, "level": "province"},
+    "新疆": {"adcode": "650000", "lon": 87.6271, "lat": 43.7935, "level": "province"},
+    "全国": {"adcode": "100000", "lon": 116.4053, "lat": 39.9042, "level": "country"}
+  },
+  "crosswalk": {
+    "2018": {"撤县设区": ["山东省济阳县→济南市济阳区"], "合并": []},
+    "2019": {"撤县设区": [], "合并": ["山东省莱芜市→济南市莱芜区、钢城区"]},
+    "2020": {"撤县设区": ["四川省成都市长宁县→长宁区"], "合并": []}
+  }
+}

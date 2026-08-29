@@ -1,0 +1,44 @@
+{
+  "rules": [
+    {
+      "name": "non_negative",
+      "description": "数值指标必须非负",
+      "check": "value >= 0",
+      "applies_to": ["gdp", "op_rev", "rd_exp", "hightech_num", "patent_grant", "population", "export", "fixed_asset_inv", "fiscal_rev", "fiscal_exp"]
+    },
+    {
+      "name": "yoy_threshold",
+      "description": "同比变化超过50%标记异常",
+      "check": "abs(yoy) > 0.50",
+      "threshold": 0.50
+    },
+    {
+      "name": "zscore_threshold",
+      "description": "z-score超过2σ标记异常",
+      "check": "abs(zscore) > 2.0",
+      "threshold": 2.0
+    },
+    {
+      "name": "iqr_threshold",
+      "description": "IQR离群点(1.5×IQR外)标记异常",
+      "check": "value < Q1 - 1.5*IQR or value > Q3 + 1.5*IQR",
+      "factor": 1.5
+    },
+    {
+      "name": "summarizability_disjointness",
+      "description": "子类别成员互斥检查",
+      "check": "disjoint"
+    },
+    {
+      "name": "summarizability_completeness",
+      "description": "子项之和≈父项",
+      "check": "sum_children ≈ parent",
+      "tolerance": 0.02
+    },
+    {
+      "name": "summarizability_type",
+      "description": "stock vs flow 类型匹配",
+      "check": "type_compatible"
+    }
+  ]
+}
