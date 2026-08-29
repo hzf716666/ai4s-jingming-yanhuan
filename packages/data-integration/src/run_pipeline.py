@@ -1,11 +1,12 @@
 """EconDataForge — one-click pipeline runner.
 
-Orchestrates: M2(source quality) → M3(parse) → M4(clean+match+fuse+provenance+couple)
-→ M5(anomaly+break+summarizability+groundtruth) → M6(output) → M7(H3 cube)
+Orchestrates: M1(requirement) → M2(source quality) → M3(parse) → M4(clean+match+fuse+provenance+couple)
+→ M5(anomaly+break+summarizability+groundtruth) → M6(output+SQLite) → M7(H3 cube)
 
 Usage:
     python -m src.run_pipeline --input <data_dir> --output <output_dir>
     python -m src.run_pipeline --input ./data_samples --output ./output
+    python -m src.run_pipeline --input ./data --output ./output --config requirement.json
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ from src.pipelines.xlsx_robust import parse_xlsx
 from src.pipelines.pdf_pipelines import parse_pdf_tables, parse_pdf_camelot
 from src.pipelines.chart_reverse import parse_pdf_charts
 from src.pipelines.ocr_pipeline import parse_pdf_ocr
+from src.pipelines.docx_pptx_parser import parse_docx, parse_pptx
 from src.cleaning import clean_records
 from src.schema_matching import match_schema, build_alias_map
 from src.fusion import fuse_records
@@ -34,8 +36,13 @@ from src.anomaly import detect_all_anomalies
 from src.structural_break import detect_structural_breaks
 from src.summarizability import check_all_summarizability
 from src.groundtruth import validate_against_groundtruth
-from src.region_mapping import apply_region_mapping
+from src.region_mapping import apply_region_mapping, load_region_gps
 from src.cube_api import SSTCube
+from src.database import create_database, write_records, write_geo_dim, get_stats
+from src.requirement_config import load_requirement
+from src.llm_interface import LLMInterface
+
+SUPPORTED_EXTENSIONS = (".xlsx", ".xls", ".csv", ".pdf", ".docx", ".pptx")
 
 
 def scan_data_sources(input_dir: str) -> list[dict]:
@@ -51,7 +58,7 @@ def scan_data_sources(input_dir: str) -> list[dict]:
     for root, dirs, files in os.walk(input_path):
         for f in files:
             ext = Path(f).suffix.lower()
-            if ext in (".xlsx", ".xls", ".csv", ".pdf"):
+            if ext in SUPPORTED_EXTENSIONS:
                 fpath = Path(root) / f
                 quality = assess_file_quality(fpath)
                 sources.append(quality)
@@ -75,31 +82,35 @@ def parse_all_sources(input_dir: str) -> list[Record]:
             if ext in (".xlsx", ".xls"):
                 recs = parse_xlsx(fpath, source_label)
                 all_records.extend(recs)
-                print(f"  [Pipeline A xlsx_robust] {f}: {len(recs)} records")
+                print(f"  [xlsx_robust] {f}: {len(recs)} records")
             elif ext == ".csv":
                 recs = _parse_csv(fpath, source_label)
                 all_records.extend(recs)
-                print(f"  [CSV] {f}: {len(recs)} records")
+                print(f"  [csv] {f}: {len(recs)} records")
             elif ext == ".pdf":
-                # Pipeline B: pdfplumber
                 recs_b = parse_pdf_tables(fpath, source_label)
                 all_records.extend(recs_b)
-                print(f"  [Pipeline B pdfplumber] {f}: {len(recs_b)} records")
+                print(f"  [pdfplumber] {f}: {len(recs_b)} records")
 
-                # Pipeline C: camelot
                 recs_c = parse_pdf_camelot(fpath, source_label)
                 all_records.extend(recs_c)
-                print(f"  [Pipeline C camelot] {f}: {len(recs_c)} records")
+                print(f"  [camelot] {f}: {len(recs_c)} records")
 
-                # Pipeline D: chart reverse
                 recs_d = parse_pdf_charts(fpath, source_label)
                 all_records.extend(recs_d)
-                print(f"  [Pipeline D chart_reverse] {f}: {len(recs_d)} records")
+                print(f"  [chart_reverse] {f}: {len(recs_d)} records")
 
-                # Pipeline E: PaddleOCR (if available)
                 recs_e = parse_pdf_ocr(fpath, source_label)
                 all_records.extend(recs_e)
-                print(f"  [Pipeline E ocr] {f}: {len(recs_e)} records")
+                print(f"  [ocr] {f}: {len(recs_e)} records")
+            elif ext == ".docx":
+                recs = parse_docx(fpath, source_label)
+                all_records.extend(recs)
+                print(f"  [docx] {f}: {len(recs)} records")
+            elif ext == ".pptx":
+                recs = parse_pptx(fpath, source_label)
+                all_records.extend(recs)
+                print(f"  [pptx] {f}: {len(recs)} records")
 
     return all_records
 
@@ -135,12 +146,14 @@ def _parse_csv(file_path: Path, source_label: str) -> list[Record]:
     return records
 
 
-def run_pipeline(input_dir: str, output_dir: str) -> dict:
+def run_pipeline(input_dir: str, output_dir: str,
+                 config_path: str | None = None) -> dict:
     """Run the complete EconDataForge pipeline.
 
     Args:
         input_dir: Directory containing source data files.
         output_dir: Directory for output files.
+        config_path: Optional path to requirement config JSON.
 
     Returns:
         Summary dict with performance metrics.
@@ -153,8 +166,28 @@ def run_pipeline(input_dir: str, output_dir: str) -> dict:
     sst_dir.mkdir(parents=True, exist_ok=True)
     eval_dir.mkdir(parents=True, exist_ok=True)
 
+    # === M1: Requirement understanding ===
+    print("\n=== M1: Requirement Understanding ===")
+    requirement = load_requirement(config_path) if config_path else None
+
+    llm = LLMInterface()
+    if llm.available and requirement:
+        print(f"  LLM available, parsing: {requirement.get('research_question', '')}")
+        schema = llm.generate_schema(requirement.get("research_question", ""))
+        if schema:
+            print(f"  LLM generated schema with {len(schema)} fields")
+    else:
+        print("  Using config-based requirement (no LLM)")
+
+    if requirement:
+        print(f"  Research question: {requirement.get('research_question', 'N/A')}")
+        print(f"  Indicators: {requirement.get('indicators', [])}")
+        print(f"  Time range: {requirement.get('time_range', [])}")
+    else:
+        print("  No config provided, running in generic mode")
+
     # === M2: Data source quality assessment ===
-    print("\n=== M2: Data Source Quality Assessment (Färber 2017) ===")
+    print("\n=== M2: Data Source Quality Assessment (Farber 2017) ===")
     sources = scan_data_sources(input_dir)
     print(f"  Assessed {len(sources)} data sources")
     avg_quality = sum(s["score"] for s in sources) / len(sources) if sources else 0
@@ -165,39 +198,33 @@ def run_pipeline(input_dir: str, output_dir: str) -> dict:
                   ensure_ascii=False, indent=2)
 
     # === M3: Multi-format parsing ===
-    print("\n=== M3: Multi-Format Parsing (5 Pipelines) ===")
+    print("\n=== M3: Multi-Format Parsing (xlsx/csv/pdf/docx/pptx) ===")
     records = parse_all_sources(input_dir)
     print(f"  Total records extracted: {len(records)}")
 
     # === M4: Data integration ===
     print("\n=== M4: Field Alignment & Integration ===")
 
-    # Step 1: Cleaning (Zhang Hui §5)
-    print("  Step 1: Cleaning (Zhang Hui §5)...")
+    print("  Step 1: Cleaning (Zhang Hui 5)...")
     records = clean_records(records)
     print(f"    After cleaning: {len(records)} records")
 
-    # Step 2: Schema matching
     print("  Step 2: Schema Matching...")
     alias_map = build_alias_map()
     records = match_schema(records, alias_map)
     matched = sum(1 for r in records if "schema_unmatched" not in (r.note or ""))
     print(f"    Schema matched: {matched}/{len(records)}")
 
-    # Step 3: Exchange rate conversion
     print("  Step 3: Exchange Rate Conversion (IMF/SNA 2008)...")
     records = apply_exchange_rate(records)
 
-    # Step 4: Fusion (voting)
     print("  Step 4: Voting Fusion (HLER + PIEVO)...")
     records = fuse_records(records)
     print(f"    After fusion: {len(records)} records")
 
-    # Step 5: Provenance
     print("  Step 5: Provenance (W3C PROV-O)...")
     records = add_provenance(records)
 
-    # Step 6: Double-helix coupling (Chen Jiejie p6)
     print("  Step 6: Double-Helix Coupling (Chen Jiejie p6)...")
     records = derive_coupling(records)
     derived_count = sum(1 for r in records if "derived" in r.source)
@@ -206,23 +233,19 @@ def run_pipeline(input_dir: str, output_dir: str) -> dict:
     # === M5: Quality checks ===
     print("\n=== M5: Quality Checks ===")
 
-    # 5a: Anomaly detection
     print("  5a: Anomaly Detection (YoY + z-score + IQR)...")
     anomalies, caliber = detect_all_anomalies(records)
     print(f"    Anomalies: {len(anomalies)}, Caliber changes: {len(caliber)}")
 
-    # 5b: Structural breaks
     print("  5b: Structural Breaks (Casini-Perron)...")
     breaks = detect_structural_breaks(records)
     print(f"    Structural breaks: {len(breaks)}")
 
-    # 5c: Summarizability
     print("  5c: Summarizability (Lenz-Shoshani)...")
     summ_violations = check_all_summarizability(records)
     print(f"    Summarizability violations: {len(summ_violations)}")
 
-    # 5d: Reverse ground truth validation
-    print("  5d: Reverse Ground Truth Validation (HLER §4)...")
+    print("  5d: Reverse Ground Truth Validation (HLER 4)...")
     gt_result = validate_against_groundtruth(records)
     print(f"    F1={gt_result['F1']}, Precision={gt_result['precision']}, "
           f"Recall={gt_result['recall']}")
@@ -231,6 +254,8 @@ def run_pipeline(input_dir: str, output_dir: str) -> dict:
     # === M7: GIS association ===
     print("\n=== M7: GIS Association (Lloyd + H3) ===")
     records = apply_region_mapping(records)
+    mapped = sum(1 for r in records if "adcode=" in (r.note or ""))
+    print(f"  Region-mapped: {mapped}/{len(records)}")
 
     # === M6: Structured output ===
     print("\n=== M6: Structured Output ===")
@@ -249,23 +274,30 @@ def run_pipeline(input_dir: str, output_dir: str) -> dict:
         json.dump(h3_points, f, ensure_ascii=False, indent=2)
     print(f"  H3 GeoCube: {h3_path} ({len(h3_points)} spatial points)")
 
+    # SQLite database
+    db_path = sst_dir / "econdataforge.db"
+    conn = create_database(db_path)
+    write_records(conn, records)
+    region_gps = load_region_gps()
+    write_geo_dim(conn, region_gps)
+    db_stats = get_stats(conn)
+    conn.close()
+    print(f"  SQLite DB: {db_path} ({db_stats['total_records']} records, "
+          f"{db_stats['unique_indicators']} indicators, {db_stats['unique_spaces']} regions)")
+
     # Anomalies
     with open(sst_dir / "anomalies.json", "w", encoding="utf-8") as f:
         json.dump(anomalies, f, ensure_ascii=False, indent=2)
 
-    # Structural breaks
     with open(sst_dir / "structural_breaks.json", "w", encoding="utf-8") as f:
         json.dump(breaks, f, ensure_ascii=False, indent=2)
 
-    # Summarizability
     with open(sst_dir / "summarizability.json", "w", encoding="utf-8") as f:
         json.dump(summ_violations, f, ensure_ascii=False, indent=2)
 
-    # Reverse validation
     with open(sst_dir / "reverse_validation.json", "w", encoding="utf-8") as f:
         json.dump(gt_result, f, ensure_ascii=False, indent=2)
 
-    # Fusion debug
     fusion_debug = [{"indicator": r.indicator, "time": r.time, "space": r.space,
                      "value": r.value, "note": r.note} for r in records
                     if "evidence=" in (r.note or "")]
@@ -285,14 +317,16 @@ def run_pipeline(input_dir: str, output_dir: str) -> dict:
         "average_quality": round(avg_quality, 3),
         "reverse_F1": gt_result["F1"],
         "h3_points": len(h3_points),
+        "db_records": db_stats["total_records"],
+        "db_indicators": db_stats["unique_indicators"],
+        "db_regions": db_stats["unique_spaces"],
         "elapsed_seconds": round(elapsed, 2),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 
-    # Generate eval report
     report_path = eval_dir / "report.md"
     with open(report_path, "w", encoding="utf-8") as f:
-        f.write(_generate_report(summary, sources, gt_result, anomalies, breaks))
+        f.write(_generate_report(summary, sources, gt_result))
     print(f"\n  Evaluation report: {report_path}")
 
     with open(eval_dir / "scores.json", "w", encoding="utf-8") as f:
@@ -304,15 +338,15 @@ def run_pipeline(input_dir: str, output_dir: str) -> dict:
     print(f"  Structural breaks: {summary['structural_breaks']}")
     print(f"  Reverse F1: {summary['reverse_F1']}")
     print(f"  H3 points: {summary['h3_points']}")
+    print(f"  SQLite records: {summary['db_records']}")
 
     return summary
 
 
-def _generate_report(summary: dict, sources: list, gt_result: dict,
-                     anomalies: list, breaks: list) -> str:
+def _generate_report(summary: dict, sources: list, gt_result: dict) -> str:
     """Generate evaluation report in Markdown."""
     lines = [
-        "# EconDataForge — 综合评测报告\n",
+        "# EconDataForge -- 综合评测报告\n",
         f"> 生成时间: {summary['timestamp']}",
         f"> 总用时: {summary['elapsed_seconds']}s\n",
         "## 综合指标\n",
@@ -327,26 +361,28 @@ def _generate_report(summary: dict, sources: list, gt_result: dict,
         f"| Summarizability违反 | {summary['summarizability_violations']} |",
         f"| 反向真值F1 | {summary['reverse_F1']} |",
         f"| H3空间点 | {summary['h3_points']} |",
-        f"| 论文溯源 | 16篇 |",
+        f"| SQLite记录数 | {summary['db_records']} |",
+        f"| SQLite指标数 | {summary['db_indicators']} |",
+        f"| SQLite地区数 | {summary['db_regions']} |",
         f"| 总用时 | {summary['elapsed_seconds']}s |",
         "",
         "## 论文/标准溯源表 (16篇)\n",
         "| # | 模块 | 论文出处 |",
         "|---|------|---------|",
-        "| 1 | 七元组schema | 吴廷鑫(2023) §2.3.5 |",
-        "| 2 | 数据清洗 | 张辉 §5 |",
-        "| 3 | Cube Coupling | 吴廷鑫(2023) §6.4 |",
-        "| 4 | OLAP | 吴廷鑫(2023) §5.3 |",
-        "| 5 | 行政区划生存期 | 吴廷鑫(2023) §3.1.2 |",
-        "| 6 | 数据一致性 | 吴廷鑫(2023) §2.3.6 |",
-        "| 7 | 图表识别 | EO-agents+张辉 |",
-        "| 8 | 反向真值校验 | HLER §4 |",
+        "| 1 | 七元组schema | Wu Tingxin(2023) 2.3.5 |",
+        "| 2 | 数据清洗 | Zhang Hui 5 |",
+        "| 3 | Cube Coupling | Wu Tingxin(2023) 6.4 |",
+        "| 4 | OLAP | Wu Tingxin(2023) 5.3 |",
+        "| 5 | 行政区划生存期 | Wu Tingxin(2023) 3.1.2 |",
+        "| 6 | 数据一致性 | Wu Tingxin(2023) 2.3.6 |",
+        "| 7 | 图表识别 | EO-agents+Zhang Hui |",
+        "| 8 | 反向真值校验 | HLER 4 |",
         "| 9 | 投票融合 | HLER+PIEVO |",
-        "| 10 | 双螺旋协同 | 陈杰杰(2026) p6 |",
-        "| 11 | 数据源质量 | Färber et al.(2017) §3.1 |",
-        "| 12 | 区划harmonisation | Lloyd et al.(2019) §3 |",
+        "| 10 | 双螺旋协同 | Chen Jiejie(2026) p6 |",
+        "| 11 | 数据源质量 | Farber et al.(2017) 3.1 |",
+        "| 12 | 区划harmonisation | Lloyd et al.(2019) 3 |",
         "| 13 | 货币换算 | IMF IFS+WB Atlas+SNA 2008 |",
-        "| 14 | 结构突变 | Casini&Perron(2018) §3 |",
+        "| 14 | 结构突变 | Casini&Perron(2018) 3 |",
         "| 15 | 数据源漂移 | De Boom&Reusens(2023) |",
         "| 16 | Summarizability | Lenz-Shoshani(1997)+Hurtado(2005) |",
         "",
@@ -356,15 +392,17 @@ def _generate_report(summary: dict, sources: list, gt_result: dict,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="EconDataForge — Multi-source data integration pipeline"
+        description="EconDataForge -- Multi-source data integration pipeline"
     )
     parser.add_argument("--input", "-i", required=True,
                         help="Input directory containing source data files")
     parser.add_argument("--output", "-o", default="./output",
                         help="Output directory (default: ./output)")
+    parser.add_argument("--config", "-c", default=None,
+                        help="Path to requirement config JSON file (optional)")
     args = parser.parse_args()
 
-    run_pipeline(args.input, args.output)
+    run_pipeline(args.input, args.output, args.config)
 
 
 if __name__ == "__main__":

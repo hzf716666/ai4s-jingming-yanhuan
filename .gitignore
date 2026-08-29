@@ -49,6 +49,9 @@ secrets/
 .env
 .env.*
 
+# Data integration pipeline output
+packages/data-integration/output/
+
 # Build artifacts / installers
 *.dmg
 *.app

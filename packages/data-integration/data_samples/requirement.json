@@ -1,0 +1,23 @@
+{
+  "research_question": "收集2018-2023年中国GDP、人口、固定资产投资数据",
+  "indicators": [
+    "GDP",
+    "人口",
+    "固定资产投资"
+  ],
+  "time_range": [
+    "2018",
+    "2023"
+  ],
+  "regions": [
+    "全国",
+    "北京",
+    "上海",
+    "广东"
+  ],
+  "data_types": [
+    "xlsx",
+    "csv"
+  ],
+  "llm_enabled": false
+}

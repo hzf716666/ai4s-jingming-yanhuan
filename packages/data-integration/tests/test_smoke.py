@@ -27,6 +27,9 @@ from src.groundtruth import validate_against_groundtruth, GROUND_TRUTHS
 from src.region_mapping import load_region_gps, map_region_to_adcode
 from src.cube_api import SSTCube
 from src.source_quality import compute_quality_score, QUALITY_DIMENSIONS
+from src.database import create_database, write_records, query_records, get_stats
+from src.requirement_config import load_requirement, create_sample_config, _default_requirement
+from src.llm_interface import LLMInterface
 
 
 def test_schema_record():
@@ -322,6 +325,74 @@ def test_values_agree():
     print("✓ test_values_agree passed")
 
 
+def test_database():
+    """Test SQLite database output layer."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        db_path = Path(tmpdir) / "test.db"
+        conn = create_database(db_path)
+
+        records = [
+            Record(time="2023", space="北京", value=100.5, unit="亿元",
+                   indicator="GDP", source="test", note="adcode=110000"),
+            Record(time="2023", space="上海", value=200.0, unit="亿元",
+                   indicator="GDP", source="test", note="adcode=310000"),
+        ]
+        count = write_records(conn, records)
+        assert count == 2
+
+        stats = get_stats(conn)
+        assert stats["total_records"] == 2
+        assert stats["unique_indicators"] == 1
+        assert stats["unique_spaces"] == 2
+
+        results = query_records(conn, indicator="GDP")
+        assert len(results) == 2
+        assert results[0]["space"] in ("北京", "上海")
+
+        conn.close()
+        assert db_path.exists()
+    print("test_database passed")
+
+
+def test_requirement_config():
+    """Test requirement config loading."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config_path = Path(tmpdir) / "req.json"
+        create_sample_config(config_path)
+        assert config_path.exists()
+
+        req = load_requirement(config_path)
+        assert "research_question" in req
+        assert "indicators" in req
+        assert isinstance(req["indicators"], list)
+        assert len(req["indicators"]) > 0
+
+    default_req = _default_requirement()
+    assert "data_types" in default_req
+    assert "xlsx" in default_req["data_types"]
+    print("test_requirement_config passed")
+
+
+def test_llm_interface():
+    """Test LLM interface graceful fallback."""
+    llm = LLMInterface()
+    assert not llm.available
+    result = llm.generate_schema("collect GDP data")
+    assert result is None
+    print("test_llm_interface passed")
+
+
+def test_xlsx_unit_extraction():
+    """Test unit pattern extraction after regex fix."""
+    from src.pipelines.xlsx_robust import extract_unit
+    assert extract_unit("GDP(亿元)") == "亿元"
+    assert extract_unit("GDP\uff08\u4ebf\u5143\uff09") == "亿元"
+    assert extract_unit("人口(万人)") == "万人"
+    assert extract_unit("增长率(%)") == "%"
+    assert extract_unit("no unit here") == ""
+    print("test_xlsx_unit_extraction passed")
+
+
 if __name__ == "__main__":
     tests = [
         test_schema_record,
@@ -342,6 +413,10 @@ if __name__ == "__main__":
         test_source_quality,
         test_config,
         test_values_agree,
+        test_database,
+        test_requirement_config,
+        test_llm_interface,
+        test_xlsx_unit_extraction,
     ]
 
     passed = 0
