@@ -15,7 +15,7 @@
 
 import { createServer } from "http";
 import { URL } from "url";
-import { existsSync, readdirSync, readFileSync } from "fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { execFileSync, execSync, spawn } from "child_process";
 import { fileURLToPath } from "url";
@@ -262,6 +262,7 @@ function normalizeMessage(msg, sessionId) {
           const session = sessions.get(sessionId);
           if (session && msg.title) {
             session.title = msg.title;
+            saveSessions();
           }
           break;
         case "api_retry":
@@ -438,6 +439,41 @@ function listSkills() {
 }
 
 /**
+ * Persist the sidecar's session registry (id ↔ cliSessionId, title) so chat
+ * history survives sidecar restarts. The CLI's own session store keeps the
+ * real messages; this file only bridges the app's session ids to CLI ids.
+ */
+const SESSIONS_FILE = () => join(CWD, ".jingming-sessions.json");
+
+function saveSessions() {
+  try {
+    writeFileSync(
+      SESSIONS_FILE(),
+      JSON.stringify(Array.from(sessions.values()), null, 2),
+      "utf8",
+    );
+  } catch {
+    // Best effort
+  }
+}
+
+function loadSessions() {
+  try {
+    const p = SESSIONS_FILE();
+    if (!existsSync(p)) return;
+    const data = JSON.parse(readFileSync(p, "utf8"));
+    for (const s of data) {
+      if (s && typeof s.id === "string") {
+        s.messages = s.messages || [];
+        sessions.set(s.id, s);
+      }
+    }
+  } catch {
+    // Corrupt or missing — start fresh
+  }
+}
+
+/**
  * Start a query with multi-turn support via resume.
  *
  * Multi-turn recipe (verified against qodercli 1.1.x):
@@ -518,7 +554,10 @@ function startQuery(sessionId, text, agentOptions = {}) {
           const mine = list
             .filter((s) => s.firstPrompt === text || s.summary === text.slice(0, 120))
             .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0];
-          if (mine?.sessionId) session.cliSessionId = mine.sessionId;
+          if (mine?.sessionId) {
+            session.cliSessionId = mine.sessionId;
+            saveSessions();
+          }
         } catch {
           // Non-fatal: next turn starts a fresh session.
         }
@@ -615,6 +654,7 @@ async function handleRequest(req, res) {
         createdAt: Date.now(),
         title: body.title || "New Session",
       });
+      saveSessions();
       json({ id: sessionId });
       return;
     }
@@ -645,10 +685,15 @@ async function handleRequest(req, res) {
         })),
       ];
 
-      // Dedupe by id
+      // Dedupe by id; a persisted sidecar session whose cliSessionId matches
+      // an SDK session is the same conversation — keep the SDK entry (it has
+      // the working id + richer metadata).
+      const sdkIds = new Set(sdkSessions.map((s) => s.sessionId));
       const seen = new Set();
       const deduped = allSessions.filter((s) => {
         if (seen.has(s.id)) return false;
+        const local = sessions.get(s.id);
+        if (local?.cliSessionId && sdkIds.has(local.cliSessionId)) return false;
         seen.add(s.id);
         return true;
       });
@@ -672,29 +717,35 @@ async function handleRequest(req, res) {
         sessions.delete(sessionId);
         activeQueries.delete(sessionId);
         clearSessionBuffers(sessionId);
+        saveSessions();
         json({ ok: true });
         return;
       }
 
       if (subPath === "/message" && method === "GET") {
-        // Get session messages
+        // Get session messages. Prefer the CLI session store: it persists
+        // across sidecar restarts and holds the real transcripts.
         const session = sessions.get(sessionId);
-        if (!session) {
-          // Try SDK
-          try {
-            const msgs = await getSessionMessages({ sessionId });
-            const formatted = msgs.map((m) => ({
-              info: {
-                id: m.uuid,
-                role: m.type === "user" ? "user" : "assistant",
-              },
-              parts: parseMessageContent(m.message),
-            }));
-            json(formatted);
-            return;
-          } catch {
-            // Not found
-          }
+        const cliId = session?.cliSessionId;
+        if (session && !cliId && session.messages.length > 0) {
+          json(session.messages);
+          return;
+        }
+        try {
+          // NOTE: getSessionMessages takes the session id as a STRING —
+          // passing { sessionId } silently returns zero messages.
+          const msgs = await getSessionMessages(cliId || sessionId);
+          const formatted = msgs.map((m) => ({
+            info: {
+              id: m.uuid,
+              role: m.type === "user" ? "user" : "assistant",
+            },
+            parts: parseMessageContent(m.message),
+          }));
+          json(formatted);
+          return;
+        } catch {
+          // Not found
         }
         json(session?.messages || []);
         return;
@@ -853,6 +904,7 @@ function parseMessageContent(message) {
 }
 
 // Start server
+loadSessions();
 const server = createServer(handleRequest);
 
 server.listen(PORT, () => {

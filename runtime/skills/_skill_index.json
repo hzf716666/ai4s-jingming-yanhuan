@@ -3,1165 +3,847 @@
   "total_skills": 56,
   "skills": [
     {
-      "name": "a-evolve",
-      "type": "knowledge",
-      "description": "Agentic evolution skill for self-improving agent pipelines via iterative refinement and selection",
-      "source": "arc",
-      "path": "arc-knowledge\\a-evolve",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        ""
-      ],
-      "applicable_stages": [],
-      "category": "methodology",
-      "priority": 3
-    },
-    {
-      "name": "biology-biopython",
-      "type": "knowledge",
-      "description": "Bioinformatics with Biopython for sequence manipulation, file parsing, BLAST, and phylogenetics. Use when working with DNA/RNA/protein sequences or biological databases.",
-      "source": "arc",
-      "path": "arc-knowledge\\biology-biopython",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        "sequence",
-        "FASTA",
-        "genome",
-        "protein",
-        "BLAST",
-        "phylogenetic"
-      ],
-      "applicable_stages": [
-        9,
-        10,
-        12
-      ],
-      "category": "domain",
-      "priority": 4
-    },
-    {
-      "name": "chemistry-rdkit",
-      "type": "knowledge",
-      "description": "Computational chemistry with RDKit for molecular analysis, descriptors, fingerprints, and substructure search. Use when working with SMILES, drug discovery, or cheminformatics tasks.",
-      "source": "arc",
-      "path": "arc-knowledge\\chemistry-rdkit",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        "molecule",
-        "SMILES",
-        "chemical",
-        "drug",
-        "rdkit",
-        "fingerprint"
-      ],
-      "applicable_stages": [
-        9,
-        10,
-        12
-      ],
-      "category": "domain",
-      "priority": 4
-    },
-    {
-      "name": "hypothesis-formulation",
-      "type": "knowledge",
-      "description": "Structured scientific hypothesis generation from observations. Use when formulating testable hypotheses, competing explanations, or experimental predictions.",
-      "source": "arc",
-      "path": "arc-knowledge\\hypothesis-formulation",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        "hypothesis",
-        "prediction",
-        "mechanism",
-        "falsifiable",
-        "null",
-        "alternative"
-      ],
-      "applicable_stages": [
-        7,
-        8,
-        9
-      ],
-      "category": "experiment",
-      "priority": 3
-    },
-    {
-      "name": "literature-search",
-      "type": "knowledge",
-      "description": "Systematic literature review methodology including search strategy, screening, and synthesis. Use when conducting literature reviews or writing background sections.",
-      "source": "arc",
-      "path": "arc-knowledge\\literature-search",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        "literature",
-        "review",
-        "systematic",
-        "PRISMA",
-        "search",
-        "database"
-      ],
-      "applicable_stages": [
-        3,
-        4,
-        5,
-        6
-      ],
-      "category": "experiment",
-      "priority": 2
-    },
-    {
-      "name": "researchclaw",
-      "type": "knowledge",
-      "description": "Run the ResearchClaw autonomous research pipeline from a topic, config, and output directory.",
-      "source": "arc",
-      "path": "arc-knowledge\\researchclaw",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        ""
-      ],
-      "applicable_stages": [],
-      "category": "methodology",
-      "priority": 3
-    },
-    {
-      "name": "scientific-visualization",
-      "type": "knowledge",
-      "description": "Publication-ready scientific figure design with matplotlib and seaborn. Use when creating journal submission figures with proper formatting, accessibility, and statistical annotations.",
-      "source": "arc",
-      "path": "arc-knowledge\\scientific-visualization",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        "figure",
-        "plot",
-        "chart",
-        "visualization",
-        "matplotlib",
-        "seaborn"
-      ],
-      "applicable_stages": [
-        14,
-        17,
-        22
-      ],
-      "category": "writing",
-      "priority": 3
-    },
-    {
-      "name": "scientific-writing",
-      "type": "knowledge",
-      "description": "Academic manuscript writing with IMRAD structure, citation formatting, and reporting guidelines. Use when drafting or revising research papers.",
-      "source": "arc",
-      "path": "arc-knowledge\\scientific-writing",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        "paper",
-        "manuscript",
-        "writing",
-        "IMRAD",
-        "citation",
-        "abstract"
-      ],
-      "applicable_stages": [
-        16,
-        17,
-        19
-      ],
-      "category": "writing",
-      "priority": 2
-    },
-    {
-      "name": "statistical-reporting",
-      "type": "knowledge",
-      "description": "Statistical test selection, assumption checking, and APA-formatted reporting. Use when analyzing experimental results or writing results sections.",
-      "source": "arc",
-      "path": "arc-knowledge\\statistical-reporting",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [
-        "statistic",
-        "hypothesis test",
-        "p-value",
-        "regression",
-        "ANOVA",
-        "t-test"
-      ],
-      "applicable_stages": [
-        9,
-        12,
-        14
-      ],
-      "category": "writing",
-      "priority": 3
-    },
-    {
-      "name": "domain-check",
-      "type": "executor",
-      "description": "Use whenever you write or run scientific analysis code (physics, earth/geo, biology, chemistry, or social science) in this workspace — before executing it and again after generating results. Runs a deterministic domain-correctness gate that catches code which runs but is scientifically wrong (unit/dimension mismatch, Euclidean distance on lat/lon without a CRS, 0-based/1-based coordinate and strand errors, impossible SMILES valence, uncorrected multiple comparisons, averaging a categorical code). Surfaces structured findings; never claims the code is correct.",
-      "source": "jingming-yanhuan",
-      "path": "core\\domain-check",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "large-file",
-      "type": "executor",
-      "description": "Use BEFORE reading any data file that could be large (CSV/TSV, Parquet, HDF5, FITS, NetCDF, NDJSON, genomics FASTQ/FASTA/VCF/BAM, GRIB, ROOT, or big text/simulation logs like VASP OUTCAR). Returns a compact memory pointer — header/schema/shape/sample/key numbers — by introspection and sampling in bounded memory, so you never load a file bigger than the context window into the model. Reference data via the pointer; read specific ranges deterministically.",
-      "source": "jingming-yanhuan",
-      "path": "core\\large-file",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "modal-run",
-      "type": "executor",
-      "description": "Use when the user asks to run heavy or GPU work on Modal (the cloud compute platform) — writing a Modal function in the workspace, running it with the user's own `modal` CLI + token, and bringing results back. Data-to-compute for jobs too big for the laptop, without a Slurm cluster.",
-      "source": "jingming-yanhuan",
-      "path": "core\\modal-run",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "publication-figures",
-      "type": "executor",
-      "description": "Use whenever you generate a chart, plot, or figure with matplotlib (or seaborn) in this workspace. Applies the 景明研环 publication figure style so every generated figure is publication-grade and shares one palette with the app's native charts. Not for interactive plotly/HTML — those follow the same palette manually.",
-      "source": "jingming-yanhuan",
-      "path": "core\\publication-figures",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "remote-compute",
-      "type": "executor",
-      "description": "Use when the user asks to run, submit, monitor, or cancel a job on a remote machine over SSH — their own GPU/CPU server, a workstation, or a Slurm cluster (\"the cluster\", a login node, \"my 3090 box\", \"the compute server\"). Picks a saved machine, runs the work directly over SSH (or via Slurm when present), tracks it, and fetches results back into the workspace.",
-      "source": "jingming-yanhuan",
-      "path": "core\\remote-compute",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "stats-integrity",
-      "type": "executor",
-      "description": "Use whenever you run statistical analysis for the social sciences (regression, hypothesis tests, econometrics) or read Stata (.dta) / SPSS (.sav) data in this workspace. Enforces an execute-don't-interpret boundary (surface estimates, don't volunteer causal claims), checks the analysis against a preregistration plan for HARKing, verifies reproducible seeds, and reproduces .dta/.sav estimates via R. Flags integrity risks; never certifies the analysis is sound.",
-      "source": "jingming-yanhuan",
-      "path": "core\\stats-integrity",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "traceability-review",
-      "type": "executor",
-      "description": "Use when the user asks to review, verify, or audit a report, manuscript, or analysis in the workspace for traceability — resolving citations, flagging numbers with no source, and checking figures against the code that generated them. Emits a structured review block the app renders as reviewer findings. Verifies traceability, never \"correctness\".",
-      "source": "jingming-yanhuan",
-      "path": "core\\traceability-review",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "citation-verify",
-      "type": "executor",
-      "description": "引用验证：4层验证（arXiv/CrossRef/DataCite/Semantic Scholar），去除虚假引用",
-      "source": "arc",
-      "path": "executor\\citation-verify",
-      "phase": "finalization",
-      "gate": false,
-      "dependencies": [
-        "export-publish"
-      ],
-      "natural_next": [],
-      "outputs": [
-        "verification_report.json"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": true,
-      "reentrant_strategy": "skip_if_cached"
-    },
-    {
-      "name": "code-generation",
-      "type": "executor",
-      "description": "实验代码生成：根据实验方案生成可运行的Python代码，GPU自适应",
-      "source": "arc",
-      "path": "executor\\code-generation",
-      "phase": "design",
-      "gate": false,
-      "dependencies": [],
-      "natural_next": [
-        "resource-planning"
-      ],
-      "outputs": [
-        "experiment.py",
-        "requirements.txt",
-        "config.yaml"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "experiment-run",
-      "type": "executor",
-      "description": "实验执行：在本地/Docker/SLURM环境运行实验，监控进度",
-      "source": "arc",
-      "path": "executor\\experiment-run",
-      "phase": "execution",
-      "gate": false,
-      "dependencies": [
-        "resource-planning"
-      ],
-      "natural_next": [
-        "iterative-refine",
-        "result-analysis"
-      ],
-      "outputs": [
-        "results.json",
-        "run_log.txt",
-        "metrics.csv"
-      ],
-      "entry_points": [
-        "have_code_need_train"
-      ],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "export-publish",
-      "type": "executor",
-      "description": "导出发布：生成最终LaTeX/PDF，准备投稿材料",
-      "source": "arc",
-      "path": "executor\\export-publish",
-      "phase": "finalization",
-      "gate": false,
-      "dependencies": [
-        "knowledge-archive"
-      ],
-      "natural_next": [
-        "citation-verify"
-      ],
-      "outputs": [
-        "manuscript.pdf",
-        "supplementary.zip"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "iterative-refine",
-      "type": "executor",
-      "description": "迭代优化：检测NaN/Inf和运行时错误，自愈修复代码，最多10轮",
-      "source": "arc",
-      "path": "executor\\iterative-refine",
-      "phase": "execution",
-      "gate": false,
-      "dependencies": [
-        "experiment-run"
-      ],
-      "natural_next": [
-        "result-analysis",
-        "experiment-run"
-      ],
-      "outputs": [
-        "refined_experiment.py",
-        "refinement_log.md"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "knowledge-archive",
-      "type": "executor",
-      "description": "知识存档：将本次研究发现/决策/实验数据写入知识库",
-      "source": "arc",
-      "path": "executor\\knowledge-archive",
-      "phase": "finalization",
-      "gate": false,
-      "dependencies": [
-        "quality-gate"
-      ],
-      "natural_next": [
-        "export-publish"
-      ],
-      "outputs": [
-        "kb_entry.json",
-        "lessons_learned.md"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "knowledge-extract",
-      "type": "executor",
-      "description": "从筛选论文中提取结构化知识卡片：方法、数据集、指标、发现",
-      "source": "arc",
-      "path": "executor\\knowledge-extract",
-      "phase": "literature",
-      "gate": false,
-      "dependencies": [
-        "literature-screen"
-      ],
-      "natural_next": [
-        "synthesis"
-      ],
-      "outputs": [
-        "knowledge_cards.md",
-        "extraction_log.json"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": true,
-      "reentrant_strategy": "skip_if_cached"
-    },
-    {
-      "name": "literature-collect",
-      "type": "executor",
-      "description": "多源文献检索与收集：OpenAlex/Semantic Scholar/arXiv，去重并生成语料库",
-      "source": "arc",
-      "path": "executor\\literature-collect",
-      "phase": "literature",
-      "gate": false,
-      "dependencies": [],
-      "natural_next": [
-        "literature-screen"
-      ],
-      "outputs": [
-        "corpus.csv",
-        "search_log.md"
-      ],
-      "entry_points": [
-        "have_questions",
-        "literature_only"
-      ],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "literature-screen",
-      "type": "executor",
-      "description": "文献筛选与质量评估：按相关性/质量/时效性筛选，产出入选论文集（GATE）",
-      "source": "arc",
-      "path": "executor\\literature-screen",
-      "phase": "literature",
-      "gate": true,
-      "dependencies": [
-        "literature-collect"
-      ],
-      "natural_next": [
-        "knowledge-extract"
-      ],
-      "outputs": [
-        "screened_corpus.csv",
-        "screening_report.md"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": true,
-      "reentrant_strategy": "skip_if_cached"
-    },
-    {
-      "name": "paper-draft",
-      "type": "executor",
-      "description": "论文初稿：生成完整学术论文（5000-6500词），含引言/方法/实验/结论",
-      "source": "arc",
-      "path": "executor\\paper-draft",
-      "phase": "writing",
-      "gate": false,
-      "dependencies": [
-        "literature-collect"
-      ],
-      "natural_next": [
-        "peer-review"
-      ],
-      "outputs": [
-        "paper_draft.md",
-        "paper.tex",
-        "references.bib"
-      ],
-      "entry_points": [
-        "have_results_need_paper"
-      ],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "paper-revision",
-      "type": "executor",
-      "description": "论文修订：根据审稿意见修改，补充实验或澄清方法论",
-      "source": "arc",
-      "path": "executor\\paper-revision",
-      "phase": "writing",
-      "gate": false,
-      "dependencies": [
-        "peer-review"
-      ],
-      "natural_next": [
-        "quality-gate"
-      ],
-      "outputs": [
-        "paper_final.md",
-        "paper_final.tex"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "peer-review",
-      "type": "executor",
-      "description": "多Agent同行评审：模拟NeurIPS/ICML审稿，检查方法论-实验一致性",
-      "source": "arc",
-      "path": "executor\\peer-review",
-      "phase": "writing",
-      "gate": false,
-      "dependencies": [
-        "paper-draft"
-      ],
-      "natural_next": [
-        "paper-revision"
-      ],
-      "outputs": [
-        "reviews.md",
-        "revision_checklist.md"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "quality-gate",
-      "type": "executor",
-      "description": "质量把关：检查完整性/引用真实性/图表一致性/可复现性（GATE）",
-      "source": "arc",
-      "path": "executor\\quality-gate",
-      "phase": "finalization",
-      "gate": true,
-      "dependencies": [
-        "paper-revision"
-      ],
-      "natural_next": [
-        "knowledge-archive"
-      ],
-      "outputs": [
-        "quality_report.md",
-        "gate_decision.json"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": true,
-      "reentrant_strategy": "skip_if_cached"
-    },
-    {
-      "name": "resource-planning",
-      "type": "executor",
-      "description": "资源规划：估算计算资源需求、内存/GPU时间、选择执行后端",
-      "source": "arc",
-      "path": "executor\\resource-planning",
-      "phase": "design",
-      "gate": false,
-      "dependencies": [
-        "code-generation"
-      ],
-      "natural_next": [
-        "experiment-run"
-      ],
-      "outputs": [
-        "resource_plan.json"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "result-analysis",
-      "type": "executor",
-      "description": "结果分析：多Agent分析实验结果，统计检验，生成可视化",
-      "source": "arc",
-      "path": "executor\\result-analysis",
-      "phase": "analysis",
-      "gate": false,
-      "dependencies": [
-        "experiment-run"
-      ],
-      "natural_next": [
-        "research-decision"
-      ],
-      "outputs": [
-        "analysis_report.md",
-        "figures/",
-        "results_table.tex"
-      ],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": [],
-      "idempotent": false,
-      "reentrant_strategy": "new_run"
-    },
-    {
-      "name": "experiment-planner",
-      "type": "expert",
-      "description": "实验方案设计专家。定义实验条件、选择基线方法、设计评估指标、规划数据划分和资源需求",
-      "source": "arc",
-      "path": "expert\\experiment-planner",
-      "expertise": [
-        "experiment_design",
-        "baseline_selection",
-        "metric_design",
-        "resource_estimation"
-      ],
-      "outputs_contract": "planner_proposal: { experiment_plan: {conditions, baselines, metrics, data_splits, resource_estimates}, reproducibility_checklist }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "hypothesis-generator",
-      "type": "expert",
-      "description": "假设生成专家。基于知识综合结果，通过多Agent辩论生成可检验的科学假设",
-      "source": "arc",
-      "path": "expert\\hypothesis-generator",
-      "expertise": [
-        "hypothesis_generation",
-        "multi_agent_debate",
-        "falsifiability_test"
-      ],
-      "outputs_contract": "planner_proposal: { hypotheses: [{statement, mechanism, testable_predictions, competing_hypotheses, falsifiability}], novelty_scores }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "knowledge-synthesizer",
-      "type": "expert",
-      "description": "知识综合专家。对文献知识进行聚类、识别研究空白、交叉验证方法、发现矛盾结论",
-      "source": "arc",
-      "path": "expert\\knowledge-synthesizer",
-      "expertise": [
-        "knowledge_synthesis",
-        "gap_analysis",
-        "contradiction_detection"
-      ],
-      "outputs_contract": "planner_proposal: { clusters, research_gaps, contradictions, consensus_findings, suggested_next: \"hypothesis-generator\" }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "literature-strategist",
-      "type": "expert",
-      "description": "文献搜索策略专家。根据研究问题设计搜索策略：关键词扩展、数据库选择、布尔查询构建",
-      "source": "arc",
-      "path": "expert\\literature-strategist",
-      "expertise": [
-        "literature_search_planning",
-        "query_design"
-      ],
-      "outputs_contract": "planner_proposal: { search_plan { databases, queries, keywords, filters }, expected_coverage, dedup_strategy }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "paper-structural-planner",
-      "type": "expert",
-      "description": "论文结构规划专家。根据研究结果规划IMRAD结构、确定图表位置、设计论证逻辑线",
-      "source": "arc",
-      "path": "expert\\paper-structural-planner",
-      "expertise": [
-        "paper_structure",
-        "narrative_design",
-        "venue_targeting"
-      ],
-      "outputs_contract": "planner_proposal: { paper_outline: {sections, figures, tables, narrative_flow}, target_venue, word_budget }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "research-decider",
-      "type": "expert",
-      "description": "研究决策专家。分析实验结果后决定：PROCEED/REFINE/PIVOT",
-      "source": "arc",
-      "path": "expert\\research-decider",
-      "expertise": [
-        "research_decision",
-        "pivot_analysis",
-        "refinement_planning"
-      ],
-      "outputs_contract": "planner_proposal: { decision, rationale, if_REFINE: {target, changes}, if_PIVOT: {new_hypothesis, rollback_target} }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "research-scoper",
-      "type": "expert",
-      "description": "研究范围界定专家。将宽泛的研究方向收敛为具体可操作的研究课题，并分解为结构化的问题树和可执行的研究计划",
-      "source": "arc",
-      "path": "expert\\research-scoper",
-      "expertise": [
-        "research_scoping",
-        "problem_decomposition",
-        "feasibility_assessment"
-      ],
-      "outputs_contract": "planner_proposal: { research_topic { title, domain, novelty_assessment }, problem_tree { sub_questions: [{ id, question, depends_on, feasibility, required_resources }] }, execution_plan { suggested_entry_point, estimated_duration, risk_factors } }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
       "name": "onescience-cli",
-      "type": "executor",
+      "type": "knowledge",
       "description": "在远程 SSH/SLURM 环境中通过 `onescience` 命令执行任意 OneScience 子命令。根据命令级别（lightweight/normal/compute）自动选择执行通道。环境初始化由 `onescience-installer` 技能处理，计算节点申请与作业提交由 `onescience-runtime` 技能处理。本技能只负责 `onescience` 命令的调度与执行。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-cli",
+      "source": "00-通用工具",
+      "path": "00-通用工具/onescience-cli",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-coder",
-      "type": "executor",
-      "description": "OneScience 分步编码执行技能。接收任务后强制调用资源技能获取规格知识、使用知识和规划决策知识，按步骤输出执行信息、等待确认后再执行；所有步骤完成后，若本地环境支持最小冒烟测试则优先执行冒烟测试（最多 6 次），否则执行静态需求一致性检查。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-coder",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-data-analyzer",
-      "type": "executor",
-      "description": "OneScience 数据分析执行技能（type=executor）。负责数据分析、可视化与报告输出，不涉及任务规划。接收规划好的任务，调用工作流执行统计分析、可视化生成和报告输出，根据领域自动匹配可视化规范（气象、生信、流体、材料等）。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-data-analyzer",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-data-profile",
-      "type": "expert",
-      "description": "OneScience 数据处理规划专家技能（type=expert）。由 onescience-orchestrator 召回，用于把已识别好的任务上下文、数据处理需求和可用知识映射为数据处理方案、数据契约、处理步骤和风险说明，并以 planner_proposal 返回给 onescience-orchestrator；不负责领域识别、不负责质量检查、不直接执行代码、运行作业或调度下游技能。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-data-profile",
-      "expertise": [
-        "data_planning",
-        "data_pipeline_design",
-        "data_schema_design"
-      ],
-      "outputs_contract": "planner_proposal: { data_plan: { processing_stages: [{goal, operations, input_format, output_format, dependencies}], data_schema: {}, risk_notes: [] } }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-dataset-builder",
-      "type": "executor",
-      "description": "OneScience 数据集构建执行技能，包含两个独立任务：(1) 生成数据集构建启动脚本（wrapper） - 接收数据处理代码路径（核心业务逻辑已由其他技能实现），分析代码接口，生成加载和调用这些接口的启动脚本（不包含数据读取、处理、转换等业务逻辑）；(2) 数据集验证任务 - 接收数据集路径，验证数据集、执行质量检查、生成元数据（该任务依赖于其它技能试用local模式执行启动脚本生成数据集后才能执行）。两个任务由 orchestrator 分别调用。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-dataset-builder",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-infer",
-      "type": "executor",
-      "description": "OneScience 科学模型推理执行技能。用于用户希望运行或构建 HuggingFace 模型、官方文档模型、本地 checkpoint 或项目原生 runner 的推理工作流时，覆盖气象/地球系统、生信、材料、流体和通用科研模型等领域，包括模型卡与配置发现、输入数据准备、checkpoint 加载、推理入口生成或复用、执行、结果验证、可视化和 baseline 对比。接收格式与 onescience-orchestrator 调用执行技能时的 step_handoff 保持一致，返回 execution_result。需要时协调交接给 onescience-coder、onescience-runtime 以及数据准备类技能。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-infer",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
       "name": "onescience-installer",
-      "type": "executor",
+      "type": "knowledge",
       "description": "OneScience 环境安装技能。用于根据 onescience.json 安装或验证 OneScience、创建或复用 conda 环境、检测已有 onescience 包、在记录的 conda 环境或当前环境中安装 Python 包；缺少 run_site 或远程 SSH 配置时先调用 onescience-runsite 补齐运行站点配置。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-installer",
+      "source": "00-通用工具",
+      "path": "00-通用工具/onescience-installer",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-modelscope-publish",
-      "type": "executor",
-      "description": "OneScience ModelScope 模型发布技能。将论文复现模型产物重组为 ModelScope 标准目录结构，检查核心目录内容完整性，生成平台必需的配置模板和审计工具，并输出 modelscope upload 命令引导用户推送到魔搭平台。作为 onescience-orchestrator 的执行技能使用。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-modelscope-publish",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
       "name": "onescience-orchestrator",
-      "type": "orchestrator",
-      "description": "OneScience / OneSkills 的通用任务编排主控，也是体系默认执行入口。它负责根据统一资源契约的资源摘要识别用户意图，召回并融合 type=expert 规划技能的 proposal，维护 Task State，绑定资源，并按执行技能能力边界拆分和调度 type=executor 的 coder/paper-repro/runtime/installer/evaluator 等执行技能，把复杂目标组织成可追踪、可回退、可闭环的任务流。用户提示词中出现“使用onescience”“使用onescience技能”“使用oneskills”“使用oneskills技能”等表达时默认先进入本技能；仅当用户已明确指定要直接使用的具体技能（如“使用onescience-runtime技能执行运行”）时，才可跳过本技能并直接调用目标技能。它不承载具体领域专家知识；新增任务类型应通过新增资源包、专家规划技能或执行技能扩展。注意：本技能负责编排调度但不直接执行任务，规划和执行不能在同一调用步骤中完成。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-orchestrator",
+      "type": "knowledge",
+      "description": "OneScience / OneSkills 的通用任务编排主控，也是体系默认执行入口。它负责根据统一资源契约的资源摘要识别用户意图，召回并融合 type=expert 规划技能的 proposal，维护 Task State，绑定资源，并按执行技能能力边界拆分和调度 type=executor 的 coder/paper-repro/runtime/installer/evaluator 等执行技能，把复杂目标组织成可追踪、可回退、可闭环的任务流。用户提示词中出现“使用onescience”“使用onescience技能”“使用oneskills”“使用oneskills技能”等表达时默认先",
+      "source": "00-通用工具",
+      "path": "00-通用工具/onescience-orchestrator",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-paper-repro",
-      "type": "executor",
-      "description": "OneScience 论文复现信息提取技能。作为 onescience-orchestrator 的执行技能，接收论文输入，提取结构化信息，生成编码任务提示词。输入：论文来源（PDF/URL/arXiv/DOI）或论文信息；输出：reproduction_spec.md（结构化规格）、coder_task_description.md（编码任务提示词）。不执行编码，不调用其他技能。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-paper-repro",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-parallel",
-      "type": "executor",
-      "description": "将PyTorch模型改造为支持Pipeline Parallelism+Tensor Parallelism的分布式训练模型，含PP stage拆分、TP线性层替换、forward_step_func/model_provider编写",
-      "source": "oneskills",
-      "path": "onescience\\onescience-parallel",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
       "name": "onescience-primitives",
-      "type": "resource",
+      "type": "knowledge",
       "description": "OneScience 原语资源召回技能。根据自然语言需求检索相关原语资源（模型、组件、数据管线、应用、工作流规划、契约等），通过范围判定、快速过滤和语义匹配召回，按内容需求返回相应知识；不做科研规划与代码实现。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-primitives",
+      "source": "00-通用工具",
+      "path": "00-通用工具/onescience-primitives",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
-    },
-    {
-      "name": "onescience-research-workflow",
-      "type": "expert",
-      "description": "OneScience 科研工作流规划专家技能（type=expert）。为 orchestrator 提供气象、生信、材料、流体等科研领域的工作流编排计划，基于资源和领域知识生成 planner proposal，包含工作流节点、资源绑定、依赖关系和执行建议。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-research-workflow",
-      "expertise": [
-        "research_workflow_planning",
-        "cross_domain_orchestration",
-        "resource_binding"
-      ],
-      "outputs_contract": "planner_proposal: { workflow_nodes: [{node_id, node_type, depends_on, resource_bindings, validation_plan}], execution_order, risks }",
-      "dependencies": [],
-      "natural_next": [],
-      "outputs": [],
-      "entry_points": [],
-      "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
       "name": "onescience-runsite",
-      "type": "executor",
+      "type": "knowledge",
       "description": "解析、校验、保存和复用 OneScience 运行站点配置。用于任意技能在继续执行任务前补齐运行站点配置，完成配置发现、缺失字段补问、已有配置复用、remote 连接验证、运行平台 DCU/GPU 类型确认、modules 写入和结构化回传。不做安装、不提交作业、不执行运行、不做远端环境诊断。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-runsite",
+      "source": "00-通用工具",
+      "path": "00-通用工具/onescience-runsite",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
       "name": "onescience-runtime",
-      "type": "executor",
-      "description": "【统一运行与基础诊断技能】按 discover、preflight、execute、diagnose 固定闭环执行测试任务，依据 onescience.json 的 execution_profile 三元组路由执行通道；SCnet 提交任务时必须读取根级 onescience.json.scnet 并把 region、partition/queue、work_dir 和资源参数交给 scnet-chat；配置问题自动委托 onescience-runsite 补齐后回到 runtime 继续原测试任务，环境问题自动委托 onescience-installer 安装或修复并 verify 成功后回到 runtime 继续原测试任务；当 execution_mode 为 slurm 且提交或运行反馈表明 partition、gpus_per_node、memory 等资源不可用时，探测可用 SLURM 资源并受控调整后重试。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-runtime",
+      "type": "knowledge",
+      "description": "【统一运行与基础诊断技能】按 discover、preflight、execute、diagnose 固定闭环执行测试任务，依据 onescience.json 的 execution_profile 三元组路由执行通道；SCnet 提交任务时必须读取根级 onescience.json.scnet 并把 region、partition/queue、work_dir 和资源参数交给 超算平台助手；配置问题自动委托 onescience-runsite 补齐后回到 runtime 继续原测试任务，环境问题自动委托 onescience-installer 安装或修复并 verify 成功后回到",
+      "source": "00-通用工具",
+      "path": "00-通用工具/onescience-runtime",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "智能体进化",
+      "type": "knowledge",
+      "description": "智能体进化：通过迭代优化与选择实现智能体流水线的自我改进",
+      "source": "00-通用工具",
+      "path": "00-通用工具/智能体进化",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "科研编排主控",
+      "type": "knowledge",
+      "description": "科研编排主控：五阶段工作流（输入→资源→专家→规划→执行），动态路由与中断处理",
+      "source": "00-通用工具",
+      "path": "00-通用工具/科研编排主控",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "超算平台助手",
+      "type": "knowledge",
+      "description": "SCNet 超算平台管理：查询/提交作业、文件管理、账户与区域切换",
+      "source": "00-通用工具",
+      "path": "00-通用工具/超算平台助手",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "引用验证",
+      "type": "knowledge",
+      "description": "引用验证：4 层验证（arXiv/CrossRef/DataCite/Semantic Scholar），去除虚假引用",
+      "source": "01-文献调研",
+      "path": "01-文献调研/引用验证",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "文献收集",
+      "type": "knowledge",
+      "description": "多源文献检索与收集：OpenAlex/Semantic Scholar/arXiv，去重并生成语料库",
+      "source": "01-文献调研",
+      "path": "01-文献调研/文献收集",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "文献检索方法",
+      "type": "knowledge",
+      "description": "系统文献检索方法：检索策略、数据库选择、筛选与证据综合",
+      "source": "01-文献调研",
+      "path": "01-文献调研/文献检索方法",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "文献策略",
+      "type": "knowledge",
+      "description": "文献搜索策略：关键词扩展、数据库选择、布尔查询构建",
+      "source": "01-文献调研",
+      "path": "01-文献调研/文献策略",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "文献筛选",
+      "type": "knowledge",
+      "description": "文献筛选与质量评估：按相关性/质量/时效性筛选，产出入选论文集",
+      "source": "01-文献调研",
+      "path": "01-文献调研/文献筛选",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "知识综合",
+      "type": "knowledge",
+      "description": "知识综合：对文献知识聚类、识别研究空白、交叉验证方法、发现矛盾结论",
+      "source": "01-文献调研",
+      "path": "01-文献调研/知识综合",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "假设生成",
+      "type": "knowledge",
+      "description": "假设生成：基于知识综合结果，通过多 Agent 辩论生成可检验的科学假设",
+      "source": "02-假设设计",
+      "path": "02-假设设计/假设生成",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "假设生成方法",
+      "type": "knowledge",
+      "description": "从观测出发生成结构化、可检验的科学假设与竞争性解释",
+      "source": "02-假设设计",
+      "path": "02-假设设计/假设生成方法",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "实验方案设计",
+      "type": "knowledge",
+      "description": "实验方案设计：定义实验条件、选择基线、设计评估指标与数据划分",
+      "source": "02-假设设计",
+      "path": "02-假设设计/实验方案设计",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "研究决策",
+      "type": "knowledge",
+      "description": "研究决策：分析实验结果后决定继续/改进/转向",
+      "source": "02-假设设计",
+      "path": "02-假设设计/研究决策",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "研究范围界定",
+      "type": "knowledge",
+      "description": "研究范围界定：将宽泛方向收敛为具体课题，分解为问题树与研究计划",
+      "source": "02-假设设计",
+      "path": "02-假设设计/研究范围界定",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "自主科研流水线",
+      "type": "knowledge",
+      "description": "从主题、配置与输出目录运行自主科研流水线",
+      "source": "02-假设设计",
+      "path": "02-假设设计/自主科研流水线",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-data-analyzer",
+      "type": "knowledge",
+      "description": "OneScience 数据分析执行技能（type=executor）。负责数据分析、可视化与报告输出，不涉及任务规划。接收规划好的任务，调用工作流执行统计分析、可视化生成和报告输出，根据领域自动匹配可视化规范（气象、生信、流体、材料等）。",
+      "source": "03-数据工程",
+      "path": "03-数据工程/onescience-data-analyzer",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-data-profile",
+      "type": "knowledge",
+      "description": "OneScience 数据处理规划专家技能（type=expert）。由 onescience-orchestrator 召回，用于把已识别好的任务上下文、数据处理需求和可用知识映射为数据处理方案、数据契约、处理步骤和风险说明，并以 planner_proposal 返回给 onescience-orchestrator；不负责领域识别、不负责质量检查、不直接执行代码、运行作业或调度下游技能。",
+      "source": "03-数据工程",
+      "path": "03-数据工程/onescience-data-profile",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-dataset-builder",
+      "type": "knowledge",
+      "description": "OneScience 数据集构建执行技能，包含两个独立任务：(1) 生成数据集构建启动脚本（wrapper） - 接收数据处理代码路径（核心业务逻辑已由其他技能实现），分析代码接口，生成加载和调用这些接口的启动脚本（不包含数据读取、处理、转换等业务逻辑）；(2) 数据集验证任务 - 接收数据集路径，验证数据集、执行质量检查、生成元数据（该任务依赖于其它技能试用local模式执行启动脚本生成数据集后才能执行）。两个任务由 orchestrator 分别调用。",
+      "source": "03-数据工程",
+      "path": "03-数据工程/onescience-dataset-builder",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-paper-repro",
+      "type": "knowledge",
+      "description": "OneScience 论文复现信息提取技能。作为 onescience-orchestrator 的执行技能，接收论文输入，提取结构化信息，生成编码任务提示词。输入：论文来源（PDF/URL/arXiv/DOI）或论文信息；输出：reproduction_spec.md（结构化规格）、coder_task_description.md（编码任务提示词）。不执行编码，不调用其他技能。",
+      "source": "03-数据工程",
+      "path": "03-数据工程/onescience-paper-repro",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "知识抽取",
+      "type": "knowledge",
+      "description": "从筛选论文中提取结构化知识卡片：方法、数据集、指标、发现",
+      "source": "03-数据工程",
+      "path": "03-数据工程/知识抽取",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-coder",
+      "type": "knowledge",
+      "description": "OneScience 分步编码执行技能。接收任务后强制调用资源技能获取规格知识、使用知识和规划决策知识，按步骤输出执行信息、等待确认后再执行；所有步骤完成后，若本地环境支持最小冒烟测试则优先执行冒烟测试（最多 6 次），否则执行静态需求一致性检查。",
+      "source": "04-实验执行",
+      "path": "04-实验执行/onescience-coder",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-infer",
+      "type": "knowledge",
+      "description": "OneScience 科学模型推理执行技能。用于用户希望运行或构建 HuggingFace 模型、官方文档模型、本地 checkpoint 或项目原生 runner 的推理工作流时，覆盖气象/地球系统、生信、材料、流体和通用科研模型等领域，包括模型卡与配置发现、输入数据准备、checkpoint 加载、推理入口生成或复用、执行、结果验证、可视化和 baseline 对比。接收格式与 onescience-orchestrator 调用执行技能时的 step_handoff 保持一致，返回 execution_result。需要时协调交接给 onescience-coder、onescience",
+      "source": "04-实验执行",
+      "path": "04-实验执行/onescience-infer",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-parallel",
+      "type": "knowledge",
+      "description": "将PyTorch模型改造为支持Pipeline Parallelism+Tensor Parallelism的分布式训练模型，含PP stage拆分、TP线性层替换、forward_step_func/model_provider编写",
+      "source": "04-实验执行",
+      "path": "04-实验执行/onescience-parallel",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-research-workflow",
+      "type": "knowledge",
+      "description": "OneScience 科研工作流规划专家技能（type=expert）。为 orchestrator 提供气象、生信、材料、流体等科研领域的工作流编排计划，基于资源和领域知识生成 planner proposal，包含工作流节点、资源绑定、依赖关系和执行建议。",
+      "source": "04-实验执行",
+      "path": "04-实验执行/onescience-research-workflow",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
       "name": "onescience-trainer",
-      "type": "executor",
+      "type": "knowledge",
       "description": "OneScience 科学模型训练执行技能。用于用户希望基于文本说明、网页说明、本地项目路径、已有 checkpoint 或项目原生训练入口来规划、生成并执行模型训练工作流，覆盖气象/地球系统、生信、材料、流体和通用科研模型等领域，包括训练信息获取、数据与切分规划、训练策略整理、完整训练脚本内容生成、训练执行组织以及结果验证。接收格式与 onescience-orchestrator 调用执行技能时的 step_handoff 保持一致，返回 execution_result。需要时协调交接给 onescience-coder、onescience-runtime 以及数据工作流技能。",
-      "source": "oneskills",
-      "path": "onescience\\onescience-trainer",
+      "source": "04-实验执行",
+      "path": "04-实验执行/onescience-trainer",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
-      "name": "scnet-chat",
-      "type": "executor",
-      "description": "通过自然语言交互管理 SCNet Chat 超算平台。用户需要查询/管理 SCNet 超算平台资源，包括查询作业、提交作业、管理文件、查看账户信息、切换区域等。触发关键词：scnet、超算、作业、作业管理、文件管理、账户、余额、查询余额、机时、集群、队列、上传、下载、重命名、区域切换、昆山、山东、西安等。",
-      "source": "oneskills",
-      "path": "onescience\\scnet-chat",
+      "name": "云端GPU执行",
+      "type": "knowledge",
+      "description": "在 Modal 云平台运行重型或 GPU 任务：编写 Modal 函数、部署并执行",
+      "source": "04-实验执行",
+      "path": "04-实验执行/云端GPU执行",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
       "entry_points": [],
       "trigger_keywords": [],
-      "applicable_stages": []
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     },
     {
-      "name": "jingming-orchestrator",
-      "type": "orchestrator",
-      "description": "景明研环CIENCE 统一编排主控。五阶段工作流：INTAKE→RESOURCE→EXPERT→PLAN→EXECUTE。融合 OneSkills 契约系统 + ARC 方法论 + 动态路由中断处理。",
-      "source": "jingming",
-      "path": "orchestrator\\jingming-orchestrator",
+      "name": "代码生成",
+      "type": "knowledge",
+      "description": "实验代码生成：根据实验方案生成可运行的 Python 代码，GPU 自适应",
+      "source": "04-实验执行",
+      "path": "04-实验执行/代码生成",
       "dependencies": [],
       "natural_next": [],
       "outputs": [],
-      "entry_points": [
-        "*"
-      ],
-      "trigger_keywords": [
-        "jingming",
-        "科研",
-        "研究",
-        "论文",
-        "实验",
-        "综述",
-        "选题"
-      ],
-      "applicable_stages": []
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "大文件安全读取",
+      "type": "knowledge",
+      "description": "读取大体积数据文件（CSV/Parquet/HDF5/FITS/NetCDF 等）前的安全探测与采样，避免内存溢出",
+      "source": "04-实验执行",
+      "path": "04-实验执行/大文件安全读取",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "实验执行",
+      "type": "knowledge",
+      "description": "实验执行：在本地/Docker/SLURM 环境运行实验，监控进度",
+      "source": "04-实验执行",
+      "path": "04-实验执行/实验执行",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "资源规划",
+      "type": "knowledge",
+      "description": "资源规划：估算计算资源、内存/GPU 时间，选择执行后端",
+      "source": "04-实验执行",
+      "path": "04-实验执行/资源规划",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "远程计算作业",
+      "type": "knowledge",
+      "description": "通过 SSH 在远程 GPU/计算集群上提交、监控、取消作业，管理远程环境",
+      "source": "04-实验执行",
+      "path": "04-实验执行/远程计算作业",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "迭代优化",
+      "type": "knowledge",
+      "description": "迭代优化：检测 NaN/Inf 与运行时错误，自愈修复代码，最多 10 轮",
+      "source": "04-实验执行",
+      "path": "04-实验执行/迭代优化",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "领域正确性检查",
+      "type": "knowledge",
+      "description": "运行科研分析代码前后执行领域正确性检查：单位/量纲、坐标系、索引、统计多重比较等典型科学错误",
+      "source": "04-实验执行",
+      "path": "04-实验执行/领域正确性检查",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "可追溯性审计",
+      "type": "knowledge",
+      "description": "审查报告/论文/分析的可追溯性：每个结论都能回溯到数据、代码与来源",
+      "source": "05-分析验证",
+      "path": "05-分析验证/可追溯性审计",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "同行评审",
+      "type": "knowledge",
+      "description": "多 Agent 同行评审：模拟会议审稿，检查方法论与实验一致性",
+      "source": "05-分析验证",
+      "path": "05-分析验证/同行评审",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "科学图表设计",
+      "type": "knowledge",
+      "description": "用 matplotlib/seaborn 设计达到发表标准的科学图表",
+      "source": "05-分析验证",
+      "path": "05-分析验证/科学图表设计",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "结果分析",
+      "type": "knowledge",
+      "description": "结果分析：多 Agent 分析实验结果，统计检验，生成可视化",
+      "source": "05-分析验证",
+      "path": "05-分析验证/结果分析",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "统计完整性检查",
+      "type": "knowledge",
+      "description": "社会科学统计分析的完整性检查：回归、假设检验、计量模型的稳健性验证",
+      "source": "05-分析验证",
+      "path": "05-分析验证/统计完整性检查",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "统计检验报告",
+      "type": "knowledge",
+      "description": "统计检验选择、假设检验与规范化的统计结果报告",
+      "source": "05-分析验证",
+      "path": "05-分析验证/统计检验报告",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "质量把关",
+      "type": "knowledge",
+      "description": "质量把关：检查完整性/引用真实性/图表一致性/可复现性",
+      "source": "05-分析验证",
+      "path": "05-分析验证/质量把关",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "onescience-modelscope-publish",
+      "type": "knowledge",
+      "description": "OneScience ModelScope 模型发布技能。将论文复现模型产物重组为 ModelScope 标准目录结构，检查核心目录内容完整性，生成平台必需的配置模板和审计工具，并输出 modelscope upload 命令引导用户推送到魔搭平台。作为 onescience-orchestrator 的执行技能使用。",
+      "source": "06-写作发表",
+      "path": "06-写作发表/onescience-modelscope-publish",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "发表级图表规范",
+      "type": "knowledge",
+      "description": "用 matplotlib/seaborn 生成图表时自动套用达到发表标准的样式规范",
+      "source": "06-写作发表",
+      "path": "06-写作发表/发表级图表规范",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "学术论文写作",
+      "type": "knowledge",
+      "description": "按 IMRAD 结构撰写学术论文：引言、方法、结果、讨论与引用规范",
+      "source": "06-写作发表",
+      "path": "06-写作发表/学术论文写作",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "导出发布",
+      "type": "knowledge",
+      "description": "导出发布：生成最终 LaTeX/PDF，准备投稿材料",
+      "source": "06-写作发表",
+      "path": "06-写作发表/导出发布",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "知识存档",
+      "type": "knowledge",
+      "description": "知识存档：将研究发现/决策/实验数据写入知识库",
+      "source": "06-写作发表",
+      "path": "06-写作发表/知识存档",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "论文修订",
+      "type": "knowledge",
+      "description": "论文修订：根据审稿意见修改，补充实验或澄清方法论",
+      "source": "06-写作发表",
+      "path": "06-写作发表/论文修订",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "论文初稿",
+      "type": "knowledge",
+      "description": "论文初稿：生成完整学术论文（5000-6500 词），含引言/方法/实验/结论",
+      "source": "06-写作发表",
+      "path": "06-写作发表/论文初稿",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "论文结构规划",
+      "type": "knowledge",
+      "description": "论文结构规划：规划 IMRAD 结构、图表位置与论证逻辑线",
+      "source": "06-写作发表",
+      "path": "06-写作发表/论文结构规划",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "生物信息学分析",
+      "type": "knowledge",
+      "description": "生物信息学分析：Biopython 序列操作、文件解析、BLAST 与系统发育",
+      "source": "07-领域科学",
+      "path": "07-领域科学/生物信息学分析",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
+    },
+    {
+      "name": "计算化学分析",
+      "type": "knowledge",
+      "description": "计算化学分析：RDKit 分子分析、描述符、指纹与子结构搜索",
+      "source": "07-领域科学",
+      "path": "07-领域科学/计算化学分析",
+      "dependencies": [],
+      "natural_next": [],
+      "outputs": [],
+      "entry_points": [],
+      "trigger_keywords": [],
+      "applicable_stages": [],
+      "category": "methodology",
+      "priority": 3
     }
   ],
-  "sources": {
-    "jingming": 1,
-    "arc": 31,
-    "oneskills": 17,
-    "jingming-yanhuan": 7
-  },
-  "type_distribution": {
-    "executor": 35,
-    "expert": 9,
-    "knowledge": 9,
-    "orchestrator": 2,
-    "resource": 1
-  },
-  "progress_model": {
-    "description": "4-phase progress model mapped from skill phases",
-    "phases": [
-      {
-        "id": "ideation",
-        "label": "构思",
-        "icon": "💡",
-        "description": "选题 + 文献调研",
-        "skill_phases": [
-          "scoping",
-          "literature"
-        ],
-        "skills": [
-          "research-scoper",
-          "literature-strategist",
-          "literature-collect",
-          "literature-screen",
-          "knowledge-extract"
-        ]
-      },
-      {
-        "id": "hypothesis",
-        "label": "假设",
-        "icon": "🔬",
-        "description": "知识综合 + 假设生成",
-        "skill_phases": [
-          "synthesis"
-        ],
-        "skills": [
-          "knowledge-synthesizer",
-          "hypothesis-generator"
-        ]
-      },
-      {
-        "id": "experiment",
-        "label": "实验",
-        "icon": "🧪",
-        "description": "实验设计 + 执行 + 分析",
-        "skill_phases": [
-          "design",
-          "execution",
-          "analysis"
-        ],
-        "skills": [
-          "experiment-planner",
-          "code-generation",
-          "resource-planning",
-          "experiment-run",
-          "iterative-refine",
-          "result-analysis",
-          "research-decider"
-        ]
-      },
-      {
-        "id": "writing",
-        "label": "撰写&审稿",
-        "icon": "📝",
-        "description": "论文撰写 + 审稿 + 修订 + 发表",
-        "skill_phases": [
-          "writing",
-          "finalization"
-        ],
-        "skills": [
-          "paper-structural-planner",
-          "paper-draft",
-          "peer-review",
-          "paper-revision",
-          "quality-gate",
-          "knowledge-archive",
-          "export-publish",
-          "citation-verify"
-        ]
-      }
-    ],
-    "progress_emission": {
-      "trigger": "on every executor skill execution",
-      "event_format": {
-        "event": "progress",
-        "current_skill": "<skill_name>",
-        "current_phase": "<skill.phase>",
-        "progress_step": "<1-4>",
-        "progress_total": 4,
-        "progress_label": "<phase_label>"
-      }
-    }
-  }
+  "sources": {},
+  "type_distribution": {},
+  "progress_model": "manual"
 }

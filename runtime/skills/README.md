@@ -4,7 +4,7 @@ Scientific skills, layered:
 
 ```text
 skills/
-  core/      # self-authored skills specific to this app (traceability-review;
+  core/      # self-authored skills specific to this app (可追溯性审计;
              # other dirs are roadmap placeholders until they get a SKILL.md)
   external/  # third-party skill packs, fetched by script — git-ignored
   user/      # user-installed / custom skills (live in the runtime workspace)

@@ -219,12 +219,14 @@ fn deploy_bundled_skills(app: &AppHandle) {
     for resource in [
         "skills",
         "skills-office",
-        "skills-core",
-        "skills-arc",
-        "skills-executor",
-        "skills-expert",
-        "skills-onescience",
-        "skills-orchestrator",
+        "skills-00",
+        "skills-01",
+        "skills-02",
+        "skills-03",
+        "skills-04",
+        "skills-05",
+        "skills-06",
+        "skills-07",
     ] {
         let src = match app
             .path()
