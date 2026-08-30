@@ -41,16 +41,23 @@
     "externalBin": [
       "binaries/opencode",
       "binaries/uv",
-      "binaries/agent-browser",
-      "binaries/whisper-cli"
+      "binaries/agent-browser"
     ],
     "resources": {
       "../../../runtime/goal-plugin": "goal-plugin/",
-      "../../../runtime/skills/external/jingming-skills": "skills/",
       "../../../runtime/skills/external/anthropic-skills": "skills-office/",
-      "../../../runtime/skills/core": "skills-core/",
       "../../../runtime/harness": "harness/",
-      "../../../examples/climate-trends": "examples/climate-trends/"
+      "../../../runtime/qoder-sidecar": "qoder-sidecar/",
+      "../../../examples/climate-trends": "examples/climate-trends/",
+      "../../../runtime/skills/external/jingming-skills": "skills/",
+      "../../../runtime/skills/00-通用工具": "skills-00/",
+      "../../../runtime/skills/01-文献调研": "skills-01/",
+      "../../../runtime/skills/02-假设设计": "skills-02/",
+      "../../../runtime/skills/03-数据工程": "skills-03/",
+      "../../../runtime/skills/04-实验执行": "skills-04/",
+      "../../../runtime/skills/05-分析验证": "skills-05/",
+      "../../../runtime/skills/06-写作发表": "skills-06/",
+      "../../../runtime/skills/07-领域科学": "skills-07/"
     }
   }
 }
