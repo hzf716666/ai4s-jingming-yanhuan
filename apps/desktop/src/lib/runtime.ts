@@ -62,7 +62,7 @@ const HIDDEN_KEY = "jingming.hiddenExamples";
 // / recent models persist too, so the effort should as well). Sibling of the
 // model-preferences keys in components/settings/modelPreferences.
 const REASONING_KEY = "jingming.models.variant.v1";
-// The selected AI backend: "opencode" (default) or "qoder".
+// The selected AI backend: "qoder" (default) or "opencode".
 const BACKEND_KEY = "jingming.backend.v1";
 
 export type BackendType = "opencode" | "qoder";
@@ -84,9 +84,9 @@ function initialReasoningVariant(): string | null {
   return window.localStorage.getItem(REASONING_KEY) || null;
 }
 function initialBackend(): BackendType {
-  if (typeof window === "undefined") return "opencode";
+  if (typeof window === "undefined") return "qoder";
   const stored = window.localStorage.getItem(BACKEND_KEY);
-  return (stored === "qoder" ? "qoder" : "opencode");
+  return (stored === "opencode" ? "opencode" : "qoder");
 }
 
 export interface Thread {
