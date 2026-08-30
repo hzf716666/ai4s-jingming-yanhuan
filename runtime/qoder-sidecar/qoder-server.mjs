@@ -15,7 +15,8 @@
 
 import { createServer } from "http";
 import { URL } from "url";
-import { existsSync } from "fs";
+import { existsSync, readdirSync, readFileSync } from "fs";
+import { join } from "path";
 import { execFileSync, execSync, spawn } from "child_process";
 import { fileURLToPath } from "url";
 
@@ -404,6 +405,39 @@ function hardStopQoder() {
 }
 
 /**
+ * List the deployed skills from the global OpenCode skills dir
+ * (JINGMING_SKILLS_DIR, set by the app when spawning the sidecar).
+ * Mirrors OpenCode's GET /api/skill shape so the frontend Skills page works
+ * with the Qoder backend too.
+ */
+function listSkills() {
+  const root = process.env.JINGMING_SKILLS_DIR;
+  if (!root || !existsSync(root)) return [];
+  let entries = [];
+  try {
+    entries = readdirSync(root, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+  const skills = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const skillMd = join(root, entry.name, "SKILL.md");
+    if (!existsSync(skillMd)) continue;
+    let description = "";
+    try {
+      const text = readFileSync(skillMd, "utf8");
+      const m = text.match(/^description:\s*(.+)$/m);
+      if (m) description = m[1].trim().slice(0, 300);
+    } catch {
+      // description stays empty
+    }
+    skills.push({ name: entry.name, description, location: skillMd });
+  }
+  return skills;
+}
+
+/**
  * Start a query with multi-turn support via resume.
  *
  * Multi-turn recipe (verified against qodercli 1.1.x):
@@ -733,7 +767,7 @@ async function handleRequest(req, res) {
 
     // ---- Skills ----
     if (path === "/api/skill" && method === "GET") {
-      json({ data: [] });
+      json({ data: listSkills() });
       return;
     }
 

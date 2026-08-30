@@ -216,7 +216,16 @@ fn deploy_bundled_skills(app: &AppHandle) {
     };
     let mut bundled: std::collections::HashSet<std::ffi::OsString> = std::collections::HashSet::new();
     let mut all_ok = true;
-    for resource in ["skills", "skills-office", "skills-core"] {
+    for resource in [
+        "skills",
+        "skills-office",
+        "skills-core",
+        "skills-arc",
+        "skills-executor",
+        "skills-expert",
+        "skills-onescience",
+        "skills-orchestrator",
+    ] {
         let src = match app
             .path()
             .resolve(resource, tauri::path::BaseDirectory::Resource)
@@ -1113,6 +1122,12 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
         // GUI-launched apps get a minimal PATH; give the sidecar the user's
         // real tools (node, npm, qodercli, etc.) for Qoder SDK auth.
         .env("PATH", enriched_path())
+        // Point the sidecar at the deployed skills dir so its /api/skill
+        // endpoint lists the same skills as the OpenCode runtime.
+        .env(
+            "JINGMING_SKILLS_DIR",
+            xdg_config_home(app)?.join("opencode").join("skills").to_string_lossy().to_string(),
+        )
         .current_dir(workspace);
 
     // Pass stored Qoder PAT token so the sidecar can authenticate.

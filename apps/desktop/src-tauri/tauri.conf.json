@@ -48,7 +48,12 @@
       "../../../runtime/harness": "harness/",
       "../../../runtime/qoder-sidecar": "qoder-sidecar/",
       "../../../examples/climate-trends": "examples/climate-trends/",
-      "../../../runtime/skills/external/jingming-skills": "skills/"
+      "../../../runtime/skills/external/jingming-skills": "skills/",
+      "../../../runtime/skills/arc-knowledge": "skills-arc/",
+      "../../../runtime/skills/executor": "skills-executor/",
+      "../../../runtime/skills/expert": "skills-expert/",
+      "../../../runtime/skills/onescience": "skills-onescience/",
+      "../../../runtime/skills/orchestrator": "skills-orchestrator/"
     },
     "icon": [
       "icons/32x32.png",
