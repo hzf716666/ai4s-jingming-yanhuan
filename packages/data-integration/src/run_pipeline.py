@@ -26,6 +26,12 @@ from src.pipelines.pdf_pipelines import parse_pdf_tables, parse_pdf_camelot
 from src.pipelines.chart_reverse import parse_pdf_charts
 from src.pipelines.ocr_pipeline import parse_pdf_ocr
 from src.pipelines.docx_pptx_parser import parse_docx, parse_pptx
+from src.pipelines.text_ie import (
+    extract_from_text,
+    extract_paragraphs_from_docx,
+    extract_paragraphs_from_pdf,
+    extract_paragraphs_from_pptx,
+)
 from src.cleaning import clean_records
 from src.schema_matching import match_schema, build_alias_map
 from src.fusion import fuse_records
@@ -66,8 +72,13 @@ def scan_data_sources(input_dir: str) -> list[dict]:
     return sources
 
 
-def parse_all_sources(input_dir: str) -> list[Record]:
-    """M3: Run all parsing pipelines on all data sources."""
+def parse_all_sources(input_dir: str, llm=None) -> list[Record]:
+    """M3: Run all parsing pipelines on all data sources.
+
+    Args:
+        input_dir: Directory containing source data files.
+        llm: Optional LLMInterface for text information extraction.
+    """
     all_records: list[Record] = []
     input_path = Path(input_dir)
     if not input_path.exists():
@@ -103,14 +114,38 @@ def parse_all_sources(input_dir: str) -> list[Record]:
                 recs_e = parse_pdf_ocr(fpath, source_label)
                 all_records.extend(recs_e)
                 print(f"  [ocr] {f}: {len(recs_e)} records")
+
+                # Text information extraction from PDF paragraphs
+                paragraphs = extract_paragraphs_from_pdf(fpath)
+                if paragraphs:
+                    full_text = "\n".join(paragraphs)
+                    recs_text = extract_from_text(full_text, llm, f"pdf:{source_label}")
+                    all_records.extend(recs_text)
+                    print(f"  [text_ie] {f}: {len(recs_text)} records from text")
             elif ext == ".docx":
                 recs = parse_docx(fpath, source_label)
                 all_records.extend(recs)
-                print(f"  [docx] {f}: {len(recs)} records")
+                print(f"  [docx] {f}: {len(recs)} records from tables")
+
+                # Text information extraction from DOCX paragraphs
+                paragraphs = extract_paragraphs_from_docx(fpath)
+                if paragraphs:
+                    full_text = "\n".join(paragraphs)
+                    recs_text = extract_from_text(full_text, llm, f"docx:{source_label}")
+                    all_records.extend(recs_text)
+                    print(f"  [text_ie] {f}: {len(recs_text)} records from text")
             elif ext == ".pptx":
                 recs = parse_pptx(fpath, source_label)
                 all_records.extend(recs)
-                print(f"  [pptx] {f}: {len(recs)} records")
+                print(f"  [pptx] {f}: {len(recs)} records from tables")
+
+                # Text information extraction from PPTX text boxes
+                paragraphs = extract_paragraphs_from_pptx(fpath)
+                if paragraphs:
+                    full_text = "\n".join(paragraphs)
+                    recs_text = extract_from_text(full_text, llm, f"pptx:{source_label}")
+                    all_records.extend(recs_text)
+                    print(f"  [text_ie] {f}: {len(recs_text)} records from text")
 
     return all_records
 

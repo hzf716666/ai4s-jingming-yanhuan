@@ -1110,6 +1110,7 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
     let node_cmd = if cfg!(windows) { "node.exe" } else { "node" };
 
     let home = std::env::var("HOME").unwrap_or_default();
+    let userprofile = std::env::var("USERPROFILE").unwrap_or_default();
     let mut cmd = app
         .shell()
         .command(node_cmd)
@@ -1120,7 +1121,11 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
             "--cwd".to_string(),
             workspace.to_string_lossy().to_string(),
         ])
-        .env("HOME", home)
+        .env("HOME", &home)
+        // On Windows, Node.js os.homedir() uses USERPROFILE, not HOME.
+        // qodercliAuth() resolves ~/.qoder/ via os.homedir(), so we must
+        // set USERPROFILE for the SDK to find credentials.
+        .env("USERPROFILE", &userprofile)
         // GUI-launched apps get a minimal PATH; give the sidecar the user's
         // real tools (node, npm, qodercli, etc.) for Qoder SDK auth.
         .env("PATH", enriched_path())
@@ -1175,18 +1180,22 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
 /// Uses port 4097 by default. Waits for the sidecar's health endpoint before returning.
 #[tauri::command(async)]
 pub async fn start_qoder_runtime(app: AppHandle, state: State<'_, RuntimeState>) -> Result<String, String> {
-    // Check if already running
-    {
+    // Check if already running — extract values under lock, release before await
+    let existing_url = {
         let lifecycle = state.lifecycle.lock().unwrap();
-        if let (Some(_), Some(url)) = (&lifecycle.qoder_child, &lifecycle.qoder_url) {
-            // Verify it's actually healthy
-            let port = lifecycle.qoder_port.unwrap_or(4097);
-            drop(lifecycle);
-            if wait_for_sidecar_health(port, 3).await.is_ok() {
-                return Ok(url.clone());
+        match (&lifecycle.qoder_child, &lifecycle.qoder_url) {
+            (Some(_), Some(url)) => {
+                let port = lifecycle.qoder_port.unwrap_or(4097);
+                Some((port, url.clone()))
             }
-            // Not healthy — the old process is dead but state is stale, fall through to restart
+            _ => None,
         }
+    };
+    if let Some((port, url)) = existing_url {
+        if wait_for_sidecar_health(port, 3).await.is_ok() {
+            return Ok(url);
+        }
+        // Not healthy — the old process is dead but state is stale, fall through to restart
     }
 
     // Repair any impossible partial state
@@ -1293,8 +1302,8 @@ fn has_qodercli_login() -> bool {
     }
     // Windows fallback
     if let Ok(appdata) = std::env::var("APPDATA") {
-        candidates.push(PathBuf::from(appdata).join("qoder-cn"));
-        candidates.push(PathBuf::from(appdata).join("qoder"));
+        candidates.push(PathBuf::from(&appdata).join("qoder-cn"));
+        candidates.push(PathBuf::from(&appdata).join("qoder"));
     }
 
     // Look for credential files inside those dirs

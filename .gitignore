@@ -49,8 +49,13 @@ secrets/
 .env
 .env.*
 
-# Data integration pipeline output
+# Data integration pipeline output & runtime data
 packages/data-integration/output/
+packages/data-integration/output_test/
+packages/data-integration/server_data/
+
+# Office temp lock files
+~$*
 
 # Build artifacts / installers
 *.dmg
