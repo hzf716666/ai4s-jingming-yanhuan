@@ -369,7 +369,7 @@ export function LiveSessionPage() {
               <span>{t("live.runsToggle.label")}</span>
             </button>
           )}
-          <ConnBadge status={displayStatus} />
+          <ConnBadge status={displayStatus} backend={backend} />
           {uniqueNotebooks.map((nb) => (
             <button
               key={nb.path}
@@ -405,7 +405,9 @@ export function LiveSessionPage() {
                 real error/offline states. */}
             {!connected && !connecting && (
               <div className="rounded-card border border-border bg-surface p-5 shadow-card">
-                <div className="text-sm font-medium text-text">{t("live.runtime.title")}</div>
+                <div className="text-sm font-medium text-text">
+                  {backend === "qoder" ? "Qoder 运行时" : t("live.runtime.title")}
+                </div>
                 {backend === "qoder" ? (
                   <p className="mt-1 text-sm text-muted">
                     浏览器模式下请先手动启动 Qoder 运行时：
@@ -579,13 +581,14 @@ function ThreadSkeleton() {
   );
 }
 
-function ConnBadge({ status }: { status: RuntimeStatus }) {
+function ConnBadge({ status, backend }: { status: RuntimeStatus; backend: "qoder" | "opencode" }) {
   const { t } = useTranslation(["session", "common"]);
   const tone = status === "ready" ? "text-ok" : status === "error" ? "text-error" : "text-muted";
+  const label = `${backend === "qoder" ? "Qoder" : "OpenCode"} · ${t(`live.connBadge.status.${status}`)}`;
   return (
     <span
       className={cn("flex items-center gap-1.5 text-xs", tone)}
-      title={t("live.connBadge.title", { status: t(`live.connBadge.status.${status}`) })}
+      title={label}
     >
       <span
         className={cn(
@@ -596,7 +599,7 @@ function ConnBadge({ status }: { status: RuntimeStatus }) {
       />
       {/* Ready is the norm — a green dot says it all (hover for detail). Text
           appears only for states that need attention. */}
-      {status !== "ready" && t("live.connBadge.title", { status: t(`live.connBadge.status.${status}`) })}
+      {status !== "ready" && label}
     </span>
   );
 }
