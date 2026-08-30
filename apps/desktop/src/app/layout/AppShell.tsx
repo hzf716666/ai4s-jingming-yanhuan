@@ -11,9 +11,10 @@ import { useRuntimeStore } from "@/lib/runtime";
 import { ensureSetupProgressListener } from "@/lib/setup";
 import { useOverlayTitlebar, useUiStore } from "@/lib/store";
 import { overlayTitlebarStyle } from "@/lib/titlebar";
-import { ensureJupyter, openExternal, watchFullscreen } from "@/lib/tauri";
+import { ensureJupyter, isTauri, openExternal, watchFullscreen } from "@/lib/tauri";
 import { useUpdateStore } from "@/lib/update";
 import { isGatewayWeb, gatewayToken, setUnauthorizedHandler } from "@/lib/webMode";
+import { QoderGate } from "@/components/onboarding/QoderGate";
 import { WebTokenGate } from "@/components/web/WebTokenGate";
 import { useIsMobile } from "@/lib/useIsMobile";
 
@@ -23,6 +24,12 @@ export function AppShell() {
   const isMobile = useIsMobile();
   // Gateway web client: hold the app behind a token gate until authenticated.
   const [webReady, setWebReady] = useState(!isGatewayWeb || !!gatewayToken());
+  // Qoder backend: hold the app behind the install/login gate until the user
+  // has a working Qoder CLI session (or a saved PAT).
+  const backend = useRuntimeStore((s) => s.backend);
+  const [qoderReady, setQoderReady] = useState(
+    () => backend !== "qoder" || !isTauri,
+  );
 
   // Cmd/Ctrl+B toggles the sidebar, matching the button's tooltip. Not in
   // settings: there the sidebar IS the settings navigation (with the only way
@@ -43,6 +50,7 @@ export function AppShell() {
   // and bring the Jupyter server back up if the user enabled it before.
   useEffect(() => {
     if (isGatewayWeb && !webReady) return; // wait for the token gate
+    if (!qoderReady) return; // wait for the Qoder install/login gate
     void useRuntimeStore.getState().bootstrap();
     void ensureJupyter();
     // One app-lifetime listener for uv provisioning progress, so a running
@@ -51,7 +59,7 @@ export function AppShell() {
     if (!import.meta.env.TEST) {
       void useUpdateStore.getState().maybeAutoCheck();
     }
-  }, [webReady]);
+  }, [webReady, qoderReady]);
 
   // Web client: if the gateway rejects the token (rotated/revoked), drop back
   // to the token gate instead of looping on a failed connection.
@@ -113,6 +121,10 @@ export function AppShell() {
 
   if (isGatewayWeb && !webReady) {
     return <WebTokenGate onConnect={() => setWebReady(true)} />;
+  }
+
+  if (backend === "qoder" && isTauri && !qoderReady) {
+    return <QoderGate onReady={() => setQoderReady(true)} />;
   }
 
   return (

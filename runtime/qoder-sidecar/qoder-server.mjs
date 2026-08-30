@@ -180,10 +180,19 @@ function normalizeMessage(msg, sessionId) {
 
     case "assistant": {
       // Full assistant message received after streaming completes.
-      // Emit tool results for any tool_use blocks, but DON'T re-emit text
-      // (streaming already handled it).
+      // This SDK version (bundled qodercli 1.1.x) does NOT emit stream_event
+      // deltas — it delivers complete assistant messages, so forward the text
+      // blocks here (the UI consumes `text.updated`).
       const content = msg.message?.content || [];
       for (const block of content) {
+        if (block.type === "text" && block.text) {
+          broadcastEvent({
+            type: "text.updated",
+            ...base,
+            partId: msg.message?.id || `assistant-${Date.now()}`,
+            text: block.text,
+          });
+        }
         if (block.type === "tool_use") {
           broadcastEvent({
             type: "tool.updated",
@@ -318,6 +327,14 @@ function buildAuth() {
 
 /**
  * Start a query with multi-turn support via resume.
+ *
+ * Multi-turn recipe (verified against qodercli 1.1.x):
+ * - First turn: call query() WITHOUT sessionId/resume — the CLI creates its
+ *   own session; we capture the real CLI session id afterwards via listSessions().
+ * - Later turns: call query() with ONLY `resume: <cliSessionId>`.
+ *   Passing sessionId together with resume is rejected by the CLI
+ *   ("--session-id can only be used with --continue or --resume when
+ *   --fork-session is also specified", exit code 42).
  */
 function startQuery(sessionId, text, agentOptions = {}) {
   const session = sessions.get(sessionId) || {
@@ -342,17 +359,17 @@ function startQuery(sessionId, text, agentOptions = {}) {
 
   const auth = buildAuth();
 
-  // Use resume for multi-turn conversations if session exists
-  const q = query({
-    prompt: text,
-    options: {
-      auth,
-      cwd: CWD,
-      sessionId,
-      resume: sessionId,
-      ...agentOptions,
-    },
-  });
+  const options = {
+    auth,
+    cwd: CWD,
+    ...agentOptions,
+  };
+  if (session.cliSessionId) {
+    // Continuation: resume the CLI session (sessionId must NOT be passed).
+    options.resume = session.cliSessionId;
+  }
+
+  const q = query({ prompt: text, options });
 
   activeQueries.set(sessionId, q);
 
@@ -372,6 +389,19 @@ function startQuery(sessionId, text, agentOptions = {}) {
       }
     } finally {
       activeQueries.delete(sessionId);
+      // Capture the real CLI session id (first turn only) so later turns can
+      // resume it. Best effort: match by firstPrompt/summary, newest first.
+      if (!session.cliSessionId) {
+        try {
+          const list = await listSessions();
+          const mine = list
+            .filter((s) => s.firstPrompt === text || s.summary === text.slice(0, 120))
+            .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))[0];
+          if (mine?.sessionId) session.cliSessionId = mine.sessionId;
+        } catch {
+          // Non-fatal: next turn starts a fresh session.
+        }
+      }
     }
   })();
 
