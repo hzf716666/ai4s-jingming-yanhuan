@@ -1,32 +1,36 @@
 # EconDataForge -- Data Integration Module Dependencies
+# Install all:  pip install -r requirements.txt
 
-# === Required (core pipeline) ===
+# === Core: Excel parsing ===
 openpyxl>=3.1.2
 
-# === Optional: Document parsing ===
-# python-docx>=0.8.11    # Word .docx parsing
-# python-pptx>=0.6.21    # PowerPoint .pptx parsing
+# === Document parsing ===
+python-docx>=0.8.11
+python-pptx>=0.6.21
 
-# === Optional: PDF parsing ===
-# pdfplumber>=0.10.0     # PDF text-based table extraction
-# pypdf>=4.0.0           # PDF processing backend
-# camelot-py[cv]>=0.11.0 # PDF vector table extraction
+# === PDF parsing ===
+pdfplumber>=0.10.0
+camelot-py[cv]>=0.11.0
 
-# === Optional: Numeric / fuzzy matching ===
-# numpy>=1.24.0          # Chart reverse engineering, OCR
-# rapidfuzz>=3.0.0       # Fuzzy string matching for schema alignment
+# === Numeric / image processing ===
+numpy<2.0
+opencv-python>=4.5.0
+Pillow>=9.0.0
 
-# === Optional: OCR (Pipeline E) ===
-# paddleocr>=2.0.0       # Scanned PDF OCR
-# opencv-python>=4.5.0   # Image processing for chart/OCR
+# === OCR (Pipeline E: scanned PDF) ===
+paddleocr==2.7.0.3
+paddlepaddle==2.6.2
 
-# === Optional: Spatial grid ===
-# h3>=4.1.0              # Uber H3 hexagonal grid for GeoCube
+# === Spatial grid (GeoCube) ===
+h3>=4.1.0
 
-# === Optional: LLM integration (M1 requirement understanding) ===
-# dashscope>=1.14.0      # Alibaba Cloud Qwen API (DASHSCOPE_API_KEY env var)
+# === LLM integration (M1 requirement understanding) ===
+dashscope>=1.14.0
 
-# Install all:  pip install -r requirements.txt
-# Install core: pip install openpyxl
-# Install docs: pip install python-docx python-pptx
-# Install PDF:  pip install pdfplumber camelot-py[cv]
+# === API server ===
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+
+# === PDF rendering (scanned PDF generation / page-to-image) ===
+PyMuPDF>=1.23.0
