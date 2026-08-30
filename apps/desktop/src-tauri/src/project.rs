@@ -1,5 +1,5 @@
 // Projects: a named workspace folder under the base dir, marked by
-// `<folder>/.openscience/project.json`. The folder IS the workspace — sessions
+// `<folder>/.jingming-yanhuan/project.json`. The folder IS the workspace — sessions
 // group under a project by their `directory`, so no registry or database
 // exists to drift out of sync. Folders without the marker stay plain dated
 // session workspaces.
@@ -61,7 +61,7 @@ pub struct ProjectInfo {
 }
 
 fn meta_file(dir: &Path) -> PathBuf {
-    dir.join(".openscience").join("project.json")
+    dir.join(".jingming-yanhuan").join("project.json")
 }
 
 fn now_ms() -> u64 {
@@ -288,7 +288,7 @@ fn restore_write_recursive(dir: &Path) {
 /// child hits `EPERM`), but it CAN access folders the app itself creates under the
 /// base dir. The user's original folder is never moved or written to, and the copy
 /// is treated as the user's existing work: the app never scaffolds its harness into
-/// it or rewrites its files. The only additions are the app's `.openscience/` dir
+/// it or rewrites its files. The only additions are the app's `.jingming-yanhuan/` dir
 /// (project.json) and one clearly-marked import-provenance section appended to the
 /// copy's AGENTS.md — kept there, where agents read it, so a reference to a path
 /// outside the copy can be traced back to the source. Snapshots run to the dedicated
@@ -346,24 +346,24 @@ fn populate_import(
     mut meta: ProjectMeta,
 ) -> Result<ProjectInfo, String> {
     copy_tree(source, dir).map_err(|e| format!("could not copy the folder: {e}"))?;
-    // The source may have carried its own `.openscience/` (if it was ever app-
+    // The source may have carried its own `.jingming-yanhuan/` (if it was ever app-
     // managed): drop it wholesale so a stale identity, a foreign project.json, or a
     // legacy `.no-snapshots` opt-out — which would silently disable versioning for
     // the fresh copy — cannot leak in. write_meta then re-creates ours.
-    let _ = force_remove_dir_all(&dir.join(".openscience"));
+    let _ = force_remove_dir_all(&dir.join(".jingming-yanhuan"));
     meta.imported_from = Some(source.to_string_lossy().to_string());
     write_meta(dir, &meta)?;
     // An imported project is the user's EXISTING work, so — unlike "New project",
     // which scaffolds an empty folder — the app never seeds its harness into it
     // (no KNOWLEDGE.md/notes/README injected) and never rewrites its files. The full
-    // provenance/caveats go to an app-owned `.openscience/IMPORTED_FROM.md`; AGENTS.md
+    // provenance/caveats go to an app-owned `.jingming-yanhuan/IMPORTED_FROM.md`; AGENTS.md
     // (the file agents read) gets just ONE marked pointer line — appended only if not
     // already present — so an agent that hits a reference to a path OUTSIDE the copy
     // can trace it back to the source instead of failing on "not found". An existing
     // AGENTS.md is otherwise left exactly as written; the user's ORIGINAL folder is
     // untouched. For a copied git repo that one line shows as a working-tree change
     // (accepted: the recovery hint beats a pristine `git status` on a copy), while
-    // `mark_imported` keeps `.openscience/` out of git and snapshots go to the
+    // `mark_imported` keeps `.jingming-yanhuan/` out of git and snapshots go to the
     // dedicated per-branch ref, never the user's branch.
     record_import_provenance(dir, source);
     if dir.join(".git").exists() {
@@ -375,10 +375,10 @@ fn populate_import(
 
 /// Marks the single provenance line the app appends to a copy's AGENTS.md, so the
 /// append can be made idempotent (never duplicated on a re-run).
-const IMPORT_PROVENANCE_MARKER: &str = "<!-- open-science-desktop:imported -->";
+const IMPORT_PROVENANCE_MARKER: &str = "<!-- jingming-yanhuan-desktop:imported -->";
 
 /// Record where the copy came from. The FULL details (source path, external-ref and
-/// stale-environment caveats) go to an app-owned `.openscience/IMPORTED_FROM.md`, so
+/// stale-environment caveats) go to an app-owned `.jingming-yanhuan/IMPORTED_FROM.md`, so
 /// they never bloat the user's own file. AGENTS.md — the file agents actually read —
 /// gets just ONE clearly-marked line pointing at that detail file, so an agent that
 /// hits a reference to a path outside the copy can follow it back to the source. The
@@ -406,7 +406,7 @@ fn record_import_provenance(dir: &Path, source: &Path) {
          rather than trusting the copied one.\n",
         source.display()
     );
-    let detail_path = dir.join(".openscience").join("IMPORTED_FROM.md");
+    let detail_path = dir.join(".jingming-yanhuan").join("IMPORTED_FROM.md");
     if let Some(parent) = detail_path.parent() {
         let _ = std::fs::create_dir_all(parent);
     }
@@ -419,7 +419,7 @@ fn record_import_provenance(dir: &Path, source: &Path) {
     }
     let line = format!(
         "\n{IMPORT_PROVENANCE_MARKER}\n> Imported into this workspace by copying from \
-         `{}` — see `.openscience/IMPORTED_FROM.md` for the original location and caveats.\n",
+         `{}` — see `.jingming-yanhuan/IMPORTED_FROM.md` for the original location and caveats.\n",
         source.display()
     );
     if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(&agents) {
@@ -504,7 +504,7 @@ pub fn set_project_pinned(app: AppHandle, id: String, pinned: bool) -> Result<()
 ///   touched (a copy-import left it untouched at import time; a legacy stub only
 ///   ever pointed at it).
 /// - App-created project: the folder holds workspace files the user made here →
-///   remove only the `.openscience/project.json` marker, demoting it to a plain
+///   remove only the `.jingming-yanhuan/project.json` marker, demoting it to a plain
 ///   folder. Nothing else on disk is deleted.
 fn delete_in(base: &Path, id: &str) -> Result<(), String> {
     let dir = project_dir_by_id(base, id).ok_or("project not found")?;
@@ -606,7 +606,7 @@ mod tests {
         assert_eq!(info.path, ext.canonicalize().unwrap().to_string_lossy());
 
         // Nothing was written into the user's repo (metadata lives in the stub).
-        assert!(!ext.join(".openscience").join("project.json").exists());
+        assert!(!ext.join(".jingming-yanhuan").join("project.json").exists());
 
         // An app-created project (no source) is not imported and lives in its folder.
         let (own, own_meta) = create_in(&base, "My Study").unwrap();
@@ -641,7 +641,7 @@ mod tests {
         m.name = "Renamed".into();
         write_meta(&stub, &m).unwrap();
         assert_eq!(read_meta(&stub).unwrap().name, "Renamed");
-        assert!(!ext.join(".openscience").join("project.json").exists());
+        assert!(!ext.join(".jingming-yanhuan").join("project.json").exists());
 
         let _ = fs::remove_dir_all(&base);
     }
@@ -770,10 +770,10 @@ mod tests {
         let agents = fs::read_to_string(dir.join("AGENTS.md")).unwrap();
         // The user's own content is preserved, and only ONE marked pointer line added.
         assert!(agents.starts_with("# My rules\nBe careful.\n"));
-        assert!(agents.contains(".openscience/IMPORTED_FROM.md"));
+        assert!(agents.contains(".jingming-yanhuan/IMPORTED_FROM.md"));
         assert_eq!(agents.matches(IMPORT_PROVENANCE_MARKER).count(), 1);
         // Full details live in the app-owned file, with the source path.
-        let detail = fs::read_to_string(dir.join(".openscience").join("IMPORTED_FROM.md")).unwrap();
+        let detail = fs::read_to_string(dir.join(".jingming-yanhuan").join("IMPORTED_FROM.md")).unwrap();
         assert!(detail.contains("/Users/x/Documents/proj"));
 
         // Re-running must NOT append a second time.
@@ -789,8 +789,8 @@ mod tests {
         let base = std::env::temp_dir().join(format!("os-project-bad-{}", std::process::id()));
         let _ = fs::remove_dir_all(&base);
         let dir = base.join("broken");
-        fs::create_dir_all(dir.join(".openscience")).unwrap();
-        fs::write(dir.join(".openscience").join("project.json"), "{not json").unwrap();
+        fs::create_dir_all(dir.join(".jingming-yanhuan")).unwrap();
+        fs::write(dir.join(".jingming-yanhuan").join("project.json"), "{not json").unwrap();
         assert!(read_meta(&dir).is_none());
         let _ = fs::remove_dir_all(&base);
     }

@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { latestRelease } from "./tauri";
 
-const RELEASE_URL = "https://api.github.com/repos/ai4s-research/open-science/releases/latest";
+const RELEASE_URL = "https://api.github.com/repos/jingming-yanhuan/jingming-yanhuan/releases/latest";
 const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
-const ENABLED_KEY = "openscience.update.enabled";
-const BADGE_KEY = "openscience.update.badge";
-const DISMISSED_KEY = "openscience.update.dismissed";
-const LAST_CHECKED_KEY = "openscience.update.lastCheckedAt";
-const LATEST_KEY = "openscience.update.latest";
+const ENABLED_KEY = "jingming-yanhuan.update.enabled";
+const BADGE_KEY = "jingming-yanhuan.update.badge";
+const DISMISSED_KEY = "jingming-yanhuan.update.dismissed";
+const LAST_CHECKED_KEY = "jingming-yanhuan.update.lastCheckedAt";
+const LATEST_KEY = "jingming-yanhuan.update.latest";
 
 export interface UpdateInfo {
   version: string;

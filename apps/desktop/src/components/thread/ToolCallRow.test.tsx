@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import type { ToolCallStatus } from "@ai4s/shared";
+import type { ToolCallStatus } from "@jingming/shared";
 import { ToolCallRow } from "./ToolCallRow";
 import { useRuntimeStore } from "@/lib/runtime";
 

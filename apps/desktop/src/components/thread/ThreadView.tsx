@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { PanelLeft, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { Session } from "@ai4s/shared";
+import type { Session } from "@jingming/shared";
 import { cn } from "@/lib/cn";
 import { useOverlayTitlebar, useUiStore } from "@/lib/store";
 import { overlayTitlebarStyle } from "@/lib/titlebar";

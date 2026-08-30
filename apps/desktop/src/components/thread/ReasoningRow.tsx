@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { Brain, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { ReasoningBlock } from "@ai4s/shared";
+import type { ReasoningBlock } from "@jingming/shared";
 import { cn } from "@/lib/cn";
 
 /**

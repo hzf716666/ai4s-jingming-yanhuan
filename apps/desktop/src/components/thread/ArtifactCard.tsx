@@ -10,7 +10,7 @@ import {
   SquareArrowOutUpRight,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { ArtifactBlock, ArtifactKind } from "@ai4s/shared";
+import type { ArtifactBlock, ArtifactKind } from "@jingming/shared";
 import { cn } from "@/lib/cn";
 
 const ICON: Record<ArtifactKind, React.ReactNode> = {

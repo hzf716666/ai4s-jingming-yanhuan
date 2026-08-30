@@ -1,9 +1,9 @@
 {
-  "name": "@ai4s/qoder-sidecar",
+  "name": "@jingming/qoder-sidecar",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Qoder CN (通义灵码) sidecar HTTP+SSE server for AI4S Workbench",
+  "description": "Qoder CN (通义灵码) sidecar HTTP+SSE server for 景明研环",
   "main": "qoder-server.mjs",
   "scripts": {
     "start": "node qoder-server.mjs --port 4097",

@@ -8,16 +8,16 @@
 
 ## 1. 项目概览
 
-**景明研环**（AI4S Workbench）是一个开源、本地优先、模型无关、可复现的 AI 科研工作台。支持 macOS / Windows / Linux 桌面端，以及通过 Remote Access Gateway 在手机浏览器上使用。
+**景明研环**（景明研环）是一个开源、本地优先、模型无关、可复现的 AI 科研工作台。支持 macOS / Windows / Linux 桌面端，以及通过 Remote Access Gateway 在手机浏览器上使用。
 
 - **Brand name**：景明研环
-- **Bundle ID**：`com.ai4s.workbench`
-- **内部包名**：`@ai4s/*`
+- **Bundle ID**：`com.jingming.yanhuan`
+- **内部包名**：`@jingming/*`
 - **版本**：0.2.5
 - **许可证**：MIT
 - **包管理器**：pnpm 9.4.0
 - **Node 要求**：>= 20
-- **仓库**：<https://github.com/hzf716666/ai4s-jingming-yanhuan>
+- **仓库**：<https://github.com/hzf716666/jingming-yanhuan>
 
 ### 核心定位
 
@@ -59,7 +59,7 @@ jingming-yanhuan/
 │   ├── kernel/               #   Python/R 内核桥接脚本
 │   ├── goal-plugin/          #   目标循环插件（JS，构建时拉取）
 │   ├── mcp/                  #   MCP 运行时笔记
-│   └── opencode-profile/     #   AI4S Workbench 的 OpenCode 配置/profile
+│   └── opencode-profile/     #   景明研环 的 OpenCode 配置/profile
 ├── docs/                     # 产品和设计文档
 │   ├── PRD.md                #   产品需求文档
 │   ├── TECHNICAL_DESIGN.md   #   技术设计文档
@@ -92,12 +92,12 @@ jingming-yanhuan/
 | **通信协议** | OpenCode HTTP + SSE API | 前端通过 `OpenCodeClient`（`packages/sdk`）调用 |
 | **存储** | 本地文件 + SQLite + JSONL | provenance.jsonl、runs.jsonl |
 | **打包** | Tauri DMG / NSIS / MSI / .deb / .rpm | GitHub Actions CI |
-| **图表** | 自定义 `CHART_PALETTE`（`@ai4s/shared`） | 统一调色板，同时用于 App 图表和 matplotlib 样式 |
+| **图表** | 自定义 `CHART_PALETTE`（`@jingming/shared`） | 统一调色板，同时用于 App 图表和 matplotlib 样式 |
 
 ### 包间依赖方向
 
 ```
-@ai4s/shared  ←  @ai4s/sdk  ←  @ai4s/desktop
+@jingming/shared  ←  @jingming/sdk  ←  @jingming/desktop
    (类型)         (客户端)       (主应用)
 ```
 
@@ -116,7 +116,7 @@ jingming-yanhuan/
 │  - Components (components/)             │
 │  - Pages (app/routes/)                  │
 └──────────────┬──────────────────────────┘
-               │ @ai4s/sdk (AgentRuntime interface)
+               │ @jingming/sdk (AgentRuntime interface)
 ┌──────────────▼──────────────────────────┐
 │  OpenCodeClient (packages/sdk/)         │
 │  - HTTP + SSE 协议实现                   │
@@ -138,7 +138,7 @@ jingming-yanhuan/
 - **隔离**：
   - 使用**捆绑的二进制文件**，不依赖用户 PATH。
   - 使用**专用空闲端口**，不占用默认 4096。
-  - 使用**应用私有** `XDG_CONFIG_HOME`/`XDG_DATA_HOME`（`~/Library/Application Support/com.ai4s.workbench/runtime/`）。
+  - 使用**应用私有** `XDG_CONFIG_HOME`/`XDG_DATA_HOME`（`~/Library/Application Support/com.jingming.yanhuan/runtime/`）。
   - 共享用户登录凭据（只读复制 `auth.json`），但从不修改用户数据。
   - 退出时自动终止。
 - **启动流程**：`User opens app → Tauri starts → Frontend loads → startRuntime() → Sidecar spawns → SDK connects`
@@ -184,7 +184,7 @@ interface RuntimeStore {
 
 ```bash
 # 克隆仓库
-git clone https://github.com/hzf716666/ai4s-jingming-yanhuan
+git clone https://github.com/hzf716666/jingming-yanhuan
 cd jingming-yanhuan
 
 # 安装依赖
@@ -204,10 +204,10 @@ bash scripts/dev/fetch-goal-plugin.sh
 pnpm dev
 
 # Tauri 开发模式（启动 Rust 后端 + 前端）
-pnpm --filter @ai4s/desktop tauri dev
+pnpm --filter @jingming/desktop tauri dev
 
 # 构建桌面安装包
-pnpm --filter @ai4s/desktop tauri build
+pnpm --filter @jingming/desktop tauri build
 
 # 测试（前端）
 pnpm test
@@ -282,12 +282,12 @@ cd apps/desktop/src-tauri && cargo test
 
 #### Import 路径
 
-- **路径别名**：`@/*` → `src/*`、`@ai4s/shared`、`@ai4s/sdk`
+- **路径别名**：`@/*` → `src/*`、`@jingming/shared`、`@jingming/sdk`
 - **不要使用相对路径跨目录引用**，始终使用别名。
   ```typescript
   // ✅ 好
   import { useRuntimeStore } from "@/lib/runtime";
-  import type { ThreadBlock } from "@ai4s/shared";
+  import type { ThreadBlock } from "@jingming/shared";
   
   // ❌ 坏
   import { useRuntimeStore } from "../../lib/runtime";
@@ -360,7 +360,7 @@ pub fn my_command(app: AppHandle, state: State<'_, MyState>, arg: String) -> Res
 - **主题**：使用 CSS 变量（由 `ThemeProvider` 管理），支持 light / warm / dark 三种主题。
 - **颜色**：使用 Tailwind 的语义化颜色类（`bg-card`、`text-foreground`、`border-border`）。
 - **响应式**：使用 Tailwind 断点（`sm:`、`md:`、`lg:`），确保手机宽度下可用。
-- **图表调色板**：使用 `@ai4s/shared` 中的 `CHART_PALETTE` — 这是应用内图表和 agent 生成 matplotlib 图的唯一颜色来源。
+- **图表调色板**：使用 `@jingming/shared` 中的 `CHART_PALETTE` — 这是应用内图表和 agent 生成 matplotlib 图的唯一颜色来源。
 
 ---
 
@@ -425,7 +425,7 @@ test("folds a text event into the thread", () => {
 1. **❌ 直接从 UI 调用 `fetch('http://127.0.0.1:4096/...')`**：必须通过 SDK。
 2. **❌ 使用 `useRuntimeStore()` 无选择器**：会导致每次 store 更新都重渲染。
 3. **❌ 在浏览器 dev 模式下期望 Tauri 功能可用**：始终检查 `isTauri`。
-4. **❌ 硬编码颜色/调色板值**：使用 Tailwind 类或 `@ai4s/shared` 的调色板。
+4. **❌ 硬编码颜色/调色板值**：使用 Tailwind 类或 `@jingming/shared` 的调色板。
 5. **❌ 将推测当作事实陈述**：所有结论必须与代码或数据绑定。
 6. **❌ 向 workspace 的 git 设置 remote 或 push**：绝不做。
 
@@ -507,7 +507,7 @@ test("folds a text event into the thread", () => {
 
 9. **Gateway Web 模式下的 API 密钥安全性**：`/global/config` 的 GET 会递归抹除所有敏感字段。Gateway 永远不代理密钥写入请求。
 
-10. **不要对 workspace git 设置 remote**：代码中有 best-effort 本地提交（`refs/openscience/snapshots/*`），但绝不配置 remote 或 push。
+10. **不要对 workspace git 设置 remote**：代码中有 best-effort 本地提交（`refs/jingming-yanhuan/snapshots/*`），但绝不配置 remote 或 push。
 
 ---
 

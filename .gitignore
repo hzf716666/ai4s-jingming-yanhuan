@@ -43,7 +43,7 @@ venv/
 docs/superpowers/
 
 # Local runtime & secrets (never commit)
-.ai4s-workbench/
+.jingming-yanhuan/
 secrets/
 *.key
 .env

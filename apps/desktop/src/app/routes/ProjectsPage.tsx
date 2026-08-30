@@ -10,7 +10,7 @@ import {
   Pin,
   Search,
 } from "lucide-react";
-import type { SessionMeta } from "@ai4s/sdk";
+import type { SessionMeta } from "@jingming/sdk";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/cn";
 import { useRuntimeStore } from "@/lib/runtime";

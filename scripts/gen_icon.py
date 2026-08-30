@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 import math
 import os
 
-OUTPUT_DIR = r"E:\openscience\jingming-yanhuan\apps\desktop\src-tauri\icons"
+OUTPUT_DIR = r"E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src-tauri\icons"
 
 # Rose-gold / warm brown palette
 LINE_COLOR = (180, 120, 100, 220)       # front edges

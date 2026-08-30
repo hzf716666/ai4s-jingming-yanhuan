@@ -10,7 +10,7 @@ import type {
   RunningJobsBlock,
   StatusLineBlock,
   UserMessageBlock,
-} from "@ai4s/shared";
+} from "@jingming/shared";
 import { cn } from "@/lib/cn";
 import { MarkdownViewer } from "@/components/markdown-viewer/MarkdownViewer";
 import { extractArtifactRefs, refToArtifactBlock } from "@/lib/artifacts";

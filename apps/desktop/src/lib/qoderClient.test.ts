@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { QoderClient } from "@ai4s/sdk";
-import type { OpenCodeEvent } from "@ai4s/sdk";
+import { QoderClient } from "@jingming/sdk";
+import type { OpenCodeEvent } from "@jingming/sdk";
 
 function createMockFetch(
   responses: Record<string, { ok: boolean; json?: unknown; status?: number }>,

@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import type { ModelStatus, RuntimeStatus } from "@ai4s/shared";
+import type { ModelStatus, RuntimeStatus } from "@jingming/shared";
 import { useRuntimeStore } from "@/lib/runtime";
 import { cn } from "@/lib/cn";
 

@@ -56,7 +56,7 @@
   "skills": {
     "title": "スキル & エージェント",
     "description": {
-      "prefix": "OpenCode ランタイムからライブで読み込まれます — バンドルされた ai4s-skills パックと、ワークスペース内の ",
+      "prefix": "OpenCode ランタイムからライブで読み込まれます — バンドルされた jingming-skills パックと、ワークスペース内の ",
       "suffix": " にあるものすべて。"
     },
     "install": {

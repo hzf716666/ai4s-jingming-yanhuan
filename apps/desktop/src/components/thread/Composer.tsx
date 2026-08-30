@@ -58,7 +58,7 @@ function blobToBase64(blob: Blob): Promise<string> {
 
 // Terminal-style input history: every sent input (prompt, "!cmd", "/name args")
 // in its typed form, shared across sessions, newest last, ↑/↓ to recall.
-const HISTORY_KEY = "ai4s.inputHistory";
+const HISTORY_KEY = "jingming.inputHistory";
 const HISTORY_MAX = 100;
 function readHistory(): string[] {
   try {

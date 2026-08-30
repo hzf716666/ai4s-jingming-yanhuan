@@ -1,4 +1,4 @@
-import type { RuntimeStatus, ToolCallStatus } from "@ai4s/shared";
+import type { RuntimeStatus, ToolCallStatus } from "@jingming/shared";
 
 export type { RuntimeStatus, ToolCallStatus };
 

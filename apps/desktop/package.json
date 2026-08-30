@@ -1,5 +1,5 @@
 {
-  "name": "@ai4s/desktop",
+  "name": "@jingming/desktop",
   "version": "0.2.5",
   "private": true,
   "type": "module",
@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "3dmol": "^2.5.5",
-    "@ai4s/sdk": "workspace:*",
-    "@ai4s/shared": "workspace:*",
+    "@jingming/sdk": "workspace:*",
+    "@jingming/shared": "workspace:*",
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/commands": "^6.10.4",
     "@codemirror/lang-css": "^6.3.1",

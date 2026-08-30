@@ -34,7 +34,7 @@ the image so the run is reproducible, and fix any random seed.
 # compute.py — run with:  modal run compute.py
 import modal
 
-app = modal.App("open-science-job")
+app = modal.App("jingming-yanhuan-job")
 image = modal.Image.debian_slim().pip_install("numpy==1.26.4", "scipy==1.13.1")
 
 @app.function(image=image, gpu=None, timeout=1800)  # set gpu="A10G" etc. if needed
@@ -87,7 +87,7 @@ python "$XDG_CONFIG_HOME/opencode/skills/modal-run/record_run.py" \
   --hardware "<the gpu= from @app.function, e.g. A10G — or 'CPU'>" \
   --code compute.py --output "$RESULT"/modal_result.txt \
   --output "$RESULT"/<each downloaded file> \
-  --session-id "$(cat .openscience/session.txt 2>/dev/null)"
+  --session-id "$(cat .jingming-yanhuan/session.txt 2>/dev/null)"
 ```
 
 `--session-id` attaches the run to this session (empty-safe if the marker's absent).

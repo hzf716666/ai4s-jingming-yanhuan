@@ -6,7 +6,7 @@
 > *what the product is*; this file says *what to build first and why*, tied to
 > evidence.
 >
-> **Evidence base.** v1 drew on feedback about Claude Science (HN, Reddit
+> **Evidence base.** v1 drew on feedback about 主流商业科研工具 (HN, Reddit
 > r/comp_chem & r/singularity, LinkedIn) — almost all life-sciences. v2 (this
 > revision, 2026-07-05) broadens that base across the major research
 > disciplines: physics/astronomy, chemistry/materials, earth/climate/geoscience,
@@ -44,7 +44,7 @@ The moat of an AI research workbench is **not the model**. It is:
 景明研环 must win on those four axes — plus two things competitors are
 criticized for lacking: **multi-discipline breadth** and **Windows support**.
 
-Do **not** market as "open-source Claude Science" or "zero hallucination."
+Do **not** market as "open-source 主流商业科研工具" or "zero hallucination."
 Market as: *"景明研环 — local-first, model-agnostic AI research
 workbench for macOS, Windows & Linux."* Sell **traceable / verifiable**, not **perfect**.
 
@@ -106,13 +106,13 @@ competitors.
 - **Acceptance.** For any artifact, one click reveals its generating code +
   environment + inputs + originating conversation turn; re-running reproduces it.
 - **Status.** ✅ Every agent write appends a version record to
-  `.openscience/provenance.jsonl` (code, tool, model, session, timestamp, and
+  `.jingming-yanhuan/provenance.jsonl` (code, tool, model, session, timestamp, and
   captured environment — Python version, OS/arch, app build). The History panel
   reveals per-version data + a link back to the originating conversation; a
   per-version **Reproduce** action drafts (never auto-sends) a prompt that re-runs
   the recorded code and reports whether the file matches. Package capture too:
   each record captures `pip freeze` (once per app run) into a content-addressed
-  lockfile `.openscience/env/<hash>.txt`; the record carries `{count, hash}`, the
+  lockfile `.jingming-yanhuan/env/<hash>.txt`; the record carries `{count, hash}`, the
   History panel shows an "N packages" chip, and the Reproduce prompt points at
   the lockfile to reinstall matching versions.
 
@@ -358,7 +358,7 @@ competitors.
 
   **Cleanup — structure (not urgent):**
   - [ ] Split `lib/runtime.ts` (1,014 lines, ~6 concerns): extract the pure
-    fold/history reducers and connection/retry; stop hardcoding `OpenScience/`
+    fold/history reducers and connection/retry; stop hardcoding `JingmingYanhuan/`
     in `tidyToolTitle` (`runtime.ts:835`).
   - [ ] Extract ProvidersCard/McpCard from `SettingsPage.tsx` (903 lines, 20
     `useState`, zero tests) following the existing ClusterCard pattern.
@@ -532,8 +532,8 @@ competitors.
   every primary action.
 - **Status.** 🟡 One documented chart design system — a validated
   categorical/sequential/status palette as single source of truth in three synced
-  places (`@ai4s/shared` chartPalette, `index.css --series-*`,
-  `openscience.mplstyle` applied by the `publication-figures` skill) — so agent
+  places (`@jingming/shared` chartPalette, `index.css --series-*`,
+  `jingming-yanhuan.mplstyle` applied by the `publication-figures` skill) — so agent
   matplotlib and native UI read as one system in light+dark. Command palette
   reaches every primary action; live streaming text + file-path tool rows;
   per-session panes + scroll memory; slimmed one-line session header. **Native
@@ -711,6 +711,6 @@ discipline-specific 20% and the one cross-cutting gap this revision adds:
 
 - **Say:** reproducible, traceable, verifiable, local-first, multi-discipline,
   model-agnostic, cross-platform (incl. Windows), beautiful & polished.
-- **Don't say:** "open-source Claude Science," "zero hallucination," "replaces
+- **Don't say:** "open-source 主流商业科研工具," "zero hallucination," "replaces
   your specialized tools." We aggregate tools into one workbench; we don't
   replace them.

@@ -2,7 +2,7 @@
 // maintained open-source MCP servers — we one-click provision them into a
 // shared isolated env (bundled uv) and register them; we do not reimplement
 // literature/database access ourselves. Keep this list small and vetted.
-import type { McpConfig } from "@ai4s/sdk";
+import type { McpConfig } from "@jingming/sdk";
 
 export interface ScienceConnector {
   /** MCP server name written into OpenCode's config. */

@@ -1,4 +1,4 @@
-import type { Project, Session } from "@ai4s/shared";
+import type { Project, Session } from "@jingming/shared";
 import {
   ariCurve,
   biorxivShot,
@@ -376,7 +376,7 @@ const browserSession: Session = {
     language: "python",
     code: `import pandas as pd
 import matplotlib.pyplot as plt
-plt.style.use("openscience.mplstyle")  # bundled palette
+plt.style.use("jingming-yanhuan.mplstyle")  # bundled palette
 
 df = pd.read_csv("preprints_2026-07-20.csv", parse_dates=["posted"])
 counts = df["subfield"].value_counts().sort_values(ascending=False)
@@ -479,7 +479,7 @@ const reproSession: Session = {
     {
       kind: "agent",
       markdown:
-        "Reproduced. Final **ARI 0.790** vs. published **0.80** (Δ 0.010, inside the ±0.02 tolerance). The gap traces to the pinned seed. Full environment, hardware, and the exact command are recorded to `.openscience/runs.jsonl` — one click regenerates it.",
+        "Reproduced. Final **ARI 0.790** vs. published **0.80** (Δ 0.010, inside the ±0.02 tolerance). The gap traces to the pinned seed. Full environment, hardware, and the exact command are recorded to `.jingming-yanhuan/runs.jsonl` — one click regenerates it.",
     },
     { kind: "status-line", text: "reproduced · ARI 0.790 (Δ 0.010) · within tolerance", tone: "done" },
   ],

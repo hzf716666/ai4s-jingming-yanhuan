@@ -15,8 +15,8 @@ import {
   type SessionMeta,
   type SkillInfo,
   type ToolCallStatus,
-} from "@ai4s/sdk";
-import type { ArtifactBlock, RuntimeStatus, ThreadBlock, ToolVerb } from "@ai4s/shared";
+} from "@jingming/sdk";
+import type { ArtifactBlock, RuntimeStatus, ThreadBlock, ToolVerb } from "@jingming/shared";
 import {
   detectTools as probeTools,
   commitWorkspaceSnapshot,
@@ -56,14 +56,14 @@ import { toast } from "@/lib/toast";
 import i18n from "@/i18n";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const URL_KEY = "ai4s.opencodeUrl";
-const HIDDEN_KEY = "ai4s.hiddenExamples";
+const URL_KEY = "jingming.opencodeUrl";
+const HIDDEN_KEY = "jingming.hiddenExamples";
 // The composer's chosen reasoning-effort variant, kept across restarts (favorites
 // / recent models persist too, so the effort should as well). Sibling of the
 // model-preferences keys in components/settings/modelPreferences.
-const REASONING_KEY = "ai4s.models.variant.v1";
+const REASONING_KEY = "jingming.models.variant.v1";
 // The selected AI backend: "opencode" (default) or "qoder".
-const BACKEND_KEY = "ai4s.backend.v1";
+const BACKEND_KEY = "jingming.backend.v1";
 
 export type BackendType = "opencode" | "qoder";
 

@@ -19,7 +19,7 @@ import type {
   ProviderAuthMethod,
   ProviderCatalogEntry,
   ProviderInfo,
-} from "@ai4s/sdk";
+} from "@jingming/sdk";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useUiStore, ZOOM_MAX, ZOOM_MIN } from "@/lib/store";

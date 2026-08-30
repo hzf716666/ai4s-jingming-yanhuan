@@ -50,7 +50,7 @@ struct VoiceInner {
 }
 
 /// Directory where whisper models are cached, e.g.
-/// ~/Library/Application Support/com.ai4s.workbench/runtime/models/
+/// ~/Library/Application Support/com.jingming.yanhuan/runtime/models/
 fn model_dir(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(runtime::runtime_root(app)?.join("models"))
 }

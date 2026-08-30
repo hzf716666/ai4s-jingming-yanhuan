@@ -1,4 +1,4 @@
-# AI4S Workbench Desktop — Product Requirements
+# 景明研环 — Product Requirements
 
 > **Status (v0.1, 2026-07-02).** The runtime is **OpenCode**, bundled as an isolated
 > sidecar (one-click, auto-started, does not touch a user's own OpenCode). Built: the
@@ -8,8 +8,8 @@
 
 ## 1. Positioning
 
-**AI4S Workbench Desktop** is an open-source AI research workbench with macOS /
-Windows installers, positioned as an **open-source alternative to Claude Science
+**景明研环** is an open-source AI research workbench with macOS /
+Windows installers, positioned as an **open-source alternative to 主流商业科研工具
 style products**.
 
 It is not an ordinary paper-summarization tool. It is a local-first, model-agnostic,
@@ -49,13 +49,13 @@ and `msi` targets; Windows can ship as `.msi` or an NSIS `setup.exe`.
 
 ### 2.2 Differentiation
 
-Versus ordinary AI paper tools, AI4S Workbench is different because it is:
+Versus ordinary AI paper tools, 景明研环 is different because it is:
 
 1. A research workbench, not a chat box.
 2. A generator of traceable artifacts, not just text.
 3. Model-agnostic (BYOK / OpenRouter / OpenAI-compatible / local), not tied to one model.
 4. Transparent — it keeps code, data, figures, reports, logs, and provenance — not a black box.
-5. Multi-domain — expanding from biology to AI4S, materials, chemistry, biology,
+5. Multi-domain — expanding from biology to 景明研环, materials, chemistry, biology,
    medicine, engineering, and industry.
 
 ## 3. Target users
@@ -64,8 +64,8 @@ Versus ordinary AI paper tools, AI4S Workbench is different because it is:
 
 1. **Researchers** — fast literature reviews; organizing papers, data, figures,
    reports; reproducibility and citation accuracy.
-2. **AI4S / AI-for-Science developers** — integrating scientific skills, MCP, and
-   database connectors into one workbench; an open-source Claude Science alternative.
+2. **景明研环 / AI-for-Science developers** — integrating scientific skills, MCP, and
+   database connectors into one workbench; an open-source 主流商业科研工具 alternative.
 3. **Grad / PhD / postdoc students** — topic surveys, paper reading, experiment data
    analysis, submission material prep.
 4. **Open-source AI agent users** — already using OpenCode, Codex, Claude Code, Cursor,
@@ -181,7 +181,7 @@ The Skills page lists the **real** skills and agents the OpenCode runtime has lo
 sources, layered:
 
 1. **OpenCode built-in** skills/agents (shipped with the runtime).
-2. **Self-authored AI4S skills** — planned: `literature-review`, `reproducible-analysis`,
+2. **Self-authored 景明研环 skills** — planned: `literature-review`, `reproducible-analysis`,
    `citation-reviewer`, `figure-provenance`, `paper-to-report` (Markdown skills under
    `runtime/skills/core`, loaded from the workspace `.opencode/skill/`).
 3. **Third-party scientific skills** — e.g. K-Dense `scientific-agent-skills` (curated
@@ -350,7 +350,7 @@ discussion. Shipped versions are kept here as the delivery record.
 - **v0.2.0 UI & reliability** — three themes (light / warm / dark) with per-theme
   accents, translucent macOS sidebar, Codex-style settings (section routes +
   sidebar navigation), in-app zoom, provider retry/error surfacing, OAuth
-  recovery via the credential store, git-snapshot bloat guards, first Zenodo DOI.
+  recovery via the credential store, git-snapshot bloat guards, 首次发布元数据.
 
 ### Planned
 
@@ -367,7 +367,7 @@ discussion. Shipped versions are kept here as the delivery record.
     dangerous only" and "full access" (#20);
   - system-level notifications when the agent is blocked on a permission or
     question (#21).
-- **v0.4.0 Reach & interop (northbound)** — using Open Science from outside the
+- **v0.4.0 Reach & interop (northbound)** — using 景明研环 from outside the
   desktop window. These surfaces are **one deliverable, not many**: they all
   drive the same runtime-agnostic `AgentRuntime` seam (#24, base class #36)
   re-exposed as a single **authenticated API gateway** — session management,
@@ -383,7 +383,7 @@ discussion. Shipped versions are kept here as the delivery record.
     (cloudflared / frp / ngrok), no new API;
   - messaging-platform integrations (Slack / Discord / Telegram / Feishu) — each
     a thin bot client that relays `sendPrompt` → streamed events (#20);
-  - Open Science *as* an ACP server, so external editors/agents drive the
+  - 景明研环 *as* an ACP server, so external editors/agents drive the
     runtime through the same seam in ACP's dialect (#14).
 - **v0.5.0 Pluggable & remote runtimes (southbound)** — the same `AgentRuntime`
   seam consumed in the *other* direction: swap or relocate the execution
@@ -435,7 +435,7 @@ complete example results; clear license; separate note for third-party skill lic
 
 ## 11. One-liner
 
-**AI4S Workbench Desktop is an open-source research agent workbench with macOS and
+**景明研环 is an open-source research agent workbench with macOS and
 Windows installers that uses OpenCode, MCP, scientific skills, and a reproducible
 artifact system to weave literature, code, figures, reports, and review into one
 local-first scientific workflow.**

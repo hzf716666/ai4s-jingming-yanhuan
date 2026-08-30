@@ -18,7 +18,7 @@
 
 ## Remote compute
 - Remote machines the user configured (SSH servers, GPU boxes, Slurm clusters)
-  are listed in this workspace at `.openscience/compute.json` (the app keeps it
+  are listed in this workspace at `.jingming-yanhuan/compute.json` (the app keeps it
   in sync from the user's settings).
 - Default execution is local, in this workspace. Only run work remotely when the
   user asks — then use the `remote-compute` skill, which reads that file, picks a

@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    ai4s_workbench_lib::run()
+    jingming_yanhuan_lib::run()
 }

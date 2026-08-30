@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ProviderInfo } from "@ai4s/sdk";
+import type { ProviderInfo } from "@jingming/sdk";
 import { useRuntimeStore } from "@/lib/runtime";
 import { ModelPicker } from "./ModelPicker";
 

@@ -56,7 +56,7 @@
   "skills": {
     "title": "技能与代理",
     "description": {
-      "prefix": "从 OpenCode 运行时实时加载——内置的 ai4s-skills 包，以及您工作区中位于 ",
+      "prefix": "从 OpenCode 运行时实时加载——内置的 jingming-skills 包，以及您工作区中位于 ",
       "suffix": " 下的所有内容。"
     },
     "install": {

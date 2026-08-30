@@ -1,12 +1,12 @@
 [package]
-name = "ai4s-workbench"
+name = "jingming-yanhuan"
 version = "0.2.5"
 description = "景明研环"
-authors = ["AI4S Workbench contributors"]
+authors = ["景明研环 contributors"]
 edition = "2021"
 
 [lib]
-name = "ai4s_workbench_lib"
+name = "jingming_yanhuan_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

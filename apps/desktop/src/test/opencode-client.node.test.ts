@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OpenCodeClient, type OpenCodeEvent } from "@ai4s/sdk";
-import { startMockOpenCode, type MockOpenCode } from "@ai4s/sdk/mock-server";
+import { OpenCodeClient, type OpenCodeEvent } from "@jingming/sdk";
+import { startMockOpenCode, type MockOpenCode } from "@jingming/sdk/mock-server";
 
 let server: MockOpenCode;
 

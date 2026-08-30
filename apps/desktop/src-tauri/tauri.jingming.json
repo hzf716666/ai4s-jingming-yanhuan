@@ -6,8 +6,8 @@
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5174",
-    "beforeDevCommand": "node node_modules/vite/bin/vite.js --port 5174 --strictPort",
-    "beforeBuildCommand": "pnpm --filter @ai4s/desktop build"
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "pnpm --filter @jingming/desktop build"
   },
   "app": {
     "windows": [
@@ -39,14 +39,14 @@
   "bundle": {
     "active": true,
     "externalBin": [
-        "binaries/opencode",
-        "binaries/uv",
-        "binaries/agent-browser",
-        "binaries/whisper-cli"
-      ],
+      "binaries/opencode",
+      "binaries/uv",
+      "binaries/agent-browser",
+      "binaries/whisper-cli"
+    ],
     "resources": {
       "../../../runtime/goal-plugin": "goal-plugin/",
-      "../../../runtime/skills/external/ai4s-skills": "skills/",
+      "../../../runtime/skills/external/jingming-skills": "skills/",
       "../../../runtime/skills/external/anthropic-skills": "skills-office/",
       "../../../runtime/skills/core": "skills-core/",
       "../../../runtime/harness": "harness/",

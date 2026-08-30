@@ -28,7 +28,7 @@ pub struct RuntimeState {
     lifecycle: Mutex<RuntimeLifecycle>,
 }
 
-/// App-private runtime root, e.g. ~/Library/Application Support/com.ai4s.workbench/runtime
+/// App-private runtime root, e.g. ~/Library/Application Support/com.jingming.yanhuan/runtime
 pub(crate) fn runtime_root(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(app
         .path()
@@ -113,7 +113,7 @@ pub fn base_workspace_dir(app: &AppHandle) -> Result<PathBuf, String> {
     // One-time migrations, oldest name last. A failed rename (e.g. cross-volume)
     // keeps the existing location rather than splitting the user's files.
     if !dir.exists() {
-        for old in [docs.join("Open Science"), runtime_root(app)?.join("workspace")] {
+        for old in [docs.join("景明研环"), runtime_root(app)?.join("workspace")] {
             if old.is_dir() {
                 if std::fs::rename(&old, &dir).is_ok() {
                     break;
@@ -204,7 +204,7 @@ fn auth_has_provider(text: &str, provider_id: &str) -> bool {
 
 /// Deploy the bundled skill packs (Tauri resources) into the app-private
 /// profile's global skills dir (`<xdg-config>/opencode/skills/`), which OpenCode
-/// scans regardless of project detection: `skills/` is the external ai4s-skills
+/// scans regardless of project detection: `skills/` is the external jingming-skills
 /// pack, `skills-office/` Anthropic's document skills (docx/pdf/pptx/xlsx),
 /// `skills-core/` the first-party skills from `runtime/skills/core`. The
 /// workspace's own `.opencode/skills/` stays reserved for skills the user
@@ -733,7 +733,7 @@ fn spawn_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, String> {
         // Lets bundled skill helpers (e.g. remote-compute's record_run.py) stamp
         // the recording app version into provenance — they run outside the app
         // and can't otherwise know it.
-        .env("OPENSCIENCE_APP_VERSION", app.package_info().version.to_string())
+        .env("JINGMING_APP_VERSION", app.package_info().version.to_string())
         .current_dir(workspace);
     // GUI-launched apps get a minimal PATH; give the agent the user's real tools.
     let mut cmd = cmd.env("PATH", enriched_path());
@@ -908,14 +908,14 @@ pub fn set_workspace(
 /// Record which session owns the active workspace, so bundled skill helpers
 /// (record_run.py) can stamp remote runs with their `sessionId` — the app knows
 /// the id but the off-app helper only sees the workspace. Written as
-/// `<workspace>/.openscience/session.txt`; best-effort, empty ids are ignored.
+/// `<workspace>/.jingming-yanhuan/session.txt`; best-effort, empty ids are ignored.
 #[tauri::command]
 pub fn mark_session(app: AppHandle, session_id: String) -> Result<(), String> {
     let id = session_id.trim();
     if id.is_empty() {
         return Ok(());
     }
-    let dir = workspace_dir(&app)?.join(".openscience");
+    let dir = workspace_dir(&app)?.join(".jingming-yanhuan");
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let path = dir.join("session.txt");
     // Write-then-rename so a concurrent read never sees a half-written id.
@@ -1176,17 +1176,19 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
 #[tauri::command(async)]
 pub async fn start_qoder_runtime(app: AppHandle, state: State<'_, RuntimeState>) -> Result<String, String> {
     // Check if already running
-    {
+    let already_running = {
         let lifecycle = state.lifecycle.lock().unwrap();
-        if let (Some(_), Some(url)) = (&lifecycle.qoder_child, &lifecycle.qoder_url) {
-            // Verify it's actually healthy
-            let port = lifecycle.qoder_port.unwrap_or(4097);
-            drop(lifecycle);
-            if wait_for_sidecar_health(port, 3).await.is_ok() {
-                return Ok(url.clone());
-            }
-            // Not healthy — the old process is dead but state is stale, fall through to restart
+        match (&lifecycle.qoder_child, &lifecycle.qoder_url, lifecycle.qoder_port) {
+            (Some(_), Some(url), port) => Some((port.unwrap_or(4097), url.clone())),
+            _ => None,
         }
+    };
+    if let Some((port, url)) = already_running {
+        // Verify it's actually healthy
+        if wait_for_sidecar_health(port, 3).await.is_ok() {
+            return Ok(url);
+        }
+        // Not healthy — the old process is dead but state is stale, fall through to restart
     }
 
     // Repair any impossible partial state
@@ -1293,7 +1295,7 @@ fn has_qodercli_login() -> bool {
     }
     // Windows fallback
     if let Ok(appdata) = std::env::var("APPDATA") {
-        candidates.push(PathBuf::from(appdata).join("qoder-cn"));
+        candidates.push(PathBuf::from(appdata.clone()).join("qoder-cn"));
         candidates.push(PathBuf::from(appdata).join("qoder"));
     }
 

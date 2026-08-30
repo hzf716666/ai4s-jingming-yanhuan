@@ -1,8 +1,8 @@
 # 景明研环
 
 Brand name: **景明研环** — "Local-first, model-agnostic AI research
-workbench for macOS, Windows & Linux." Formerly Open Science. Bundle identifier stays
-`com.ai4s.workbench` and internal `@ai4s/*` package names are unchanged.
+workbench for macOS, Windows & Linux." Bundle identifier:
+`com.jingming.yanhuan`; internal `@jingming/*` package names.
 
 Project rules and working context for AI agents (Claude Code, Cursor, Codex, etc.).
 `CLAUDE.md` is a symlink to this file — edit only `AGENTS.md`.
@@ -69,5 +69,5 @@ local workspace + SQLite + JSONL provenance.
 - New session workspaces are local git repos: the app initializes them and makes
   best-effort local commits after workspace file changes. Never set a remote or push.
 
-<!-- open-science-desktop:imported -->
-> Imported into this workspace by copying from `\\?\E:\tb\jingming-yanhuan` — see `.openscience/IMPORTED_FROM.md` for the original location and caveats.
+<!-- jingming-yanhuan-desktop:imported -->
+> Imported into this workspace by copying from `\\?\E:\tb\jingming-yanhuan` — see `.jingming-yanhuan/IMPORTED_FROM.md` for the original location and caveats.

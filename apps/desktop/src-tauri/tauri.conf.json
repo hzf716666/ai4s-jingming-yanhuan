@@ -2,12 +2,12 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "景明研环",
   "version": "0.2.5",
-  "identifier": "com.ai4s.workbench",
+  "identifier": "com.jingming.yanhuan",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "pnpm --filter @ai4s/desktop exec vite --port 5173 --strictPort",
-    "beforeBuildCommand": "pnpm --filter @ai4s/desktop build"
+    "beforeDevCommand": "pnpm --filter @jingming/desktop exec vite --port 5173 --strictPort",
+    "beforeBuildCommand": "pnpm --filter @jingming/desktop build"
   },
   "app": {
     "windows": [
@@ -43,12 +43,12 @@
     },
     "resources": {
       "../../../runtime/goal-plugin": "goal-plugin/",
-      "../../../runtime/skills/external/ai4s-skills": "skills/",
       "../../../runtime/skills/external/anthropic-skills": "skills-office/",
       "../../../runtime/skills/core": "skills-core/",
       "../../../runtime/harness": "harness/",
       "../../../runtime/qoder-sidecar": "qoder-sidecar/",
-      "../../../examples/climate-trends": "examples/climate-trends/"
+      "../../../examples/climate-trends": "examples/climate-trends/",
+      "../../../runtime/skills/external/jingming-skills": "skills/"
     },
     "icon": [
       "icons/32x32.png",

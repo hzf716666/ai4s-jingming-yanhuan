@@ -14,17 +14,17 @@ Core skills are bundled as the `skills-core/` app resource and deployed next to
 the external pack on every sidecar start; directories without a `SKILL.md` are
 skipped.
 
-## Default pack: ai4s-skills (bundled into the installer)
+## Default pack: jingming-skills (bundled into the installer)
 
 The default scientific skills come from
-[ai4s-research/ai4s-skills](https://github.com/ai4s-research/ai4s-skills)
+[jingming-yanhuan/jingming-skills](https://github.com/jingming-yanhuan/jingming-skills)
 (research-explorer, literature-survey, experiment-suite, paper-writer,
-integrity-auditor, mindmap-render, ai4s-agent).
+integrity-auditor, mindmap-render, jingming-agent).
 
 How they ship, end to end:
 
 1. `scripts/dev/fetch-skills.sh` (run locally and in CI) downloads the pack at a
-   pinned commit into `external/ai4s-skills/`.
+   pinned commit into `external/jingming-skills/`.
 2. `tauri.conf.json` bundles that directory as an app resource (`resources/skills/`).
 3. On every sidecar start, `runtime.rs::deploy_bundled_skills` syncs the pack into
    the app-private profile's global skills dir (`<xdg-config>/opencode/skills/`),
@@ -33,7 +33,7 @@ How they ship, end to end:
    reserved for user-installed skills. Skill listing must be workspace-scoped
    (`GET /api/skill?directory=…`) — the SDK does this via its `directory` option.
 
-To bump the pack version, update `AI4S_SKILLS_COMMIT` in `fetch-skills.sh`.
+To bump the pack version, update `景明研环_SKILLS_COMMIT` in `fetch-skills.sh`.
 
 ## Office pack: Anthropic document skills (bundled into the installer)
 

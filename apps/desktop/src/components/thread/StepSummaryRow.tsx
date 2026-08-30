@@ -1,7 +1,7 @@
 import { memo, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { StepSummaryBlock } from "@ai4s/shared";
+import type { StepSummaryBlock } from "@jingming/shared";
 import { cn } from "@/lib/cn";
 
 export const StepSummaryRow = memo(function StepSummaryRow({ block }: { block: StepSummaryBlock }) {

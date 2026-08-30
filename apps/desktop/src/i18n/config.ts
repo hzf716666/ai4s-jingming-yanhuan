@@ -15,7 +15,7 @@ export interface LocaleMeta {
 export const DEFAULT_LOCALE = "en";
 
 /** localStorage key holding the user's chosen locale. */
-export const LOCALE_KEY = "ai4s.locale";
+export const LOCALE_KEY = "jingming.locale";
 
 /** Registration order is the switcher's display order. */
 export const LOCALES: LocaleMeta[] = [

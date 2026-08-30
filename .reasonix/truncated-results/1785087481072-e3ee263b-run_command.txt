@@ -13,7 +13,7 @@ if (import.meta.hot && !inWebWorker) {
   }
   prevRefreshReg = window.$RefreshReg$;
   prevRefreshSig = window.$RefreshSig$;
-  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("E:/openscience/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx");
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("E:/jingming-yanhuan/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx");
   window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
 }
 var _s = $RefreshSig$();
@@ -236,7 +236,7 @@ export function CodeEditor({
     void 0,
     false,
     {
-      fileName: "E:/openscience/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx",
+      fileName: "E:/jingming-yanhuan/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx",
       lineNumber: 282,
       columnNumber: 5
     },
@@ -253,10 +253,10 @@ if (import.meta.hot && !inWebWorker) {
 }
 if (import.meta.hot && !inWebWorker) {
   RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
-    RefreshRuntime.registerExportsForReactRefresh("E:/openscience/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx", currentExports);
+    RefreshRuntime.registerExportsForReactRefresh("E:/jingming-yanhuan/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx", currentExports);
     import.meta.hot.accept((nextExports) => {
       if (!nextExports) return;
-      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("E:/openscience/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx", currentExports, nextExports);
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("E:/jingming-yanhuan/jingming-yanhuan/apps/desktop/src/components/code-editor/CodeEditor.tsx", currentExports, nextExports);
       if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
     });
   });

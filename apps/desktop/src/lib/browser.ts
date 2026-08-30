@@ -2,7 +2,7 @@
 // (github.com/vercel-labs/agent-browser) into OpenCode as a local MCP server.
 // The desktop-side glue (sidecar path, Chrome/profile detection, Chrome
 // download) lives in Rust (browser.rs); this file only shapes the MCP config.
-import type { McpConfig } from "@ai4s/sdk";
+import type { McpConfig } from "@jingming/sdk";
 
 /** MCP server name written into OpenCode's config. */
 export const BROWSER_MCP_ID = "browser-control";

@@ -85,7 +85,7 @@ vi.mock("./kernel", () => ({ kernelReset: mocks.kernelReset }));
 vi.mock("./systemNotification", () => ({
   notifyPermissionRequest: mocks.notifyPermissionRequest,
 }));
-vi.mock("@ai4s/sdk", () => {
+vi.mock("@jingming/sdk", () => {
   class OpenCodeClient {
     private statusCb: (s: string) => void = () => {};
     constructor(opts: Record<string, unknown>) {
@@ -219,7 +219,7 @@ vi.mock("@ai4s/sdk", () => {
   return { OpenCodeClient, DEFAULT_OPENCODE_URL: "http://127.0.0.1:4096" };
 });
 
-import type { ArtifactBlock } from "@ai4s/shared";
+import type { ArtifactBlock } from "@jingming/shared";
 import { DRAFT_KEY, rootSessionOf, useRuntimeStore } from "./runtime";
 
 beforeEach(async () => {
@@ -1215,9 +1215,9 @@ describe("reasoning-effort variant", () => {
 
   it("persists the chosen variant across restarts", () => {
     useRuntimeStore.getState().setReasoningVariant("high");
-    expect(window.localStorage.getItem("ai4s.models.variant.v1")).toBe("high");
+    expect(window.localStorage.getItem("jingming.models.variant.v1")).toBe("high");
     useRuntimeStore.getState().setReasoningVariant(null);
-    expect(window.localStorage.getItem("ai4s.models.variant.v1")).toBeNull();
+    expect(window.localStorage.getItem("jingming.models.variant.v1")).toBeNull();
   });
 });
 

@@ -1,19 +1,16 @@
 cff-version: 1.2.0
 message: "If you use 景明研环 in your research, please cite it as below."
-title: "景明研环: a local-first, model-agnostic AI research workbench"
+title: "景明研环: 可验证科学假设生成与人机协同迭代平台"
 type: software
 authors:
-  - name: "The 景明研环 Contributors"
-repository-code: "https://github.com/ai4s-research/open-science"
-url: "https://openedscience.com"
+  - name: "景明研环团队"
+repository-code: "https://github.com/hzf716666/jingming-yanhuan"
 license: MIT
 version: 0.2.5
-doi: 10.5281/zenodo.21522590
-date-released: "2026-07-23"
 keywords:
   - AI for science
+  - data integration
+  - hypothesis generation
   - research workbench
-  - AI agents
+  - human-AI collaboration
   - reproducibility
-  - local-first
-  - desktop application

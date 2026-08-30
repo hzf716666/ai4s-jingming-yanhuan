@@ -18,7 +18,7 @@ import {
   Settings,
   Trash2,
 } from "lucide-react";
-import type { Project } from "@ai4s/shared";
+import type { Project } from "@jingming/shared";
 import { cn } from "@/lib/cn";
 import { rootSessionOf, useRuntimeStore } from "@/lib/runtime";
 import { pickFolder, renameProject, type ProjectInfo } from "@/lib/tauri";
@@ -50,7 +50,7 @@ const COLLAPSE_BELOW = 140;
 
 /** Projects the user folded shut (ids). Projects default to open — a
  *  researcher has a handful, and their sessions ARE the sidebar's content. */
-const COLLAPSED_KEY = "ai4s.collapsedProjects";
+const COLLAPSED_KEY = "jingming.collapsedProjects";
 function initialCollapsedProjects(): string[] {
   if (typeof window === "undefined") return [];
   try {

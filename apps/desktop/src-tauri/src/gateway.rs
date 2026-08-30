@@ -270,7 +270,7 @@ fn route(stream: &mut TcpStream, req: &Request, ctx: &Ctx) {
 
     // Liveness — open (carries no capability).
     if req.method == "GET" && path == "/v1/health" {
-        respond_json(stream, 200, "{\"ok\":true,\"service\":\"open-science-gateway\"}");
+        respond_json(stream, 200, "{\"ok\":true,\"service\":\"jingming-yanhuan-gateway\"}");
         return;
     }
 

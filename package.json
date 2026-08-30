@@ -1,15 +1,15 @@
 {
-  "name": "ai4s-workbench",
+  "name": "jingming-yanhuan",
   "version": "0.2.5",
   "private": true,
   "description": "景明研环 — local-first, model-agnostic AI research workbench for macOS, Windows and Linux.",
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm --filter @ai4s/desktop dev",
-    "build": "pnpm --filter @ai4s/desktop build",
-    "test": "pnpm --filter @ai4s/desktop test",
-    "typecheck": "pnpm --filter @ai4s/desktop typecheck",
-    "lint": "pnpm --filter @ai4s/desktop lint"
+    "dev": "pnpm --filter @jingming/desktop dev",
+    "build": "pnpm --filter @jingming/desktop build",
+    "test": "pnpm --filter @jingming/desktop test",
+    "typecheck": "pnpm --filter @jingming/desktop typecheck",
+    "lint": "pnpm --filter @jingming/desktop lint"
   },
   "engines": {
     "node": ">=20"

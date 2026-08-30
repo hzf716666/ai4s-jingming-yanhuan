@@ -2,12 +2,12 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "景明研环 2",
   "version": "0.2.5",
-  "identifier": "com.ai4s.workbench.dev2",
+  "identifier": "com.jingming.yanhuan.dev2",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5174",
     "beforeDevCommand": "",
-    "beforeBuildCommand": "pnpm --filter @ai4s/desktop build"
+    "beforeBuildCommand": "pnpm --filter @jingming/desktop build"
   },
   "app": {
     "windows": [

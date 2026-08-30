@@ -68,7 +68,7 @@ A skill is a folder with a `SKILL.md` (instructions the agent follows) plus any
 scripts/templates it needs. Install one from the **Skills** page (paste a URL or
 Markdown; the agent saves it under the workspace's `.opencode/skills/`). The
 app also bundles first-party skills (e.g. `traceability-review`) and the
-`ai4s-skills` pack.
+`jingming-skills` pack.
 
 ## Safety
 

@@ -759,7 +759,7 @@ mod tests {
 
     #[test]
     fn list_dir_sorts_dirs_first_and_skips_hidden() {
-        let root = std::env::temp_dir().join(format!("ai4s-listdir-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("jingming-listdir-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         std::fs::create_dir_all(root.join("sub")).unwrap();
         std::fs::create_dir_all(root.join(".hidden")).unwrap();
@@ -794,7 +794,7 @@ mod tests {
 
     #[test]
     fn unique_name_dedupes_with_numeric_suffix() {
-        let dir = std::env::temp_dir().join(format!("ai4s-unique-test-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("jingming-unique-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
 
@@ -818,7 +818,7 @@ mod tests {
         // A file already inside the workspace attaches by its relative path (no
         // copy); anything outside returns None so it gets copied in. Regression
         // for issue #44 — dragging a workspace file back in must not duplicate it.
-        let root = std::env::temp_dir().join(format!("ai4s-wsrel-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("jingming-wsrel-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         std::fs::create_dir_all(root.join("results/foo")).unwrap();
         std::fs::write(root.join("top.png"), "x").unwrap();
@@ -831,7 +831,7 @@ mod tests {
             Some("results/foo/bar.png"),
         );
         // A file outside the workspace, and a non-existent path, are not in place.
-        let outside = std::env::temp_dir().join(format!("ai4s-wsrel-out-{}.png", std::process::id()));
+        let outside = std::env::temp_dir().join(format!("jingming-wsrel-out-{}.png", std::process::id()));
         std::fs::write(&outside, "x").unwrap();
         assert_eq!(workspace_relative(&ws, &outside), None);
         assert_eq!(workspace_relative(&ws, Path::new("/no/such/file.png")), None);
@@ -851,7 +851,7 @@ mod tests {
 
     #[test]
     fn locate_finds_literal_bare_and_missing_paths() {
-        let root = std::env::temp_dir().join(format!("ai4s-locate-test-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("jingming-locate-test-{}", std::process::id()));
         std::fs::create_dir_all(root.join("proj")).unwrap();
         std::fs::create_dir_all(root.join("node_modules/pkg")).unwrap();
         std::fs::write(root.join("root.pdf"), b"x").unwrap();
@@ -888,7 +888,7 @@ mod tests {
 
     #[test]
     fn locate_prefers_the_newest_of_duplicate_basenames() {
-        let root = std::env::temp_dir().join(format!("ai4s-locate-dup-test-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("jingming-locate-dup-test-{}", std::process::id()));
         std::fs::create_dir_all(root.join("old")).unwrap();
         std::fs::create_dir_all(root.join("new")).unwrap();
         std::fs::write(root.join("old/report.pdf"), b"x").unwrap();

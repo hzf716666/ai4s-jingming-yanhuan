@@ -6,13 +6,13 @@ export type Theme = "light" | "warm" | "dark";
 
 export const THEMES: readonly Theme[] = ["light", "warm", "dark"];
 
-const THEME_KEY = "ai4s.theme.v2";
+const THEME_KEY = "jingming.theme.v2";
 /** Two-theme era key: its "light" was the warm paper palette, now called "warm". */
-const LEGACY_THEME_KEY = "ai4s.theme";
-const SIDEBAR_WIDTH_KEY = "ai4s.sidebar.width";
-const SIDEBAR_COLLAPSED_KEY = "ai4s.sidebar.collapsed";
-const INSPECTOR_WIDTH_KEY = "ai4s.inspector.width";
-const ZOOM_KEY = "ai4s.zoom";
+const LEGACY_THEME_KEY = "jingming.theme";
+const SIDEBAR_WIDTH_KEY = "jingming.sidebar.width";
+const SIDEBAR_COLLAPSED_KEY = "jingming.sidebar.collapsed";
+const INSPECTOR_WIDTH_KEY = "jingming.inspector.width";
+const ZOOM_KEY = "jingming.zoom";
 
 export const ZOOM_MIN = 0.5;
 export const ZOOM_MAX = 3;

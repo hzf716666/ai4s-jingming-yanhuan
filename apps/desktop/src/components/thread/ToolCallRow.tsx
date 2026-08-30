@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { AlertTriangle, Check, Clock, Loader2, ShieldQuestion, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { ToolCallBlock, ToolCallStatus } from "@ai4s/shared";
+import type { ToolCallBlock, ToolCallStatus } from "@jingming/shared";
 import { cn } from "@/lib/cn";
 import { SubagentActivity } from "./SubagentActivity";
 

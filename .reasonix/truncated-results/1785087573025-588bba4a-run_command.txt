@@ -1,18 +1,18 @@
 $ pnpm --prefix apps/desktop test -- --run 2>&1
 [exit 1]
 
-> @ai4s/desktop@0.2.5 test E:\openscience\jingming-yanhuan\apps\desktop
+> @jingming/desktop@0.2.5 test E:\jingming-yanhuan\jingming-yanhuan\apps\desktop
 > vitest run "--run"
 
 
-[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mE:/openscience/jingming-yanhuan/apps/desktop[39m
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mE:/jingming-yanhuan/jingming-yanhuan/apps/desktop[39m
 
  [32m✓[39m src/lib/artifacts.test.ts [2m([22m[2m24 tests[22m[2m)[22m[90m 11[2mms[22m[39m
  [32m✓[39m src/lib/setup.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 7[2mms[22m[39m
  [32m✓[39m src/lib/runs.test.ts [2m([22m[2m19 tests[22m[2m)[22m[90m 12[2mms[22m[39m
  [31m❯[39m src/lib/runtime.test.ts [2m([22m[2m38 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[90m 24[2mms[22m[39m
 [31m   [31m×[31m tidyToolTitle[2m > [22mshows workspace files by their relative path[90m 8[2mms[22m[31m[39m
-[31m     → expected '/Users/asq/Documents/OpenScience/demo…' to be 'demo/analyze.py' // Object.is equality[39m
+[31m     → expected '/Users/dev/Documents/JingmingYanhuan/demo…' to be 'demo/analyze.py' // Object.is equality[39m
 [31m   [31m×[31m toolPresentation[2m > [22mfile tools: verb + relative path[90m 3[2mms[22m[31m[39m
 [31m     → expected { verb: 'Created', …(1) } to deeply equal { verb: 'Created', …(1) }[39m
 [31m   [31m×[31m foldEvent[2m > [22mshows the file path for a file tool that has no title yet[90m 2[2mms[22m[31m[39m
@@ -43,7 +43,7 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at UserMessage2 (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\atoms.tsx:26:3)
+    at UserMessage2 (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\atoms.tsx:26:3)
 
  [32m✓[39m src/components/thread/UserMessage.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[90m 284[2mms[22m[39m
 [90mstderr[2m | src/components/thread/ModelPicker.test.tsx[2m > [22m[2mModelPicker[2m > [22m[2mlabels the chip with the current model
@@ -59,9 +59,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -72,9 +72,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -85,9 +85,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 
 [90mstderr[2m | src/components/thread/ModelPicker.test.tsx[2m > [22m[2mModelPicker[2m > [22m[2mopens and lists every model
 [22m[39mWarning: An update to ModelPicker inside a test was not wrapped in act(...).
@@ -100,9 +100,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -113,9 +113,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -126,9 +126,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 
 [90mstderr[2m | src/app/routes/RunsPage.test.tsx[2m > [22m[2mRunsPage[2m > [22m[2mlists runs with their command and expands the newest to show the recipe
 [22m[39m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
@@ -149,9 +149,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -162,9 +162,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -175,9 +175,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -188,9 +188,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 
  [32m✓[39m src/components/thread/GoalPill.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 511[2mms[22m[39m
 [90mstderr[2m | src/components/thread/ModelPicker.test.tsx[2m > [22m[2mModelPicker[2m > [22m[2msteps the reasoning slider and clears to model default past the first level
@@ -204,9 +204,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -217,9 +217,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -230,9 +230,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 
 [90mstderr[2m | src/components/thread/ModelPicker.test.tsx[2m > [22m[2mModelPicker[2m > [22m[2mhides the reasoning control for a model with no levels
 [22m[39mWarning: An update to ModelPicker inside a test was not wrapped in act(...).
@@ -245,9 +245,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -258,9 +258,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -271,9 +271,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 
  [32m✓[39m src/components/settings/RemoteComputeCard.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 618[2mms[22m[39m
    [33m[2m✓[22m[39m RemoteComputeCard[2m > [22madds a machine then probes it via the post-add machine list refetch [33m478[2mms[22m[39m
@@ -292,9 +292,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -305,9 +305,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -318,9 +318,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 
 [90mstderr[2m | src/components/thread/ModelPicker.test.tsx[2m > [22m[2mModelPicker[2m > [22m[2mstays open after switching to a reasoning-capable model (so effort can be tuned)
 [22m[39mWarning: An update to ModelPicker inside a test was not wrapped in act(...).
@@ -333,9 +333,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -346,9 +346,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 Warning: An update to ModelPicker inside a test was not wrapped in act(...).
 
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -359,9 +359,9 @@ act(() => {
 /* assert on the output */
 
 This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
-    at ModelPicker (E:\openscience\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
-    at Router (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
-    at MemoryRouter (E:\openscience\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
+    at ModelPicker (E:\jingming-yanhuan\jingming-yanhuan\apps\desktop\src\components\thread\ModelPicker.tsx:209:39)
+    at Router (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1203:17)
+    at MemoryRouter (E:\jingming-yanhuan\jingming-yanhuan\node_modules\.pnpm\react-router@6.30.4_react@18.3.1\node_modules\react-router\dist\umd\react-router.development.js:1097:7)
 
  [32m✓[39m src/components/thread/ModelPicker.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[33m 880[2mms[22m[39m
  [32m✓[39m src/components/thread/WorkspaceChip.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[90m 299[2mms[22m[39m
@@ -377,16 +377,16 @@ This ensures that you're testing the behavior the user would see in the browser.
    [33m[2m✓[22m[39m Settings model browser integration[2m > [22mkeeps the browser up through an immediately-rejected retry after a failed switch [33m454[2mms[22m[39m
 [90mstderr[2m | src/components/inspector/FilePreviewInspector.test.tsx[2m > [22m[2mFilePreviewInspector — markdown[2m > [22m[2mtoggles to the raw source under the Code tab
 [22m[39mTypeError: textRange(...).getClientRects is not a function
-    at TextTile.coordsIn (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:2086:51)
-    at LineTile.coordsIn (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:1999:27)
-    at DocView.coordsAt (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:3247:21)
-    at EditorView.coordsAtPos (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:8511:29)
-    at RectangleMarker.forRange (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:9278:28)
-    at Object.markers (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:9545:51)
-    at LayerView.measure (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:9435:27)
-    at file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:8169:34
+    at TextTile.coordsIn (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:2086:51)
+    at LineTile.coordsIn (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:1999:27)
+    at DocView.coordsAt (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:3247:21)
+    at EditorView.coordsAtPos (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:8511:29)
+    at RectangleMarker.forRange (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:9278:28)
+    at Object.markers (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:9545:51)
+    at LayerView.measure (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:9435:27)
+    at file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:8169:34
     at Array.map (<anonymous>)
-    at EditorView.measure (file:///E:/openscience/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:8167:42)
+    at EditorView.measure (file:///E:/jingming-yanhuan/jingming-yanhuan/node_modules/[4m.pnpm[24m/@codemirror+view@6.43.6/node_modules/[4m@codemirror/view[24m/dist/index.js:8167:42)
 
  [32m✓[39m src/lib/scrollMemory.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 30[2mms[22m[39m
 [90mstderr[2m | src/components/inspector/Inspector.i18n.test.tsx[2m > [22m[2mProvenancePanel strings (i18n)[2m > [22m[2mshows the loading state before history resolves

@@ -20,15 +20,15 @@ fn git_lock() -> &'static Mutex<()> {
 }
 
 const AUTHOR_NAME: &str = "景明研环";
-const AUTHOR_EMAIL: &str = "open-science-desktop@local";
+const AUTHOR_EMAIL: &str = "jingming-yanhuan-desktop@local";
 
 /// Snapshots commit to dedicated refs OUTSIDE `refs/heads/*`, never to any
 /// branch — one chain PER user branch, keyed as `<prefix>/<branch>` (following
 /// the `refs/wip/<branch>` convention of git-wip). `git log` / `git branch` /
 /// `git status` never show them; we only add objects and move these refs, never
 /// touching the user's branches, HEAD, working tree, or staging area. Inspect a
-/// branch's history with `git log refs/openscience/snapshots/<branch>`.
-const SNAPSHOT_REF_PREFIX: &str = "refs/openscience/snapshots";
+/// branch's history with `git log refs/jingming-yanhuan/snapshots/<branch>`.
+const SNAPSHOT_REF_PREFIX: &str = "refs/jingming-yanhuan/snapshots";
 
 /// The well-known SHA-1 of git's empty tree — used to skip the very first
 /// snapshot of an empty workspace (nothing to record yet).
@@ -37,7 +37,7 @@ const EMPTY_TREE: &str = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 /// A dedicated index file (under `.git`) so staging for a snapshot never touches
 /// the user's real index (`.git/index`) — their staged work is left intact.
 /// Kept between snapshots so git's stat cache keeps `add -A` fast on large trees.
-const SNAPSHOT_INDEX: &str = "openscience-index";
+const SNAPSHOT_INDEX: &str = "jingming-yanhuan-index";
 
 /// Files at or above this size are kept out of snapshots. Git stores every
 /// version whole (binaries never delta or compress) and never reclaims the
@@ -491,30 +491,30 @@ fn unstage_bulk_dirs(root: &Path, index: &Path) -> Result<(), String> {
 /// is how we recognize an app-managed repo that is safe to `add -A`/commit into;
 /// we never touch a git repository the user brought into the workspace himself.
 fn snapshot_marker(root: &Path) -> PathBuf {
-    root.join(".git").join(".openscience-snapshots")
+    root.join(".git").join(".jingming-yanhuan-snapshots")
 }
 
-/// Written under a workspace's `.openscience/` to opt it out of app-managed
+/// Written under a workspace's `.jingming-yanhuan/` to opt it out of app-managed
 /// snapshots entirely — used for IMPORTED workspaces (a repo/folder the user
 /// brought in) so the app never `git init`s or commits into it, even when the
 /// folder isn't a git repo yet.
 const NO_SNAPSHOT_MARKER: &str = ".no-snapshots";
 
 fn no_snapshot_marker(root: &Path) -> PathBuf {
-    root.join(".openscience").join(NO_SNAPSHOT_MARKER)
+    root.join(".jingming-yanhuan").join(NO_SNAPSHOT_MARKER)
 }
 
 /// Prepare an IMPORTED (user-brought) workspace. Snapshots go to a dedicated ref
 /// and never to the user's branches, so a real git repo IS snapshotted — we just
-/// keep the app's `.openscience/` dir out of the user's `git status` via a local
+/// keep the app's `.jingming-yanhuan/` dir out of the user's `git status` via a local
 /// `.git/info/exclude` (never their tracked `.gitignore`). A plain folder instead
 /// gets an explicit opt-out marker so a later snapshot never `git init`s it (we
 /// won't create a repo in a folder that isn't already one). Best-effort.
 pub fn mark_imported(root: &Path) {
     if root.join(".git").is_dir() {
-        exclude_locally(root, ".openscience/");
+        exclude_locally(root, ".jingming-yanhuan/");
     } else {
-        let osdir = root.join(".openscience");
+        let osdir = root.join(".jingming-yanhuan");
         let _ = std::fs::create_dir_all(&osdir);
         let _ = std::fs::write(no_snapshot_marker(root), b"imported\n");
     }
@@ -977,10 +977,10 @@ mod tests {
 
         super::mark_imported(&root);
         // A real repo isn't given the opt-out marker but gets a LOCAL exclude for
-        // .openscience/ so our provenance dir never shows in the user's status.
+        // .jingming-yanhuan/ so our provenance dir never shows in the user's status.
         assert!(!super::no_snapshot_marker(&root).exists());
         let exclude = fs::read_to_string(root.join(".git/info/exclude")).unwrap();
-        assert!(exclude.lines().any(|l| l.trim() == ".openscience/"));
+        assert!(exclude.lines().any(|l| l.trim() == ".jingming-yanhuan/"));
 
         // It IS snapshotted (to the dedicated per-branch ref), while the user's
         // branch stays untouched (HEAD unborn — we never committed to a branch).
@@ -994,7 +994,7 @@ mod tests {
         let count = fs::read_to_string(root.join(".git/info/exclude"))
             .unwrap()
             .lines()
-            .filter(|l| l.trim() == ".openscience/")
+            .filter(|l| l.trim() == ".jingming-yanhuan/")
             .count();
         assert_eq!(count, 1);
         let _ = fs::remove_dir_all(&root);

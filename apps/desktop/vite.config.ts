@@ -14,16 +14,16 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": r("./src"),
-      "@ai4s/shared": r("../../packages/shared/src/index.ts"),
-      "@ai4s/sdk/mock-server": r("../../packages/sdk/src/mockServer.ts"),
-      "@ai4s/sdk": r("../../packages/sdk/src/index.ts"),
+      "@jingming/shared": r("../../packages/shared/src/index.ts"),
+      "@jingming/sdk/mock-server": r("../../packages/sdk/src/mockServer.ts"),
+      "@jingming/sdk": r("../../packages/sdk/src/index.ts"),
     },
   },
   server: {
     host: "0.0.0.0",
     port: 5173,
     fs: {
-      allow: [r("."), r("../../"), "E:\\openscience\\jingming-yanhuan", "E:\\tb\\jingming-yanhuan"],
+      allow: [r("."), r("../../"), "E:\\jingming-yanhuan\\jingming-yanhuan", "E:\\tb\\jingming-yanhuan"],
     },
   },
   test: {

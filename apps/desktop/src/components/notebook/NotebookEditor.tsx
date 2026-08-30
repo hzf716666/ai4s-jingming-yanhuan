@@ -13,7 +13,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import type { NotebookCell } from "@ai4s/shared";
+import type { NotebookCell } from "@jingming/shared";
 import { previewUrl, readArtifact, writeWorkspaceFile } from "@/lib/artifactFile";
 import { isGatewayWeb } from "@/lib/webMode";
 import { useRuntimeStore } from "@/lib/runtime";
