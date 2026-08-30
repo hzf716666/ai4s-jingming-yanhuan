@@ -4,11 +4,22 @@ Render → OCR → row grouping → heuristic data-row detection.
 """
 from __future__ import annotations
 
+import os
+# Disable OneDNN / MKL-DNN to avoid fused_conv2d compatibility issues
+os.environ.setdefault("FLAGS_use_mkldnn", "0")
+
 import re
 from pathlib import Path
 from typing import Any
 
 from src.schema import Record
+
+# Set PaddleOCR model cache dir to a writable location inside the project
+_MODEL_DIR = Path(__file__).resolve().parent.parent.parent / "models" / "paddleocr"
+_MODEL_DIR.mkdir(parents=True, exist_ok=True)
+_det_dir = _MODEL_DIR / "det" / "ch_PP-OCRv4_det_infer"
+_rec_dir = _MODEL_DIR / "rec" / "ch_PP-OCRv4_rec_infer"
+_cls_dir = _MODEL_DIR / "cls" / "ch_ppocr_mobile_v2.0_cls_infer"
 
 try:
     import numpy as np
@@ -33,7 +44,24 @@ except ImportError:
 def _get_ocr_engine():
     global _ocr_engine
     if _ocr_engine is None:
-        _ocr_engine = PaddleOCR(use_angle_cls=True, lang="ch", show_log=False)
+        try:
+            _ocr_engine = PaddleOCR(
+                use_angle_cls=True,
+                lang="ch",
+                show_log=False,
+                det_model_dir=str(_det_dir),
+                rec_model_dir=str(_rec_dir),
+                cls_model_dir=str(_cls_dir),
+            )
+        except TypeError:
+            # Fallback for versions without show_log
+            _ocr_engine = PaddleOCR(
+                use_angle_cls=True,
+                lang="ch",
+                det_model_dir=str(_det_dir),
+                rec_model_dir=str(_rec_dir),
+                cls_model_dir=str(_cls_dir),
+            )
     return _ocr_engine
 
 
@@ -59,27 +87,45 @@ def _render_page(pdf_path: str, page_num: int, dpi: int = 150):
 
 
 def _group_into_rows(items: list, y_tol: int = 15) -> list[list[dict]]:
-    """Group OCR results into rows by y-coordinate."""
+    """Group OCR results into rows by y-coordinate (center of box)."""
     if not items:
         return []
-    sorted_items = sorted(items, key=lambda x: x[0][1])
+
+    # Compute center y for each item
+    enriched = []
+    for item in items:
+        box = item[0]
+        text, conf = item[1][0], item[1][1]
+        y_center = sum(p[1] for p in box) / 4
+        x_center = sum(p[0] for p in box) / 4
+        enriched.append({
+            "text": text, "conf": conf,
+            "x": x_center, "y": y_center,
+        })
+
+    # Sort by y then by x
+    enriched.sort(key=lambda d: (d["y"], d["x"]))
+
     rows: list[list[dict]] = []
     current_row: list[dict] = []
     current_y = None
 
-    for item in sorted_items:
-        box, (text, conf) = item[0], (item[1][0], item[1][1])
-        y = box[0][1]
+    for item in enriched:
+        y = item["y"]
         if current_y is None or abs(y - current_y) <= y_tol:
-            current_row.append({"text": text, "conf": conf, "x": box[0][0], "y": y})
+            current_row.append(item)
         else:
             if current_row:
+                # Sort row items by x
+                current_row.sort(key=lambda d: d["x"])
                 rows.append(current_row)
-            current_row = [{"text": text, "conf": conf, "x": box[0][0], "y": y}]
+            current_row = [item]
             current_y = y
-        current_y = y
+        # Update current_y to the running average of the row
+        current_y = sum(d["y"] for d in current_row) / len(current_row)
 
     if current_row:
+        current_row.sort(key=lambda d: d["x"])
         rows.append(current_row)
     return rows
 

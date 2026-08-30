@@ -1110,6 +1110,7 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
     let node_cmd = if cfg!(windows) { "node.exe" } else { "node" };
 
     let home = std::env::var("HOME").unwrap_or_default();
+    let userprofile = std::env::var("USERPROFILE").unwrap_or_default();
     let mut cmd = app
         .shell()
         .command(node_cmd)
@@ -1120,7 +1121,11 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
             "--cwd".to_string(),
             workspace.to_string_lossy().to_string(),
         ])
-        .env("HOME", home)
+        .env("HOME", &home)
+        // On Windows, Node.js os.homedir() uses USERPROFILE, not HOME.
+        // qodercliAuth() resolves ~/.qoder/ via os.homedir(), so we must
+        // set USERPROFILE for the SDK to find credentials.
+        .env("USERPROFILE", &userprofile)
         // GUI-launched apps get a minimal PATH; give the sidecar the user's
         // real tools (node, npm, qodercli, etc.) for Qoder SDK auth.
         .env("PATH", enriched_path())
@@ -1191,6 +1196,7 @@ pub async fn start_qoder_runtime(app: AppHandle, state: State<'_, RuntimeState>)
     };
     if let Some((port, url)) = already_running {
         // Verify it's actually healthy
+
         if wait_for_sidecar_health(port, 3).await.is_ok() {
             return Ok(url);
         }
@@ -1303,6 +1309,7 @@ fn has_qodercli_login() -> bool {
     if let Ok(appdata) = std::env::var("APPDATA") {
         candidates.push(PathBuf::from(appdata.clone()).join("qoder-cn"));
         candidates.push(PathBuf::from(appdata).join("qoder"));
+
     }
 
     // Look for credential files inside those dirs

@@ -8,6 +8,10 @@ import { FilesPage } from "./routes/FilesPage";
 import { RunsPage } from "./routes/RunsPage";
 import { ProjectsPage } from "./routes/ProjectsPage";
 import { SettingsPage } from "./routes/SettingsPage";
+import { ExtractionListPage } from "./routes/data/ExtractionListPage";
+import { ExtractionNewPage } from "./routes/data/ExtractionNewPage";
+import { ExtractionProgressPage } from "./routes/data/ExtractionProgressPage";
+import { ExtractionResultPage } from "./routes/data/ExtractionResultPage";
 import { NotFound } from "./routes/NotFound";
 
 export const routes: RouteObject[] = [
@@ -26,6 +30,10 @@ export const routes: RouteObject[] = [
       { path: "projects", element: <ProjectsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "settings/:section", element: <SettingsPage /> },
+      { path: "data/extraction", element: <ExtractionListPage /> },
+      { path: "data/extraction/new", element: <ExtractionNewPage /> },
+      { path: "data/extraction/:taskId/progress", element: <ExtractionProgressPage /> },
+      { path: "data/extraction/:taskId/result", element: <ExtractionResultPage /> },
       { path: "*", element: <NotFound /> },
     ],
   },
