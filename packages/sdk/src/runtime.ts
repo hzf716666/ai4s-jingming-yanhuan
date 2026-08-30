@@ -5,6 +5,7 @@ import type {
   OpenCodeEvent,
   PermissionAskedEvent,
   PermissionReply,
+  ProviderInfo,
   QuestionAskedEvent,
   RuntimeStatus,
   SessionMeta,
@@ -67,6 +68,8 @@ export interface AgentRuntime {
   listSkills(): Promise<SkillInfo[]>;
   listAgents(): Promise<AgentInfo[]>;
   listCommands(): Promise<CommandInfo[]>;
+  /** Connected providers and their models (may be absent on some backends). */
+  listProviders?(): Promise<ProviderInfo[]>;
 
   // ---- model selection ----
   getDefaultModel(): Promise<string | null>;

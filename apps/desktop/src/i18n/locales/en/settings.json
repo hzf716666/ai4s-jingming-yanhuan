@@ -32,7 +32,7 @@
   },
   "page": {
     "title": "Settings",
-    "subtitle": "Everything here configures the bundled OpenCode runtime — one config, no copies."
+    "subtitle": "Everything here configures the bundled agent runtime — one config, no copies."
   },
   "runtime": {
     "title": "Agent runtime",

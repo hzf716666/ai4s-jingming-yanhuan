@@ -788,9 +788,10 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
         client.listAgents(),
         client.getDefaultModel().catch(() => null),
         client.listCommands().catch(() => []),
-        // listProviders is OpenCodeClient-only (not on the AgentRuntime port);
-        // opencodeClient is the same instance as `client`, set together.
-        opencodeClient ? opencodeClient.listProviders().catch(() => []) : Promise.resolve([]),
+        // listProviders is optional on the runtime port; both backends expose
+        // it (OpenCode reads /config/providers directly, Qoder reads the
+        // sidecar's /config/providers with the live model list).
+        client.listProviders ? client.listProviders().catch(() => []) : Promise.resolve([]),
       ]);
       // A model switch in flight owns `defaultModel`: this read may predate
       // the switch's config write, and applying it would visibly revert the

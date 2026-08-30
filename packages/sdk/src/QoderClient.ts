@@ -21,6 +21,7 @@ import type {
   HistoryMessage,
   PermissionAskedEvent,
   PermissionReply,
+  ProviderInfo,
   QuestionAskedEvent,
   SessionMeta,
   SkillInfo,
@@ -531,6 +532,16 @@ export class QoderClient extends BaseAgentRuntime implements AgentRuntime {
     });
     if (!res.ok) return [];
     return (await res.json()) as CommandInfo[];
+  }
+
+  async listProviders(): Promise<ProviderInfo[]> {
+    const res = await this.fetchWithTimeout(this.scopedUrl("/config/providers"), {
+      method: "GET",
+      headers: this.headers(),
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { providers?: ProviderInfo[] };
+    return json.providers ?? [];
   }
 
   async getDefaultModel(): Promise<string | null> {

@@ -15,7 +15,9 @@
 
 import { createServer } from "http";
 import { URL } from "url";
-import { spawn } from "child_process";
+import { existsSync } from "fs";
+import { execFileSync, execSync, spawn } from "child_process";
+import { fileURLToPath } from "url";
 
 // Dynamic import for the SDK (ESM)
 let QoderSDK = null;
@@ -325,6 +327,82 @@ function buildAuth() {
   return qodercliAuth();
 }
 
+// ---- Model support ----
+// The selected model (frontend ids look like "qoder/<name>"); persisted via
+// PATCH /global/config and applied to every query.
+let currentModel = "qoder/Auto";
+let qoderModelsCache = null;
+let qoderModelsCacheAt = 0;
+
+/** Resolve the qodercli executable: SDK-bundled first, then PATH. */
+function resolveQoderCli() {
+  try {
+    const bundled = fileURLToPath(
+      new URL("./node_modules/@qoder-ai/qoder-agent-sdk/dist/_bundled/qodercli.exe", import.meta.url),
+    );
+    if (existsSync(bundled)) return bundled;
+  } catch {
+    // ignore
+  }
+  return "qodercli";
+}
+
+/** List available models via `qodercli --list-models` (cached 60s). */
+async function listQoderModels() {
+  if (qoderModelsCache && Date.now() - qoderModelsCacheAt < 60000) {
+    return qoderModelsCache;
+  }
+  const models = [];
+  try {
+    const out = execFileSync(resolveQoderCli(), ["--list-models"], {
+      encoding: "utf8",
+      timeout: 30000,
+      windowsHide: true,
+    });
+    let started = false;
+    for (const line of out.split(/\r?\n/)) {
+      const name = line.trim();
+      if (!name) continue;
+      if (name === "MODEL") {
+        started = true;
+        continue;
+      }
+      if (started && !name.startsWith("-") && !/\s/.test(name)) {
+        models.push(name);
+      }
+    }
+  } catch {
+    // Fall back to a sensible default set if the CLI is unavailable.
+  }
+  if (models.length === 0) {
+    models.push("Auto", "Performance", "Efficient", "Lite");
+  }
+  qoderModelsCache = models;
+  qoderModelsCacheAt = Date.now();
+  return models;
+}
+
+/**
+ * Hard-stop the qodercli child process(es) of this sidecar. The SDK's
+ * interrupt() is a soft stop — the CLI keeps running until the current turn
+ * ends, which makes "stop" feel laggy. Killing the child ends the stream
+ * immediately.
+ */
+function hardStopQoder() {
+  try {
+    if (process.platform === "win32") {
+      execSync(
+        `wmic process where "ParentProcessId=${process.pid} and Name='qodercli.exe'" call terminate`,
+        { stdio: "ignore", windowsHide: true },
+      );
+    } else {
+      execSync(`pkill -P ${process.pid} || true`, { stdio: "ignore" });
+    }
+  } catch {
+    // Best effort — the soft interrupt may still have worked.
+  }
+}
+
 /**
  * Start a query with multi-turn support via resume.
  *
@@ -364,6 +442,15 @@ function startQuery(sessionId, text, agentOptions = {}) {
     cwd: CWD,
     ...agentOptions,
   };
+  // Apply the user-selected model (ids look like "qoder/<name>").
+  const model = options.model || currentModel;
+  if (model) {
+    const name = String(model).replace(/^qoder\//, "");
+    if (name) options.model = name;
+    else delete options.model;
+  } else {
+    delete options.model;
+  }
   if (session.cliSessionId) {
     // Continuation: resume the CLI session (sessionId must NOT be passed).
     options.resume = session.cliSessionId;
@@ -588,6 +675,18 @@ async function handleRequest(req, res) {
           return;
         }
 
+        // Stop any in-flight query for this session first, so a new prompt
+        // starts immediately (no waiting for the previous turn to drain).
+        const prev = activeQueries.get(sessionId);
+        if (prev) {
+          try {
+            await prev.interrupt();
+          } catch {
+            // ignore
+          }
+          hardStopQoder();
+        }
+
         const agentOptions = {};
         if (body.agent) agentOptions.agentId = body.agent;
         if (body.model) agentOptions.model = body.model;
@@ -606,7 +705,14 @@ async function handleRequest(req, res) {
             // Ignore
           }
         }
+        // Hard stop: interrupt() alone waits for the current turn to end.
+        // Killing the qodercli child makes the stream end immediately.
+        hardStopQoder();
         clearSessionBuffers(sessionId);
+        broadcastEvent({
+          type: "session.idle",
+          sessionId,
+        });
         json({ ok: true });
         return;
       }
@@ -645,18 +751,14 @@ async function handleRequest(req, res) {
 
     // ---- Providers ----
     if (path === "/config/providers" && method === "GET") {
-      const hasToken = !!process.env.QODER_PERSONAL_ACCESS_TOKEN;
+      const models = await listQoderModels();
       json({
         providers: [
           {
             id: "qoder",
-            name: "Qoder CN",
-            authenticated: hasToken,
-            models: [
-              { id: "qoder/performance", name: "Performance" },
-              { id: "qoder/balanced", name: "Balanced" },
-              { id: "qoder/speed", name: "Speed" },
-            ],
+            name: "Qoder",
+            authenticated: true,
+            models: models.map((m) => ({ id: m, name: m })),
           },
         ],
       });
@@ -664,11 +766,15 @@ async function handleRequest(req, res) {
     }
 
     if (path === "/global/config" && method === "GET") {
-      json({ model: "qoder/performance" });
+      json({ model: currentModel });
       return;
     }
 
     if (path === "/global/config" && method === "PATCH") {
+      const body = await readBody().catch(() => ({}));
+      if (typeof body.model === "string" && body.model.trim()) {
+        currentModel = body.model.trim();
+      }
       json({ ok: true });
       return;
     }

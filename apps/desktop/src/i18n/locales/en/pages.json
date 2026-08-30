@@ -56,7 +56,7 @@
   "skills": {
     "title": "Skills & Agents",
     "description": {
-      "prefix": "Loaded live from the OpenCode runtime — the bundled jingming-skills pack plus anything under ",
+      "prefix": "Loaded live from the agent runtime — the bundled jingming-skills pack plus anything under ",
       "suffix": " in your workspace."
     },
     "install": {
@@ -72,7 +72,7 @@
       "detectionUnavailable": "Environment detection runs in the desktop app.",
       "found": "found",
       "notFound": "not found",
-      "note": "OpenCode runs code with whatever is installed here (e.g. Python via its shell tool). Python/R/Jupyter are not bundled; install them or a Science Pack to enable analysis."
+      "note": "The agent runtime runs code with whatever is installed here (e.g. Python via its shell tool). Python/R/Jupyter are not bundled; install them or a Science Pack to enable analysis."
     },
     "agentsSection": {
       "sectionTitle": "Agents ({{count}})",
