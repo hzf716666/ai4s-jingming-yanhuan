@@ -141,7 +141,6 @@ export function ExtractionNewPage() {
     }
   };
 
-  const uploadingCount = files.filter((f) => f.uploading).length;
   const uploadedFiles = files.filter((f) => !f.uploading);
 
   return (
