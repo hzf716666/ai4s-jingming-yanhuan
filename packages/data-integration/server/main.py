@@ -19,8 +19,10 @@ if str(_PARENT) not in sys.path:
 
 from .models import LLMConfig, LLMConfigResponse, TaskCreateRequest
 from .task_manager import get_manager
+from .map_api import router as map_router
 
 app = FastAPI(title="Data Extraction API", version="1.0.0")
+app.include_router(map_router)
 
 # CORS — allow all for local dev
 app.add_middleware(

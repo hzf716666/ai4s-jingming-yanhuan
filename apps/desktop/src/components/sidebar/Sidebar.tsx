@@ -792,16 +792,16 @@ function DataIntegrationNav({
         </div>
       )}
 
-      {/* 数据地图 — 占位 */}
+      {/* 数据地图 */}
       <button
-        className="flex items-center gap-2 rounded-input px-2 py-1 text-[13px] text-text hover:bg-surface-2"
-        title="开发中"
+        onClick={() => navigate("/data/map")}
+        className={cn(
+          "flex items-center gap-2 rounded-input px-2 py-1 text-[13px] text-text hover:bg-surface-2",
+          location.startsWith("/data/map") && "bg-surface-2 font-medium",
+        )}
       >
-        <MapIcon size={16} className="text-muted" />
+        <MapIcon size={16} className={location.startsWith("/data/map") ? "text-accent" : "text-muted"} />
         <span>数据地图</span>
-        <span className="ml-auto rounded bg-surface-2 px-1 text-[9px] uppercase tracking-wider text-muted">
-          soon
-        </span>
       </button>
 
       {/* 知识图谱 — 占位 */}

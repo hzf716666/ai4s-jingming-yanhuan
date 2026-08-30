@@ -8,6 +8,7 @@ import { FilesPage } from "./routes/FilesPage";
 import { RunsPage } from "./routes/RunsPage";
 import { ProjectsPage } from "./routes/ProjectsPage";
 import { SettingsPage } from "./routes/SettingsPage";
+import { DataMapPage } from "./routes/data/DataMapPage";
 import { ExtractionListPage } from "./routes/data/ExtractionListPage";
 import { ExtractionNewPage } from "./routes/data/ExtractionNewPage";
 import { ExtractionProgressPage } from "./routes/data/ExtractionProgressPage";
@@ -30,6 +31,7 @@ export const routes: RouteObject[] = [
       { path: "projects", element: <ProjectsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "settings/:section", element: <SettingsPage /> },
+      { path: "data/map", element: <DataMapPage /> },
       { path: "data/extraction", element: <ExtractionListPage /> },
       { path: "data/extraction/new", element: <ExtractionNewPage /> },
       { path: "data/extraction/:taskId/progress", element: <ExtractionProgressPage /> },
