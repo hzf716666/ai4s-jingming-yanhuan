@@ -41,6 +41,7 @@ export function LiveSessionPage() {
   const webReadOnly = useRuntimeStore((s) => s.webReadOnly);
   const sending = useRuntimeStore((s) => s.sending);
   const runningSessions = useRuntimeStore((s) => s.runningSessions);
+  const backend = useRuntimeStore((s) => s.backend);
   const stepCounts = useRuntimeStore((s) => s.stepCounts);
   const retryNotices = useRuntimeStore((s) => s.retryNotices);
   const serverUrl = useRuntimeStore((s) => s.serverUrl);
@@ -405,12 +406,21 @@ export function LiveSessionPage() {
             {!connected && !connecting && (
               <div className="rounded-card border border-border bg-surface p-5 shadow-card">
                 <div className="text-sm font-medium text-text">{t("live.runtime.title")}</div>
-                <p className="mt-1 text-sm text-muted">
-                  {t("live.runtime.bodyPrefix")}{" "}
-                  {/* eslint-disable-next-line i18next/no-literal-string -- literal shell command, not prose */}
-                  <span className="font-mono">opencode serve</span>
-                  {t("live.runtime.bodySuffix")}
-                </p>
+                {backend === "qoder" ? (
+                  <p className="mt-1 text-sm text-muted">
+                    浏览器模式下请先手动启动 Qoder 运行时：
+                    {/* eslint-disable-next-line i18next/no-literal-string -- literal shell command, not prose */}
+                    <span className="font-mono">node runtime/qoder-sidecar/qoder-server.mjs</span>
+                    ，启动后刷新页面即可连接。
+                  </p>
+                ) : (
+                  <p className="mt-1 text-sm text-muted">
+                    {t("live.runtime.bodyPrefix")}{" "}
+                    {/* eslint-disable-next-line i18next/no-literal-string -- literal shell command, not prose */}
+                    <span className="font-mono">opencode serve</span>
+                    {t("live.runtime.bodySuffix")}
+                  </p>
+                )}
                 <div className="mt-3 rounded-input bg-surface-2 px-3 py-2 font-mono text-xs text-text">
                   {serverUrl}
                 </div>

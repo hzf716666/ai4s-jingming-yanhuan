@@ -965,48 +965,37 @@ pub async fn pick_folder(app: AppHandle) -> Result<Option<String>, String> {
 
 /// Resolve the qoder-server.mjs script path.
 /// Tries multiple locations:
-/// 1. Next to the executable (production, bundled resource)
-/// 2. Project root runtime/ directory (dev mode)
+/// 1. Bundled resource dir (packaged app; also populated under
+///    target/<profile>/resources by `tauri dev`/`tauri build`)
+/// 2. Compile-time repo root (dev mode; src-tauri/../../runtime/qoder-sidecar)
 /// 3. Current working directory (fallback)
-fn resolve_qoder_script() -> Result<PathBuf, String> {
-    // Try executable-relative path first (production)
-    if let Ok(exe) = std::env::current_exe() {
-        let exe_dir = exe.parent().unwrap_or_else(|| std::path::Path::new("."));
-        // Check bundled resource location (mapped from runtime/qoder-sidecar → qoder-sidecar/)
-        let resource_path = exe_dir
-            .join("resources")
+fn resolve_qoder_script(app: &AppHandle) -> Result<PathBuf, String> {
+    // 1. Tauri resource dir (production).
+    if let Ok(res) = app.path().resource_dir() {
+        let resource_path = res
             .join("qoder-sidecar")
             .join("qoder-server.mjs");
         if resource_path.exists() {
             return Ok(resource_path);
         }
-        // Check dev location relative to exe
-        let dev_path = exe_dir
-            .join("runtime")
-            .join("qoder-sidecar")
-            .join("qoder-server.mjs");
-        if dev_path.exists() {
-            return Ok(dev_path);
-        }
     }
 
-    // Try current working directory (dev mode)
+    // 2. Compile-time project root. NOTE: use env! (compile-time), NOT
+    //    std::env::var — CARGO_MANIFEST_DIR is not present in the runtime
+    //    environment, so the old lookup always failed in dev.
+    let dev_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("..")
+        .join("runtime")
+        .join("qoder-sidecar")
+        .join("qoder-server.mjs");
+    if dev_path.exists() {
+        return Ok(dev_path);
+    }
+
+    // 3. Current working directory (repo root).
     if let Ok(cwd) = std::env::current_dir() {
         let path = cwd
-            .join("runtime")
-            .join("qoder-sidecar")
-            .join("qoder-server.mjs");
-        if path.exists() {
-            return Ok(path);
-        }
-    }
-
-    // Try compile-time project root (for development)
-    let env_root = std::env::var("CARGO_MANIFEST_DIR").unwrap_or_default();
-    if !env_root.is_empty() {
-        let path = PathBuf::from(env_root)
-            .join("..")
-            .join("..")
             .join("runtime")
             .join("qoder-sidecar")
             .join("qoder-server.mjs");
@@ -1104,7 +1093,7 @@ fn spawn_qoder_sidecar(app: &AppHandle, port: u16) -> Result<CommandChild, Strin
     let port_str = port.to_string();
 
     // Resolve the qoder-server.mjs script
-    let qoder_script = resolve_qoder_script()?;
+    let qoder_script = resolve_qoder_script(app)?;
 
     // Verify node exists
     let node_cmd = if cfg!(windows) { "node.exe" } else { "node" };
