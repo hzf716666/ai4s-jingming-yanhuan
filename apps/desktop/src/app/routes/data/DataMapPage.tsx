@@ -120,12 +120,6 @@ export function DataMapPage() {
             minDistance: 3,
             maxDistance: 400,
           },
-          layers: [
-            {
-              type: "bloom",
-              bloomIntensity: 0.15,
-            },
-          ],
         },
         series: [
           {
