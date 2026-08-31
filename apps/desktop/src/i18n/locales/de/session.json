@@ -121,8 +121,8 @@
   },
   "live": {
     "runtime": {
-      "title": "OpenCode-Runtime",
-      "bodyPrefix": "Die Desktop-App führt automatisch eine gebündelte OpenCode-Instanz aus. Starten Sie im Browser eine mit",
+      "title": "Qoder-Runtime",
+      "bodyPrefix": "Die Desktop-App führt automatisch eine gebündelte Qoder-Instanz aus. Starten Sie im Browser eine mit",
       "bodySuffix": " und verbinden Sie sich."
     },
     "connect": "Verbinden",
@@ -143,7 +143,7 @@
       "openTitle": "{{path}} öffnen — der Agent arbeitet in dieser Sitzung an diesem Notebook"
     },
     "connBadge": {
-      "title": "OpenCode · {{status}}",
+      "title": "Qoder · {{status}}",
       "status": {
         "ready": "bereit",
         "connecting": "verbindet …",

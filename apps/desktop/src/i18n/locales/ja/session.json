@@ -121,8 +121,8 @@
   },
   "live": {
     "runtime": {
-      "title": "OpenCode ランタイム",
-      "bodyPrefix": "デスクトップアプリはバンドルされた OpenCode を自動的に実行します。ブラウザでは、",
+      "title": "Qoder ランタイム",
+      "bodyPrefix": "デスクトップアプリはバンドルされた Qoder を自動的に実行します。ブラウザでは、",
       "bodySuffix": " で起動して接続してください。"
     },
     "connect": "接続",
@@ -143,7 +143,7 @@
       "openTitle": "{{path}} を開く — エージェントはこのセッションでこのノートブックを操作します"
     },
     "connBadge": {
-      "title": "OpenCode · {{status}}",
+      "title": "Qoder · {{status}}",
       "status": {
         "ready": "準備完了",
         "connecting": "接続中",

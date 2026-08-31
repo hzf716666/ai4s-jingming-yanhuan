@@ -36,7 +36,7 @@
   },
   "runtime": {
     "title": "Agent runtime",
-    "hint": "opencode serve, driven over its HTTP + SSE API",
+    "hint": "Qoder serve, driven over its HTTP + SSE API",
     "connect": "Connect",
     "disconnect": "Disconnect",
     "serverLabel": "Server",
@@ -56,7 +56,7 @@
     "mirrorPythonPlaceholder": "https://mirror.example.com/python-build-standalone",
     "mirrorHint": "Optional mirrors, used only when setting up Python tools (Jupyter, science databases) on networks where pypi.org / github.com are slow. Leave blank for defaults.",
     "backendLabel": "Backend",
-    "backendHint": "Switch between OpenCode (default) and Qoder CN as the AI agent backend"
+    "backendHint": "Switch between Qoder (default) and Qoder CN as the AI agent backend"
   },
   "updates": {
     "title": "App updates",
@@ -108,7 +108,7 @@
   },
   "providers": {
     "title": "Providers",
-    "hint": "Authentication, custom endpoints, and imported OpenCode logins",
+    "hint": "Authentication, custom endpoints, and imported Qoder logins",
     "connectPrompt": "Connect the runtime to manage providers.",
     "manage": "Manage",
     "collapse": "Collapse",
@@ -137,7 +137,7 @@
     "fetchingModels": "Fetching…",
     "noModelsFound": "No models reported by the endpoint.",
     "addEndpoint": "Add endpoint",
-    "importLogin": "Already use the OpenCode CLI? Import its login"
+    "importLogin": "Already use the Qoder CLI? Import its login"
   },
   "mcp": {
     "title": "MCP servers",
@@ -236,8 +236,8 @@
     "couldNotRemoveMcp": "Could not remove the MCP server",
     "mcpRemoved": "MCP server {{name}} removed",
     "importFailed": "Import failed",
-    "noOpenCodeLoginFound": "No OpenCode CLI login found on this machine.",
-    "importedLogin": "Imported your OpenCode CLI login.",
+    "noOpenCodeLoginFound": "No Qoder CLI login found on this machine.",
+    "importedLogin": "Imported your Qoder CLI login.",
     "couldNotSetProxy": "Could not apply the proxy setting",
     "proxyApplied": "Proxy setting applied",
     "mirrorSaved": "Mirror settings saved",

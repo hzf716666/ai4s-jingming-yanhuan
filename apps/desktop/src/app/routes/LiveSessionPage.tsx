@@ -584,7 +584,7 @@ function ThreadSkeleton() {
 function ConnBadge({ status, backend }: { status: RuntimeStatus; backend: "qoder" | "opencode" }) {
   const { t } = useTranslation(["session", "common"]);
   const tone = status === "ready" ? "text-ok" : status === "error" ? "text-error" : "text-muted";
-  const label = `${backend === "qoder" ? "Qoder" : "OpenCode"} · ${t(`live.connBadge.status.${status}`)}`;
+  const label = `${backend === "qoder" ? "Qoder CN" : "Qoder"} · ${t(`live.connBadge.status.${status}`)}`;
   return (
     <span
       className={cn("flex items-center gap-1.5 text-xs", tone)}

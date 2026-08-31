@@ -32,11 +32,11 @@
   },
   "page": {
     "title": "設定",
-    "subtitle": "ここでの設定はすべて、バンドルされた OpenCode ランタイムに対するものです — 設定は一つだけで、コピーはありません。"
+    "subtitle": "ここでの設定はすべて、バンドルされた Qoder ランタイムに対するものです — 設定は一つだけで、コピーはありません。"
   },
   "runtime": {
     "title": "エージェントランタイム",
-    "hint": "opencode serve を、その HTTP + SSE API 経由で操作します",
+    "hint": "Qoder serve を、その HTTP + SSE API 経由で操作します",
     "connect": "接続",
     "disconnect": "切断",
     "serverLabel": "サーバー",
@@ -56,7 +56,7 @@
     "mirrorPythonPlaceholder": "https://mirror.example.com/python-build-standalone",
     "mirrorHint": "任意のミラー。Python ツール(Jupyter・科学データベース)のセットアップ時のダウンロードにのみ使用され、pypi.org / github.com が遅いネットワーク向けです。空欄でデフォルト。",
     "backendLabel": "バックエンド",
-    "backendHint": "OpenCode（デフォルト）と Qoder CN の間で AI エージェントバックエンドを切り替えます"
+    "backendHint": "Qoder（デフォルト）と Qoder CN の間で AI エージェントバックエンドを切り替えます"
   },
   "updates": {
     "title": "アプリの更新",
@@ -108,7 +108,7 @@
   },
   "providers": {
     "title": "プロバイダー",
-    "hint": "認証、カスタムエンドポイント、インポートした OpenCode ログイン",
+    "hint": "認証、カスタムエンドポイント、インポートした Qoder ログイン",
     "connectPrompt": "プロバイダーを管理するにはランタイムに接続してください。",
     "manage": "管理",
     "collapse": "折りたたむ",
@@ -136,7 +136,7 @@
     "fetchingModels": "取得中…",
     "noModelsFound": "エンドポイントからモデルが返されませんでした。",
     "addEndpoint": "エンドポイントを追加",
-    "importLogin": "すでに OpenCode CLI を使っていますか？ そのログインをインポート"
+    "importLogin": "すでに Qoder CLI を使っていますか？ そのログインをインポート"
   },
   "mcp": {
     "title": "MCP サーバー",
@@ -235,8 +235,8 @@
     "couldNotRemoveMcp": "MCP サーバーを削除できませんでした",
     "mcpRemoved": "MCP サーバー {{name}} を削除しました",
     "importFailed": "インポートに失敗しました",
-    "noOpenCodeLoginFound": "このマシンで OpenCode CLI のログインが見つかりませんでした。",
-    "importedLogin": "OpenCode CLI のログインをインポートしました。",
+    "noOpenCodeLoginFound": "このマシンで Qoder CLI のログインが見つかりませんでした。",
+    "importedLogin": "Qoder CLI のログインをインポートしました。",
     "couldNotSetProxy": "プロキシ設定を適用できませんでした",
     "proxyApplied": "プロキシ設定を適用しました",
     "mirrorSaved": "ミラー設定を保存しました",

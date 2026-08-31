@@ -25,6 +25,7 @@ import { useParams } from "react-router-dom";
 import { useUiStore, ZOOM_MAX, ZOOM_MIN } from "@/lib/store";
 import { shippedLocales } from "@/i18n/config";
 import { getClient, useRuntimeStore } from "@/lib/runtime";
+import { normalizeProviderNames } from "@/lib/providerDisplay";
 import { useUpdateStore } from "@/lib/update";
 import {
   agentBrowserProfiles,
@@ -235,7 +236,7 @@ export function SettingsPage() {
     let fresh: ProviderInfo[] | null = null;
     try {
       fresh = await client.listProviders();
-      setProviders(fresh);
+      setProviders(normalizeProviderNames(fresh));
       setCatalogState("ready");
     } catch {
       setCatalogState((s) => (s === "ready" ? s : "unavailable"));
@@ -248,7 +249,7 @@ export function SettingsPage() {
         client.listMcpServers().catch(() => []),
       ]);
       setAuthMethods(m);
-      setCatalog(c.all);
+      setCatalog(normalizeProviderNames(c.all));
       setCustomIds(custom);
       setMcpServers(mcp);
       setJupyter(await jupyterStatus());
@@ -926,7 +927,7 @@ export function SettingsPage() {
                   aria-label={t("runtime.backendLabel")}
                   className={chipCls("shrink-0")}
                 >
-                  <option value="opencode">OpenCode</option>
+                  <option value="opencode">Qoder</option>
                   <option value="qoder">Qoder CN</option>
                 </select>
               }

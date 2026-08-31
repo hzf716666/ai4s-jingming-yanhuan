@@ -32,11 +32,11 @@
   },
   "page": {
     "title": "Configuración",
-    "subtitle": "Todo aquí configura el entorno de ejecución de OpenCode incluido — una sola configuración, sin copias."
+    "subtitle": "Todo aquí configura el entorno de ejecución de Qoder incluido — una sola configuración, sin copias."
   },
   "runtime": {
     "title": "Entorno de ejecución del agente",
-    "hint": "opencode serve, controlado mediante su API HTTP + SSE",
+    "hint": "Qoder serve, controlado mediante su API HTTP + SSE",
     "connect": "Conectar",
     "disconnect": "Desconectar",
     "serverLabel": "Servidor",
@@ -56,7 +56,7 @@
     "mirrorPythonPlaceholder": "https://mirror.example.com/python-build-standalone",
     "mirrorHint": "Espejos opcionales, usados solo al configurar herramientas de Python (Jupyter, bases de datos científicas) en redes donde pypi.org / github.com son lentos. Déjalo en blanco para los valores predeterminados.",
     "backendLabel": "Backend",
-    "backendHint": "Cambiar entre OpenCode (predeterminado) y Qoder CN como backend del agente de IA"
+    "backendHint": "Cambiar entre Qoder (predeterminado) y Qoder CN como backend del agente de IA"
   },
   "updates": {
     "title": "Actualizaciones de la app",
@@ -108,7 +108,7 @@
   },
   "providers": {
     "title": "Proveedores",
-    "hint": "Autenticación, endpoints personalizados e inicios de sesión de OpenCode importados",
+    "hint": "Autenticación, endpoints personalizados e inicios de sesión de Qoder importados",
     "connectPrompt": "Conecta el runtime para gestionar proveedores.",
     "manage": "Administrar",
     "collapse": "Contraer",
@@ -137,7 +137,7 @@
     "fetchingModels": "Obteniendo…",
     "noModelsFound": "El endpoint no informó ningún modelo.",
     "addEndpoint": "Añadir endpoint",
-    "importLogin": "¿Ya usas la CLI de OpenCode? Importa su inicio de sesión"
+    "importLogin": "¿Ya usas la CLI de Qoder? Importa su inicio de sesión"
   },
   "mcp": {
     "title": "Servidores MCP",
@@ -236,8 +236,8 @@
     "couldNotRemoveMcp": "No se pudo quitar el servidor MCP",
     "mcpRemoved": "Servidor MCP {{name}} eliminado",
     "importFailed": "Error al importar",
-    "noOpenCodeLoginFound": "No se encontró ningún inicio de sesión de la CLI de OpenCode en esta máquina.",
-    "importedLogin": "Se importó tu inicio de sesión de la CLI de OpenCode.",
+    "noOpenCodeLoginFound": "No se encontró ningún inicio de sesión de la CLI de Qoder en esta máquina.",
+    "importedLogin": "Se importó tu inicio de sesión de la CLI de Qoder.",
     "couldNotSetProxy": "No se pudo aplicar la configuración del proxy",
     "proxyApplied": "Configuración del proxy aplicada",
     "mirrorSaved": "Configuración de espejo guardada",

@@ -121,8 +121,8 @@
   },
   "live": {
     "runtime": {
-      "title": "Runtime OpenCode",
-      "bodyPrefix": "L'application de bureau exécute automatiquement un OpenCode intégré. Dans le navigateur, démarrez-en un avec",
+      "title": "Runtime Qoder",
+      "bodyPrefix": "L'application de bureau exécute automatiquement un Qoder intégré. Dans le navigateur, démarrez-en un avec",
       "bodySuffix": " puis connectez-vous."
     },
     "connect": "Connecter",
@@ -143,7 +143,7 @@
       "openTitle": "Ouvrir {{path}} — l'agent travaille sur ce notebook dans cette session"
     },
     "connBadge": {
-      "title": "OpenCode · {{status}}",
+      "title": "Qoder · {{status}}",
       "status": {
         "ready": "prêt",
         "connecting": "connexion…",

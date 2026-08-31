@@ -2,14 +2,39 @@
 """Map data API — reads integration.db (SQLite) for the 3D data map page."""
 from __future__ import annotations
 
+import json
 import sqlite3
+from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 _DB = Path(__file__).resolve().parent.parent / "server_data" / "integration.db"
+_GEO = Path(__file__).resolve().parent.parent / "server_data" / "geo"
+_DIAG = Path(__file__).resolve().parent.parent / "server_data" / "diag.log"
 
 router = APIRouter(prefix="/api/map", tags=["map"])
+
+
+class DiagIn(BaseModel):
+    text: str
+
+
+@router.post("/diag")
+def diag(d: DiagIn):
+    """临时诊断上报（验证后删除）"""
+    with open(_DIAG, "a", encoding="utf-8") as f:
+        f.write(datetime.now().isoformat() + " " + d.text + "\n")
+    return {"ok": True}
+
+
+@router.get("/geo/{name}")
+def geo(name: str):
+    """Outline layer data for the globe: world | china | hubei | districts."""
+    if name not in ("world", "china", "hubei", "districts"):
+        raise HTTPException(404, "unknown layer")
+    return json.loads((_GEO / f"{name}.json").read_text(encoding="utf-8"))
 
 
 def _conn() -> sqlite3.Connection:

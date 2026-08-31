@@ -94,6 +94,12 @@ for fp in glob.glob(os.path.join(MAP_WEB, "d42*.json")):
         if name and center:
             district_center[name] = (center[0], center[1])
 
+# 省直辖县级市等 host 区县无 center 时的城市级坐标回退（市政府驻地）
+CITY_FALLBACK_GPS = {
+    "仙桃市": (113.4509, 30.3614),
+    "潜江市": (112.8992, 30.4021),
+}
+
 zone_count = 0
 for z in zones.get("zones", []):
     host = z.get("host_districts", [])
@@ -102,6 +108,8 @@ for z in zones.get("zones", []):
         if d in district_center:
             lon, lat = district_center[d]
             break
+    if lon is None and host:
+        lon, lat = CITY_FALLBACK_GPS.get(host[0], (None, None))
     for year, yd in z.get("years", {}).items():
         for key, value in yd.get("indicators", {}).items():
             unit = "个"

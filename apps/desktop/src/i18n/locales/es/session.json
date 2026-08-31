@@ -121,8 +121,8 @@
   },
   "live": {
     "runtime": {
-      "title": "Entorno de ejecución de OpenCode",
-      "bodyPrefix": "La app de escritorio ejecuta automáticamente una instancia de OpenCode incluida. En el navegador, inicia una con",
+      "title": "Entorno de ejecución de Qoder",
+      "bodyPrefix": "La app de escritorio ejecuta automáticamente una instancia de Qoder incluida. En el navegador, inicia una con",
       "bodySuffix": " y conéctate."
     },
     "connect": "Conectar",
@@ -143,7 +143,7 @@
       "openTitle": "Abrir {{path}} — el agente trabaja en este cuaderno dentro de esta sesión"
     },
     "connBadge": {
-      "title": "OpenCode · {{status}}",
+      "title": "Qoder · {{status}}",
       "status": {
         "ready": "listo",
         "connecting": "conectando",

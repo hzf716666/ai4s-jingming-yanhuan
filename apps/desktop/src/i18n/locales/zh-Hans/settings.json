@@ -36,7 +36,7 @@
   },
   "runtime": {
     "title": "代理运行时",
-    "hint": "opencode serve，通过其 HTTP + SSE API 驱动",
+    "hint": "Qoder serve，通过其 HTTP + SSE API 驱动",
     "connect": "连接",
     "disconnect": "断开连接",
     "serverLabel": "服务器",
@@ -56,7 +56,7 @@
     "mirrorPythonPlaceholder": "https://mirror.example.com/python-build-standalone",
     "mirrorHint": "可选镜像,仅在设置 Python 工具(Jupyter、科学数据库)下载时使用,适合 pypi.org / github.com 访问缓慢的网络。留空则使用默认源。",
     "backendLabel": "后端",
-    "backendHint": "在 OpenCode（默认）和通义灵码之间切换 AI 代理后端"
+    "backendHint": "在 Qoder（默认）和 Qoder CN 之间切换 AI 代理后端"
   },
   "updates": {
     "title": "应用更新",
@@ -108,7 +108,7 @@
   },
   "providers": {
     "title": "供应商",
-    "hint": "登录认证、自定义端点和导入的 OpenCode 登录信息",
+    "hint": "登录认证、自定义端点和导入的 Qoder 登录信息",
     "connectPrompt": "连接运行时以管理提供商。",
     "manage": "管理",
     "collapse": "收起",
@@ -136,7 +136,7 @@
     "fetchingModels": "获取中…",
     "noModelsFound": "端点未返回任何模型。",
     "addEndpoint": "添加端点",
-    "importLogin": "已经在使用 OpenCode CLI？导入其登录信息"
+    "importLogin": "已经在使用 Qoder CLI？导入其登录信息"
   },
   "mcp": {
     "title": "MCP 服务器",
@@ -235,8 +235,8 @@
     "couldNotRemoveMcp": "无法移除 MCP 服务器",
     "mcpRemoved": "MCP 服务器 {{name}} 已移除",
     "importFailed": "导入失败",
-    "noOpenCodeLoginFound": "在此计算机上未找到 OpenCode CLI 登录信息。",
-    "importedLogin": "已导入您的 OpenCode CLI 登录信息。",
+    "noOpenCodeLoginFound": "在此计算机上未找到 Qoder CLI 登录信息。",
+    "importedLogin": "已导入您的 Qoder CLI 登录信息。",
     "couldNotSetProxy": "无法应用代理设置",
     "proxyApplied": "代理设置已生效",
     "mirrorSaved": "镜像设置已保存",

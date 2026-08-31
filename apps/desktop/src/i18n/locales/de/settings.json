@@ -32,11 +32,11 @@
   },
   "page": {
     "title": "Einstellungen",
-    "subtitle": "Hier wird ausschließlich die gebündelte OpenCode-Runtime konfiguriert — eine Konfiguration, keine Kopien."
+    "subtitle": "Hier wird ausschließlich die gebündelte Qoder-Runtime konfiguriert — eine Konfiguration, keine Kopien."
   },
   "runtime": {
     "title": "Agent-Runtime",
-    "hint": "opencode serve, gesteuert über dessen HTTP- + SSE-API",
+    "hint": "Qoder serve, gesteuert über dessen HTTP- + SSE-API",
     "connect": "Verbinden",
     "disconnect": "Trennen",
     "serverLabel": "Server",
@@ -56,7 +56,7 @@
     "mirrorPythonPlaceholder": "https://mirror.example.com/python-build-standalone",
     "mirrorHint": "Optionale Spiegelserver, nur beim Einrichten von Python-Tools (Jupyter, Wissenschaftsdatenbanken) in Netzwerken verwendet, in denen pypi.org / github.com langsam sind. Leer lassen für Standardwerte.",
     "backendLabel": "Backend",
-    "backendHint": "Zwischen OpenCode (Standard) und Qoder CN als KI-Agent-Backend wechseln"
+    "backendHint": "Zwischen Qoder (Standard) und Qoder CN als KI-Agent-Backend wechseln"
   },
   "updates": {
     "title": "App-Updates",
@@ -108,7 +108,7 @@
   },
   "providers": {
     "title": "Anbieter",
-    "hint": "Authentifizierung, benutzerdefinierte Endpunkte und importierte OpenCode-Anmeldungen",
+    "hint": "Authentifizierung, benutzerdefinierte Endpunkte und importierte Qoder-Anmeldungen",
     "connectPrompt": "Verbinde die Laufzeit, um Anbieter zu verwalten.",
     "manage": "Verwalten",
     "collapse": "Einklappen",
@@ -137,7 +137,7 @@
     "fetchingModels": "Wird abgerufen…",
     "noModelsFound": "Der Endpunkt hat keine Modelle gemeldet.",
     "addEndpoint": "Endpunkt hinzufügen",
-    "importLogin": "Nutzen Sie bereits die OpenCode-CLI? Deren Anmeldung importieren"
+    "importLogin": "Nutzen Sie bereits die Qoder-CLI? Deren Anmeldung importieren"
   },
   "mcp": {
     "title": "MCP-Server",
@@ -236,8 +236,8 @@
     "couldNotRemoveMcp": "Der MCP-Server konnte nicht entfernt werden",
     "mcpRemoved": "MCP-Server {{name}} entfernt",
     "importFailed": "Import fehlgeschlagen",
-    "noOpenCodeLoginFound": "Auf diesem Rechner wurde keine OpenCode-CLI-Anmeldung gefunden.",
-    "importedLogin": "Ihre OpenCode-CLI-Anmeldung wurde importiert.",
+    "noOpenCodeLoginFound": "Auf diesem Rechner wurde keine Qoder-CLI-Anmeldung gefunden.",
+    "importedLogin": "Ihre Qoder-CLI-Anmeldung wurde importiert.",
     "couldNotSetProxy": "Proxy-Einstellung konnte nicht übernommen werden",
     "proxyApplied": "Proxy-Einstellung übernommen",
     "mirrorSaved": "Spiegel-Einstellungen gespeichert",

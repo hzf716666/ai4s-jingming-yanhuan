@@ -58,6 +58,14 @@ for (let i = 0; i < args.length; i++) {
 // In-memory session state
 const sessions = new Map(); // sessionId -> { messages, createdAt, title }
 
+// Full system prompt sent when skills are deployed. The qodercli preset
+// cannot be appended to (see startQuery), so this replaces it; the CLI still
+// injects tool definitions on its own, keeping the agent fully functional.
+const AGENT_SYSTEM_PROMPT =
+  "You are Qoder, an AI-powered coding assistant inside 景明研环 (Jingming Yanhuan), a scientific research workbench. " +
+  "You have access to tools (bash, read, write, etc.) to inspect, edit, and run code in the user's workspace. " +
+  "Complete the user's task; for multi-step tasks work through them in order. Be concise and precise.\n";
+
 // SSE clients: Set of { res, sessionFilter }
 // sessionFilter: null = all events, string = only events for that session
 const eventClients = new Set();
@@ -439,6 +447,25 @@ function listSkills() {
 }
 
 /**
+ * Build a skills manifest for the agent's system prompt from the deployed
+ * skill packs (JINGMING_SKILLS_DIR). The Qoder CLI does not scan that dir, so
+ * without this the model cannot enumerate or use the skills at all. Mirrors
+ * OpenCode, which injects discovered skills into its system prompt.
+ */
+function skillsSystemPrompt() {
+  const skills = listSkills();
+  if (!skills.length) return "";
+  const lines = skills.map(
+    (s) => `- ${s.name}: ${s.description || "(no description)"} — SKILL.md at ${s.location}`,
+  );
+  return (
+    "\n\n# Available skills\n" +
+    "You have the following skills installed. To use a skill, read its SKILL.md file at the listed path and follow its instructions exactly.\n" +
+    lines.join("\n")
+  );
+}
+
+/**
  * Persist the sidecar's session registry (id ↔ cliSessionId, title) so chat
  * history survives sidecar restarts. The CLI's own session store keeps the
  * real messages; this file only bridges the app's session ids to CLI ids.
@@ -524,6 +551,18 @@ function startQuery(sessionId, text, agentOptions = {}) {
   if (session.cliSessionId) {
     // Continuation: resume the CLI session (sessionId must NOT be passed).
     options.resume = session.cliSessionId;
+  }
+  // Give the model knowledge of the deployed skill packs (the CLI does not
+  // scan the app's skills dir): list name + description + SKILL.md path so it
+  // can enumerate skills and read them on demand.
+  const skillNote = skillsSystemPrompt();
+  if (skillNote) {
+    // qodercli 1.1.7 silently drops appendSystemPrompt (the preset+append
+    // shape), so the skills note never reached the model — it answered "no
+    // skills". A plain string IS forwarded verbatim, and the CLI still injects
+    // its own tool definitions regardless, so embed the note in a full
+    // systemPrompt instead.
+    options.systemPrompt = AGENT_SYSTEM_PROMPT + skillNote;
   }
 
   const q = query({ prompt: text, options });

@@ -121,8 +121,8 @@
   },
   "live": {
     "runtime": {
-      "title": "OpenCode 运行时",
-      "bodyPrefix": "桌面应用会自动运行一个内置的 OpenCode。在浏览器中，请使用以下命令启动一个",
+      "title": "Qoder 运行时",
+      "bodyPrefix": "桌面应用会自动运行一个内置的 Qoder。在浏览器中，请使用以下命令启动一个",
       "bodySuffix": "并连接。"
     },
     "connect": "连接",
@@ -143,7 +143,7 @@
       "openTitle": "打开 {{path}} — 代理在此会话中处理此笔记本"
     },
     "connBadge": {
-      "title": "OpenCode · {{status}}",
+      "title": "Qoder · {{status}}",
       "status": {
         "ready": "就绪",
         "connecting": "连接中",

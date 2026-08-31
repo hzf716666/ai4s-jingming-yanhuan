@@ -52,6 +52,7 @@ import { recordRun, runInputFromEvent } from "./runs";
 import { splitReview } from "./review";
 import { notifyPermissionRequest } from "./systemNotification";
 import { fallbackDefaultModel } from "@/components/settings/modelCatalog";
+import { normalizeProviderNames } from "@/lib/providerDisplay";
 import { toast } from "@/lib/toast";
 import i18n from "@/i18n";
 
@@ -783,7 +784,7 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
   loadCatalog: async () => {
     if (!client) return;
     try {
-      const [firstSkills, agents, defaultModel, commands, providers] = await Promise.all([
+      const [firstSkills, agents, defaultModel, commands, rawProviders] = await Promise.all([
         client.listSkills(),
         client.listAgents(),
         client.getDefaultModel().catch(() => null),
@@ -793,6 +794,7 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
         // sidecar's /config/providers with the live model list).
         client.listProviders ? client.listProviders().catch(() => []) : Promise.resolve([]),
       ]);
+      const providers = normalizeProviderNames(rawProviders);
       // A model switch in flight owns `defaultModel`: this read may predate
       // the switch's config write, and applying it would visibly revert the
       // just-selected model.

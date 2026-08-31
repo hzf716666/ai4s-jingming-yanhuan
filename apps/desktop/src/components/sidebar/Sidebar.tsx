@@ -13,8 +13,6 @@ import {
   FolderOpen,
   FolderTree,
   Loader2,
-  Map as MapIcon,
-  Network,
   NotebookPen,
   PanelLeft,
   Plus,
@@ -464,10 +462,6 @@ export function Sidebar({ project }: { project: Project }) {
             onClick={() => navigate("/skills")}
           />
 
-          {/* 数据整合 */}
-          <div className="mt-3 px-2 py-1 text-[11px] font-medium uppercase tracking-wider text-muted">
-            数据整合
-          </div>
           <DataIntegrationNav location={location.pathname} navigate={navigate} />
         </nav>
 
@@ -741,7 +735,7 @@ export function Sidebar({ project }: { project: Project }) {
   );
 }
 
-/** 数据整合分组导航 — 数据抽取 / 数据地图 / 知识图谱 */
+/** 数据分组导航 — 单一行（右侧新建），下方为 数据列表 / 数据地图 / 知识图谱 */
 function DataIntegrationNav({
   location,
   navigate,
@@ -749,72 +743,61 @@ function DataIntegrationNav({
   location: string;
   navigate: (path: string) => void;
 }) {
-  const isDataActive = location.startsWith("/data");
-  const extractionActive = location.startsWith("/data/extraction");
+  const dataActive = location.startsWith("/data");
+  const listActive = location === "/data/extraction";
+  const mapActive = location.startsWith("/data/map");
 
   return (
-    <div className="flex flex-col gap-0.5">
-      {/* 数据抽取 — 可展开 */}
-      <button
-        onClick={() => navigate("/data/extraction")}
-        className={cn(
-          "flex items-center gap-2 rounded-input px-2 py-1 text-[13px] text-text hover:bg-surface-2",
-          extractionActive && "bg-surface-2 font-medium",
-        )}
-      >
-        <Database size={16} className={extractionActive ? "text-accent" : "text-muted"} />
-        <span>数据抽取</span>
-      </button>
-      {isDataActive && (
-        <div className="ml-[26px] flex flex-col gap-0.5 border-l border-border-faint pl-2.5">
-          <button
-            onClick={() => navigate("/data/extraction")}
-            className={cn(
-              "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
-              location === "/data/extraction"
-                ? "bg-accent/10 font-medium text-accent"
-                : "text-muted hover:bg-surface-2 hover:text-text",
-            )}
-          >
-            任务列表
-          </button>
-          <button
-            onClick={() => navigate("/data/extraction/new")}
-            className={cn(
-              "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
-              location === "/data/extraction/new"
-                ? "bg-accent/10 font-medium text-accent"
-                : "text-muted hover:bg-surface-2 hover:text-text",
-            )}
-          >
-            新建任务
-          </button>
-        </div>
-      )}
+    <div>
+      <div className="group/data relative flex items-center gap-2 rounded-input px-2 py-1 text-[13px] text-text">
+        <Database
+          size={16}
+          className={cn("shrink-0", dataActive ? "text-accent" : "text-muted")}
+        />
+        <span className="min-w-0 flex-1 truncate">数据</span>
+        <button
+          onClick={() => navigate("/data/extraction/new")}
+          aria-label="新建"
+          title="新建"
+          className="rounded p-1 text-muted hover:bg-border hover:text-text"
+        >
+          <Plus size={13} />
+        </button>
+      </div>
 
-      {/* 数据地图 */}
-      <button
-        onClick={() => navigate("/data/map")}
-        className={cn(
-          "flex items-center gap-2 rounded-input px-2 py-1 text-[13px] text-text hover:bg-surface-2",
-          location.startsWith("/data/map") && "bg-surface-2 font-medium",
-        )}
-      >
-        <MapIcon size={16} className={location.startsWith("/data/map") ? "text-accent" : "text-muted"} />
-        <span>数据地图</span>
-      </button>
-
-      {/* 知识图谱 — 占位 */}
-      <button
-        className="flex items-center gap-2 rounded-input px-2 py-1 text-[13px] text-text hover:bg-surface-2"
-        title="开发中"
-      >
-        <Network size={16} className="text-muted" />
-        <span>知识图谱</span>
-        <span className="ml-auto rounded bg-surface-2 px-1 text-[9px] uppercase tracking-wider text-muted">
-          soon
-        </span>
-      </button>
+      <div className="mb-0.5 ml-[15px] flex flex-col gap-0.5 border-l border-border-faint pl-1.5">
+        <button
+          onClick={() => navigate("/data/extraction")}
+          className={cn(
+            "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
+            listActive
+              ? "bg-accent/10 font-medium text-accent"
+              : "text-muted hover:bg-surface-2 hover:text-text",
+          )}
+        >
+          数据列表
+        </button>
+        <button
+          onClick={() => navigate("/data/map")}
+          className={cn(
+            "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
+            mapActive
+              ? "bg-accent/10 font-medium text-accent"
+              : "text-muted hover:bg-surface-2 hover:text-text",
+          )}
+        >
+          数据地图
+        </button>
+        <button
+          className="flex items-center gap-1 rounded-input px-2 py-1 text-left text-[12.5px] text-muted transition-colors hover:bg-surface-2 hover:text-text"
+          title="开发中"
+        >
+          知识图谱
+          <span className="ml-auto rounded bg-surface-2 px-1 text-[9px] uppercase tracking-wider text-muted">
+            soon
+          </span>
+        </button>
+      </div>
     </div>
   );
 }
