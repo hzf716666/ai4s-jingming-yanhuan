@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import type { Project } from "@jingming/shared";
 import { cn } from "@/lib/cn";
-import { rootSessionOf, useRuntimeStore } from "@/lib/runtime";
+import { rootSessionOf, useRuntimeStore, normalizeDir } from "@/lib/runtime";
 import { pickFolder, renameProject, type ProjectInfo } from "@/lib/tauri";
 import {
   SIDEBAR_MAX,
@@ -217,7 +217,7 @@ export function Sidebar({ project }: { project: Project }) {
   // Subagent child sessions are internals of their parent conversation —
   // their asks and progress surface there, so they get no row of their own.
   const topSessions = sessions.filter((s) => !s.parentId);
-  const projectByPath = new Map(projects.map((p) => [p.path, p]));
+  const projectByPath = new Map(projects.map((p) => [normalizeDir(p.path), p]));
   const sessionsByProject = new Map<string, Row[]>(
     projects.map((p) => [p.id, []]),
   );
@@ -229,7 +229,7 @@ export function Sidebar({ project }: { project: Project }) {
       to: `/live/${s.id}`,
       kind: "session",
     };
-    const owner = s.directory ? projectByPath.get(s.directory) : undefined;
+    const owner = s.directory ? projectByPath.get(normalizeDir(s.directory)) : undefined;
     if (owner) sessionsByProject.get(owner.id)!.push(row);
     else looseRows.push(row);
   }
@@ -237,7 +237,7 @@ export function Sidebar({ project }: { project: Project }) {
   const updatedByProject = new Map<string, number>();
   for (const s of topSessions) {
     if (!s.directory || s.updated == null) continue;
-    const owner = projectByPath.get(s.directory);
+    const owner = projectByPath.get(normalizeDir(s.directory));
     if (owner)
       updatedByProject.set(owner.id, Math.max(updatedByProject.get(owner.id) ?? 0, s.updated));
   }
@@ -744,60 +744,75 @@ function DataIntegrationNav({
   navigate: (path: string) => void;
 }) {
   const dataActive = location.startsWith("/data");
-  const listActive = location === "/data/extraction";
   const mapActive = location.startsWith("/data/map");
+  // 分组可折叠，状态持久化（与 collapsedProjects 同一模式）
+  const [collapsed, setCollapsed] = useState(
+    () =>
+      typeof localStorage !== "undefined" &&
+      localStorage.getItem("jingming.collapsedDataNav") === "1",
+  );
+  const toggleCollapsed = () => {
+    setCollapsed((c) => {
+      const next = !c;
+      localStorage.setItem("jingming.collapsedDataNav", next ? "1" : "0");
+      return next;
+    });
+  };
 
   return (
     <div>
       <div className="group/data relative flex items-center gap-2 rounded-input px-2 py-1 text-[13px] text-text">
-        <Database
-          size={16}
-          className={cn("shrink-0", dataActive ? "text-accent" : "text-muted")}
-        />
-        <span className="min-w-0 flex-1 truncate">数据</span>
         <button
-          onClick={() => navigate("/data/extraction/new")}
-          aria-label="新建"
-          title="新建"
-          className="rounded p-1 text-muted hover:bg-border hover:text-text"
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? "展开数据分组" : "收起数据分组"}
+          title={collapsed ? "展开" : "收起"}
+          className="flex min-w-0 flex-1 items-center gap-2 rounded-input px-0.5 py-0.5 text-left transition-colors hover:bg-surface-2"
         >
-          <Plus size={13} />
+          <Database
+            size={16}
+            className={cn("shrink-0", dataActive ? "text-accent" : "text-muted")}
+          />
+          <span className="min-w-0 flex-1 truncate">数据</span>
         </button>
       </div>
 
-      <div className="mb-0.5 ml-[15px] flex flex-col gap-0.5 border-l border-border-faint pl-1.5">
-        <button
-          onClick={() => navigate("/data/extraction")}
-          className={cn(
-            "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
-            listActive
-              ? "bg-accent/10 font-medium text-accent"
-              : "text-muted hover:bg-surface-2 hover:text-text",
-          )}
-        >
-          数据列表
-        </button>
-        <button
-          onClick={() => navigate("/data/map")}
-          className={cn(
-            "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
-            mapActive
-              ? "bg-accent/10 font-medium text-accent"
-              : "text-muted hover:bg-surface-2 hover:text-text",
-          )}
-        >
-          数据地图
-        </button>
-        <button
-          className="flex items-center gap-1 rounded-input px-2 py-1 text-left text-[12.5px] text-muted transition-colors hover:bg-surface-2 hover:text-text"
-          title="开发中"
-        >
-          知识图谱
-          <span className="ml-auto rounded bg-surface-2 px-1 text-[9px] uppercase tracking-wider text-muted">
-            soon
-          </span>
-        </button>
-      </div>
+      {!collapsed && (
+        <div className="mb-0.5 ml-[15px] flex flex-col gap-0.5 border-l border-border-faint pl-1.5">
+          <button
+            onClick={() => navigate("/data/records")}
+            className={cn(
+              "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
+              location.startsWith("/data/records")
+                ? "bg-accent/10 font-medium text-accent"
+                : "text-muted hover:bg-surface-2 hover:text-text",
+            )}
+          >
+            数据面板
+          </button>
+          <button
+            onClick={() => navigate("/data/map")}
+            className={cn(
+              "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
+              mapActive
+                ? "bg-accent/10 font-medium text-accent"
+                : "text-muted hover:bg-surface-2 hover:text-text",
+            )}
+          >
+            数据地图
+          </button>
+          <button
+            onClick={() => navigate("/data/knowledge-graph")}
+            className={cn(
+              "rounded-input px-2 py-1 text-left text-[12.5px] transition-colors",
+              location.startsWith("/data/knowledge-graph")
+                ? "bg-accent/10 font-medium text-accent"
+                : "text-muted hover:bg-surface-2 hover:text-text",
+            )}
+          >
+            知识图谱
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -47,6 +47,8 @@
   --series-8: #eb6834;
   --chart-grid: #e7e3da;
   --chart-axis: #cbc6bb;
+  /* 数据地图边界：暖色/白色底用较深的灰色（非纯黑 --text），暗色底用浅灰 */
+  --map-boundary: #6f695e;
   /* Code highlighting (GitHub-light hues; see .hljs-* rules below). */
   --hl-keyword: #cf222e;
   --hl-entity: #8250df;
@@ -88,6 +90,7 @@
   --series-8: #eb6834;
   --chart-grid: #e6e6ea;
   --chart-axis: #c9c9cf;
+  --map-boundary: #63656c;
   /* Code highlighting (GitHub-light hues; see .hljs-* rules below). */
   --hl-keyword: #cf222e;
   --hl-entity: #8250df;
@@ -129,6 +132,7 @@
   --series-8: #d95926;
   --chart-grid: #33313c;
   --chart-axis: #4a4753;
+  --map-boundary: #c9c4bb;
   /* Code highlighting (GitHub-dark hues; see .hljs-* rules below). */
   --hl-keyword: #ff7b72;
   --hl-entity: #d2a8ff;
@@ -179,9 +183,24 @@ body {
   background: color-mix(in srgb, var(--bg) 80%, transparent);
 }
 
+/* Tailwind v3 无法为 var() 颜色生成透明度修饰类（如 bg-surface/80，只支持
+   静态颜色值），color-mix 在运行时按主题求值、效果等价。地图覆盖层等半透明
+   面板用这些类替代带透明度的 Tailwind 写法。 */
+.bg-surface-80 {
+  background-color: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+.bg-surface-90 {
+  background-color: color-mix(in srgb, var(--surface) 90%, transparent);
+}
+.bg-surface-95 {
+  background-color: color-mix(in srgb, var(--surface) 95%, transparent);
+}
+.bg-accent-15 {
+  background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
 /* Native <select> chrome (metallic bezel + arrow) clashes with the flat
-   inputs; draw our own chevron instead. Pair with inputCls via selectCls. */
-.select-chrome {
+   inputs; draw our own chevron instead. Pair with inputCls via selectCls. */.select-chrome {
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23898989' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");

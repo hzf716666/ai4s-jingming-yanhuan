@@ -778,6 +778,10 @@ export function SettingsPage() {
 
   const saveCustom = () =>
     run(t("toast.couldNotAddEndpoint"), async () => {
+      if (backend !== "opencode") {
+        toast.error(t("toast.customEndpointNeedsOpenCode"));
+        return;
+      }
       const id = cName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const models = modelList(cModels);
       if (!id || !cUrl.trim() || models.length === 0) {
@@ -927,8 +931,8 @@ export function SettingsPage() {
                   aria-label={t("runtime.backendLabel")}
                   className={chipCls("shrink-0")}
                 >
-                  <option value="opencode">Qoder</option>
-                  <option value="qoder">Qoder CN</option>
+                  <option value="opencode">{t("runtime.backendOpenCode")}</option>
+                  <option value="qoder">{t("runtime.backendQoderCN")}</option>
                 </select>
               }
             />
@@ -1274,6 +1278,11 @@ export function SettingsPage() {
                   </button>
                   {showCustom && (
                     <div className="space-y-2 px-3 pb-3">
+                      {backend === "qoder" && (
+                        <p className="rounded-input border border-warn/30 bg-warn/10 px-2.5 py-1.5 text-xs text-warn">
+                          {t("providers.customEndpointQoderOnly")}
+                        </p>
+                      )}
                       <div className="flex gap-2">
                         <input
                           value={cName}

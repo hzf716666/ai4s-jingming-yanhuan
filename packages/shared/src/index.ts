@@ -34,6 +34,7 @@ export type ThreadBlock =
   | StepSummaryBlock
   | ToolCallBlock
   | ReviewerBlock
+  | TierChartBlock
   | DataTableBlock
   | FigureBlock
   | ArtifactBlock
@@ -140,6 +141,25 @@ export interface ReviewerBlock {
   kind: "reviewer";
   findings: ReviewFinding[];
   note?: string;
+}
+
+/** 四档概率仪表图(评审报告的概率分布可视化, 对齐 Gatekeeper 评估页样式):
+ *  agent 输出 ```tierchart fenced JSON, 前端渲染为 Top/Top-/Good/Fair 概率条. */
+export interface TierChartBlock {
+  kind: "tierchart";
+  /** 四档概率(键: exceptional/strong/fair/limited, 值 0-1, 和=1) */
+  probabilities: Record<string, number>;
+  /** 集成预测(内部键 exceptional/strong/fair/limited) */
+  tier?: string;
+  /** 置信度标签 high/medium/low */
+  confidence?: string;
+  /** 熵归一化值 0-1 */
+  normEntropy?: number;
+  /** 一致模型数 */
+  agreeCount?: number;
+  totalModels?: number;
+  /** 一句话结论 */
+  summary?: string;
 }
 
 export interface DataTableBlock {

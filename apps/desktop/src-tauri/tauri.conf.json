@@ -55,7 +55,8 @@
       "../../../runtime/skills/04-实验执行": "skills-04/",
       "../../../runtime/skills/05-分析验证": "skills-05/",
       "../../../runtime/skills/06-写作发表": "skills-06/",
-      "../../../runtime/skills/07-领域科学": "skills-07/"
+      "../../../runtime/skills/07-领域科学": "skills-07/",
+      "../../../runtime/skills/08-经济实证": "skills-08/"
     },
     "icon": [
       "icons/32x32.png",

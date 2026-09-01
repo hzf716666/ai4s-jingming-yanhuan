@@ -121,8 +121,8 @@
   },
   "live": {
     "runtime": {
-      "title": "Qoder runtime",
-      "bodyPrefix": "The desktop app runs a bundled Qoder automatically. In the browser, start one with",
+      "title": "OpenCode runtime",
+      "bodyPrefix": "The desktop app runs a bundled OpenCode automatically. In the browser, start one with",
       "bodySuffix": " and connect."
     },
     "connect": "Connect",

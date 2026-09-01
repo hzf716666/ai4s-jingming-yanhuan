@@ -20,9 +20,15 @@ if str(_PARENT) not in sys.path:
 from .models import LLMConfig, LLMConfigResponse, TaskCreateRequest
 from .task_manager import get_manager
 from .map_api import router as map_router
+from .records_api import router as records_router
+from .hypotheses_api import router as hypotheses_router
+from .progress_api import router as progress_router
 
 app = FastAPI(title="Data Extraction API", version="1.0.0")
 app.include_router(map_router)
+app.include_router(records_router)
+app.include_router(hypotheses_router)
+app.include_router(progress_router)
 
 # CORS — allow all for local dev
 app.add_middleware(
@@ -37,6 +43,15 @@ app.add_middleware(
 @app.on_event("startup")
 def _startup():
     get_manager()
+    # 自动同步下载的数据文件(OECD 等下载目录) → fact_records(面板)/zone_facts(地图)
+    try:
+        import subprocess, sys as _sys, os
+        sync = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "sync_oecd_to_panel.py")
+        if os.path.exists(sync):
+            r = subprocess.run([_sys.executable, sync], capture_output=True, text=True, timeout=120)
+            print("[auto-sync]", (r.stdout or r.stderr).strip()[-200:])
+    except Exception as e:
+        print("[auto-sync] skipped:", e)
 
 
 # ============== Tasks ==============

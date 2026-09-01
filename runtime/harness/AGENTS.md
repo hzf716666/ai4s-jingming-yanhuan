@@ -29,6 +29,7 @@
 - Read `KNOWLEDGE.md`.
 - Read the latest `2-3` files in `notes/`.
 - Then check the goal, worktree, code, data, and logs.
+- **研究项目(目录含 `PIPELINE.md` 与 `data/records.json`)**: 额外读 `PIPELINE.md`,按其中的 P1→P7 七阶段流水线执行(拆解→过滤→数据盘点→实验→整合→写作→评审),每阶段产物落盘后向用户汇报。
 
 ## Principles
 1. Restate the goal before acting.

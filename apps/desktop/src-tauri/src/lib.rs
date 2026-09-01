@@ -182,6 +182,8 @@ pub fn run() {
             artifact_file::read_artifact,
             artifact_file::open_path,
             artifact_file::reveal_path,
+            artifact_file::open_external_path,
+            artifact_file::reveal_external_path,
             artifact_file::absolute_path,
             artifact_file::resolve_artifact,
             artifact_file::save_text_file,

@@ -413,6 +413,14 @@ class TaskManager:
         conn.close()
         task.set_stage(PipelineStage.M6_OUTPUT, 90, "SQLite 已生成")
 
+        # 抽取完成 → 自动同步到数据地图(zone_facts), 使地图/面板/图谱联动
+        try:
+            from scripts.sync_records_to_views import sync_fact_to_zone  # type: ignore
+            n_zone = sync_fact_to_zone()
+            task.add_log(f"  已同步 {n_zone} 条到数据地图(zone_facts)")
+        except Exception as _e:
+            task.add_log(f"  zone 同步跳过: {_e}")
+
         # Anomalies / breaks / etc.
         with open(sst_dir / "anomalies.json", "w", encoding="utf-8") as f:
             json.dump(anomalies, f, ensure_ascii=False, indent=2)

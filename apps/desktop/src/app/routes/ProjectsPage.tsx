@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,8 +15,83 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/cn";
 import { useRuntimeStore } from "@/lib/runtime";
 import { openProjectFolder, renameProject, type ProjectInfo } from "@/lib/tauri";
+import { normalizeDir } from "@/lib/runtime";
 import { isGatewayWeb } from "@/lib/webMode";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+
+/** 研究项目进度(FKG 假设 → 研究 → 论文) */
+interface ProjectProgressData {
+  project: string;
+  is_research: boolean;
+  stages: { id: string; label: string; done: boolean }[];
+  percent: number;
+  status: string;
+  done: number;
+  total: number;
+}
+
+/** 拉取一个项目的进度(研究项目目录产物 → 阶段完成度)。 */
+async function fetchProjectProgress(path: string): Promise<ProjectProgressData | null> {
+  try {
+    const r = await fetch(
+      `http://127.0.0.1:8787/api/projects/progress?path=${encodeURIComponent(path)}`,
+    );
+    if (!r.ok) return null;
+    return (await r.json()) as ProjectProgressData;
+  } catch {
+    return null;
+  }
+}
+
+/** 研究进度条: 假设→拆解→文献→过滤→数据→实验→整合→写作→评审, 最后到论文交付。 */
+function ProjectProgress({ path }: { path: string }) {
+  const [data, setData] = useState<ProjectProgressData | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    fetchProjectProgress(path).then((d) => {
+      if (!cancelled) {
+        setData(d);
+        setLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [path]);
+  if (loading) return null;
+  if (!data || !data.is_research) return null;
+  return (
+    <div className="mt-1 w-full max-w-sm">
+      <div className="flex items-center justify-between text-[10px] text-muted">
+        <span>
+          研究进度 {data.percent}% · {data.status}
+        </span>
+        <span className="tabular-nums">
+          {data.done}/{data.total} 阶段
+        </span>
+      </div>
+      {/* 分段进度条: 每阶段一格 */}
+      <div className="mt-1 flex h-1.5 w-full gap-0.5 overflow-hidden">
+        {data.stages.map((s, i) => (
+          <div
+            key={s.id}
+            title={s.label}
+            className={cn(
+              "flex-1 rounded-sm transition-colors",
+              s.done ? "bg-accent" : "bg-border",
+              i % 3 === 0 && s.done ? "bg-accent" : "",
+            )}
+          />
+        ))}
+      </div>
+      <div className="mt-0.5 flex justify-between text-[9px] text-muted">
+        <span>假设构建</span>
+        <span>论文交付</span>
+      </div>
+    </div>
+  );
+}
 
 /** Compact "time ago" like the reference UI: 37m · 18h · 3d · 1w · 9mo · 2y.
  *  Under a minute reads as "now". `now` is passed so a list renders consistently. */
@@ -83,7 +158,7 @@ export function ProjectsPage() {
     const q = query.trim().toLowerCase();
     return projects
       .map((p) => {
-        const projectSessions = sessionsByPath.get(p.path) ?? [];
+        const projectSessions = sessionsByPath.get(normalizeDir(p.path)) ?? [];
         const latest = projectSessions[0]?.updated ?? 0;
         return { ...p, sessions: projectSessions, updated: Math.max(latest, p.createdAt) };
       })
@@ -180,6 +255,8 @@ export function ProjectsPage() {
                           {t("projects.importedBadge")}
                         </span>
                       )}
+                      {/* 研究进度条: 仅研究项目显示(假设→研究→论文) */}
+                      <ProjectProgress path={p.path} />
                     </div>
 
                     {/* Sources — click to open the folder in the OS file manager. */}

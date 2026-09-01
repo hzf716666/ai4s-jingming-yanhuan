@@ -250,6 +250,34 @@ pub fn open_path(app: AppHandle, path: String, root: Option<String>) -> Result<(
     os_open(&full)
 }
 
+/// Open an ABSOLUTE file path in the OS default application. For files outside
+/// the session workspace (e.g. 年鉴源文件 in E:\tb\B中国火炬统计年鉴) that the
+/// workspace-scoped `open_path` cannot reach. Only opens when the file exists.
+#[tauri::command]
+pub fn open_external_path(path: String) -> Result<(), String> {
+    let p = std::path::Path::new(&path);
+    if !p.is_absolute() {
+        return Err(format!("expected absolute path, got {path}"));
+    }
+    if !p.exists() {
+        return Err(format!("file not found: {path}"));
+    }
+    os_open(p)
+}
+
+/// Reveal an ABSOLUTE file/dir in the OS file manager (external 年鉴 sources).
+#[tauri::command]
+pub fn reveal_external_path(path: String) -> Result<(), String> {
+    let p = std::path::Path::new(&path);
+    if !p.is_absolute() {
+        return Err(format!("expected absolute path, got {path}"));
+    }
+    if !p.exists() {
+        return Err(format!("path not found: {path}"));
+    }
+    reveal_impl(p)
+}
+
 /// Reveal a workspace file/dir in the OS file manager (Finder on macOS,
 /// Explorer on Windows, the file-manager portal/DBus with a folder-open
 /// fallback on Linux).

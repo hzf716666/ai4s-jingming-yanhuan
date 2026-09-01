@@ -15,3 +15,8 @@ declare module "echarts-gl/lib/util/geometry/Bars3DGeometry" {
   };
   export default BarsGeometry;
 }
+
+declare module "echarts-gl/lib/util/shader/lines3D.glsl.js" {
+  const shaderSource: string;
+  export default shaderSource;
+}

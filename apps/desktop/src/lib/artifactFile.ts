@@ -58,6 +58,21 @@ export async function openArtifactExternally(path: string, root?: FileRoot): Pro
   await invoke("open_path", { path, root });
 }
 
+/** Open an ABSOLUTE file path in the OS default application (desktop only).
+ *  For files outside the session workspace (e.g. 年鉴源文件). */
+export async function openExternalPath(absPath: string): Promise<void> {
+  if (!isTauri) return;
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("open_external_path", { path: absPath });
+}
+
+/** Reveal an ABSOLUTE file/dir in the OS file manager (desktop only). */
+export async function revealExternalPath(absPath: string): Promise<void> {
+  if (!isTauri) return;
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("reveal_external_path", { path: absPath });
+}
+
 /** Reveal a root-relative file/dir in the OS file manager (Finder / Explorer /
  *  Linux file manager). Desktop only; no-op in the browser. */
 export async function revealArtifact(path: string, root?: FileRoot): Promise<void> {

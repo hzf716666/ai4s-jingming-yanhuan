@@ -413,12 +413,16 @@ export class QoderClient extends BaseAgentRuntime implements AgentRuntime {
       title: string;
       created?: number;
       updated?: number;
+      directory?: string;
+      parentId?: string;
     }>;
     return sessions.map((s) => ({
       id: s.id,
       title: s.title,
       created: s.created ?? Date.now(),
       updated: s.updated ?? Date.now(),
+      directory: s.directory ?? undefined,
+      parentId: s.parentId ?? undefined,
     }));
   }
 

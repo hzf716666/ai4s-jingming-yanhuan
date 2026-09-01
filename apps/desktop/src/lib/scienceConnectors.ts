@@ -11,14 +11,24 @@ export interface ScienceConnector {
   /** Short discipline chip, e.g. "materials", "economics". */
   discipline: string;
   description: string;
-  /** PyPI package installed into the shared science-MCP env. */
-  pkg: string;
+  /** How this connector is provisioned. `python` (default): installed into the
+   *  managed venv via pip. `npx`/`uvx`: launched on demand by the runtime, no
+   *  managed venv needed. */
+  kind?: "python" | "npx" | "uvx";
+  /** PyPI package installed into the shared science-MCP env (kind=python). */
+  pkg?: string;
   /** Console script the package installs (resolved next to the managed python).
    *  Preferred when set — many MCP servers ship a script, not a `-m` module. */
   bin?: string;
   /** Fallback: Python `-m` module the server runs as, plus any args. */
   module?: string;
   args?: string[];
+  /** npm package for kind=npx (e.g. "@cyanheads/oecd-mcp-server"). */
+  npmPkg?: string;
+  /** Binary npm installs (kind=npx); defaults to the package's bin. */
+  npmBin?: string;
+  /** Extra args passed after the bin (kind=npx). */
+  npmArgs?: string[];
   /** Env var the server reads its API key from (free keys; never logged). */
   apiKeyEnv?: string;
   /** Where the user gets a free key. */
@@ -105,6 +115,73 @@ export const SCIENCE_CONNECTORS: ScienceConnector[] = [
     bin: "usgs-mcp",
     source: "github.com/mansurjisan/ocean-mcp",
   },
+  {
+    id: "cnki",
+    label: "CNKI 知网文献检索",
+    discipline: "economics",
+    description:
+      "中国知网 (CNKI) 学术文献与期刊检索、元数据导出 — 需要知网账号登录(Playwright 浏览器)",
+    pkg: "cnki-mcp",
+    bin: "cnki-mcp",
+    installNote: "需要知网账号; 首次启用会安装 Playwright 浏览器",
+    source: "github.com/SepineTam/cnki-mcp",
+  },
+  {
+    id: "yahoo-finance",
+    label: "Yahoo Finance 金融数据",
+    discipline: "economics",
+    description:
+      "股票、ETF、指数、汇率等金融时间序列(Yahoo Finance) — 免 key",
+    pkg: "yahoo-finance-mcp",
+    bin: "yahoo-finance-mcp",
+    source: "github.com/Alex2Yang97/yahoo-finance-mcp",
+  },
+  {
+    id: "mcp-finance",
+    label: "Finance 计算分析工具",
+    discipline: "economics",
+    description:
+      "yfinance 包装器 + 资产收益率/波动率/风险等计算分析工具",
+    pkg: "mcp-finance",
+    bin: "mcp-finance",
+    source: "github.com/JoshCap20/finance-mcp",
+  },
+  {
+    id: "worldbank",
+    label: "World Bank 世界银行数据",
+    discipline: "economics",
+    kind: "npx",
+    description:
+      "World Bank Open Data — 各国 GDP、人口、贸易、教育、健康等宏观发展指标 (240+ 经济体)",
+    npmPkg: "worldbank-mcp",
+    npmBin: "worldbank-mcp",
+    installNote: "npx 启动 (拉取 npm 包无需额外环境)",
+    source: "github.com/tianyuio/worldbank-mcp",
+  },
+  {
+    id: "oecd",
+    label: "OECD 经合组织数据",
+    discipline: "economics",
+    kind: "npx",
+    description:
+      "OECD 统计数据库 — 1500+ 数据集 (GDP、税收、教育、创新、劳动力市场等)",
+    npmPkg: "@cyanheads/oecd-mcp-server",
+    npmBin: "oecd-mcp-server",
+    installNote: "npx 启动",
+    source: "github.com/cyanheads/oecd-mcp-server",
+  },
+  {
+    id: "cnbs",
+    label: "中国国家统计局数据",
+    discipline: "economics/china",
+    kind: "npx",
+    description:
+      "中国国家统计局 (NBS) 数据查询 — GDP、CPI、人口、工业、固定资产投资等",
+    npmPkg: "mcp-cnbs",
+    npmBin: "mcp-cnbs",
+    installNote: "npx 启动",
+    source: "github.com/icen-ai/mcp-cnbs",
+  },
 ];
 
 /** Resolve a console script that sits next to the managed python interpreter
@@ -123,9 +200,22 @@ export function connectorConfig(
   python: string,
   apiKey?: string,
 ): McpConfig {
-  const command = c.bin
-    ? [scriptBeside(python, c.bin)]
-    : [python, "-m", c.module ?? "", ...(c.args ?? [])];
+  let command: string[];
+  if (c.kind === "npx") {
+    // On-demand npm launch: `npx -y <pkg> [bin] [args]`. No managed venv.
+    command = ["npx", "-y", c.npmPkg ?? ""];
+    if (c.npmBin) command.push(c.npmBin);
+    if (c.npmArgs) command.push(...c.npmArgs);
+  } else if (c.kind === "uvx") {
+    command = ["uvx", "--from", c.npmPkg ?? ""];
+    if (c.npmBin) command.push(c.npmBin);
+    if (c.npmArgs) command.push(...c.npmArgs);
+  } else {
+    // Python connector: console script beside the managed interpreter, or -m module.
+    command = c.bin
+      ? [scriptBeside(python, c.bin)]
+      : [python, "-m", c.module ?? "", ...(c.args ?? [])];
+  }
   const config: McpConfig = { type: "local", command, enabled: true };
   if (c.apiKeyEnv && apiKey && apiKey.trim()) {
     config.environment = { [c.apiKeyEnv]: apiKey.trim() };

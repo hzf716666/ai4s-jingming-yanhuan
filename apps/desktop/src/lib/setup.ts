@@ -90,9 +90,14 @@ export const useSetupStore = create<SetupState>((set, get) => ({
     if (!c) return;
     set({ connectorId: id, line: null });
     try {
-      toast.success(`Setting up ${c.label} — first run downloads a managed Python, please wait…`);
-      const python = await setupScienceMcp(c.pkg);
-      await getClient()!.addMcpServer(c.id, connectorConfig(c, python, apiKey));
+      if (c.kind === "npx" || c.kind === "uvx") {
+        // On-demand npm/uvx servers need no managed venv — register directly.
+        await getClient()!.addMcpServer(c.id, connectorConfig(c, "", apiKey));
+      } else {
+        toast.success(`Setting up ${c.label} — first run downloads a managed Python, please wait…`);
+        const python = await setupScienceMcp(c.pkg ?? "");
+        await getClient()!.addMcpServer(c.id, connectorConfig(c, python, apiKey));
+      }
       toast.success(`${c.label} enabled — the agent can now use it from chat.`);
       await useRuntimeStore.getState().loadCatalog();
     } catch (e) {

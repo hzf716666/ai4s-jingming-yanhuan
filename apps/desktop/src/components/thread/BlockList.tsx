@@ -4,6 +4,7 @@ import { AgentMessage, DataTable, RunningJobsOverlay, StatusLine, UserMessage } 
 import { ToolCallRow } from "./ToolCallRow";
 import { ToolGroup, groupToolBlocks } from "./ToolGroup";
 import { ReviewerCard } from "./ReviewerCard";
+import { TierChartCard } from "./TierChartCard";
 import { ReasoningRow } from "./ReasoningRow";
 import { StepSummaryRow } from "./StepSummaryRow";
 import { FigureBlock } from "./FigureBlock";
@@ -48,6 +49,8 @@ export function renderBlock(
       return <ToolCallRow key={i} block={block} />;
     case "reviewer":
       return <ReviewerCard key={i} block={block} />;
+    case "tierchart":
+      return <TierChartCard key={i} block={block} />;
     case "table":
       return <DataTable key={i} block={block} />;
     case "figure":

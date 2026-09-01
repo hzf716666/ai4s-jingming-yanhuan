@@ -52,10 +52,15 @@ describe("connectorConfig", () => {
     expect(cfg.type === "local" && cfg.environment).toBeUndefined();
   });
 
-  it("every connector declares an id, discipline, package, and a launch path", () => {
+  it("every connector declares an id, discipline, a launch path, and source", () => {
     for (const c of SCIENCE_CONNECTORS) {
-      expect(c.id && c.discipline && c.pkg && c.source).toBeTruthy();
-      expect(Boolean(c.bin) || Boolean(c.module)).toBe(true);
+      expect(c.id && c.discipline && c.source).toBeTruthy();
+      if (c.kind === "npx" || c.kind === "uvx") {
+        expect(c.npmPkg).toBeTruthy();
+      } else {
+        expect(c.pkg).toBeTruthy();
+        expect(Boolean(c.bin) || Boolean(c.module)).toBe(true);
+      }
       if (c.apiKeyEnv) expect(c.apiKeyUrl).toBeTruthy(); // key-needing → tell users where to get one
     }
   });
@@ -91,5 +96,44 @@ describe("connectorConfig", () => {
   it("launches USGS water data as a console script (earth, no key)", () => {
     const cfg = connectorConfig(byId("usgs-water"), "/env/bin/python");
     expect(cfg.type === "local" && cfg.command).toEqual(["/env/bin/usgs-mcp"]);
+  });
+});
+
+describe("SCIENCE_CONNECTORS", () => {
+  it("every connector has a launch path and a source", () => {
+    for (const c of SCIENCE_CONNECTORS) {
+      if (c.kind === "npx" || c.kind === "uvx") {
+        expect(c.npmPkg, `${c.id} npmPkg`).toBeTruthy();
+        expect(c.npmBin ?? c.npmPkg, `${c.id} needs npmBin or defaults to pkg`).toBeTruthy();
+      } else {
+        expect(c.pkg, `${c.id} pkg`).toBeTruthy();
+        expect(c.bin || c.module, `${c.id} needs bin or module`).toBeTruthy();
+      }
+      expect(c.source, `${c.id} source`).toBeTruthy();
+      expect(c.source.startsWith("github.com"), `${c.id} source should link github`).toBe(true);
+    }
+  });
+});
+
+describe("connectorConfig npx/uvx", () => {
+  it("launches an npx connector on demand (worldbank)", () => {
+    const cfg = connectorConfig(byId("worldbank"), "/env/bin/python");
+    expect(cfg.type === "local" && cfg.command).toEqual([
+      "npx", "-y", "worldbank-mcp", "worldbank-mcp",
+    ]);
+  });
+
+  it("launches @cyanheads oecd bin for oecd", () => {
+    const cfg = connectorConfig(byId("oecd"), "/env/bin/python");
+    expect(cfg.type === "local" && cfg.command).toEqual([
+      "npx", "-y", "@cyanheads/oecd-mcp-server", "oecd-mcp-server",
+    ]);
+  });
+
+  it("launches mcp-cnbs for China NBS", () => {
+    const cfg = connectorConfig(byId("cnbs"), "/env/bin/python");
+    expect(cfg.type === "local" && cfg.command).toEqual([
+      "npx", "-y", "mcp-cnbs", "mcp-cnbs",
+    ]);
   });
 });

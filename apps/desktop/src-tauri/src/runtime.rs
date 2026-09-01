@@ -227,6 +227,7 @@ fn deploy_bundled_skills(app: &AppHandle) {
         "skills-05",
         "skills-06",
         "skills-07",
+        "skills-08",
     ] {
         let src = match app
             .path()
@@ -256,7 +257,49 @@ fn deploy_bundled_skills(app: &AppHandle) {
     if all_ok {
         prune_stale_skills(&dst, &bundled);
     }
+    // The Qoder backend's CLI discovers skills from its OWN user dir
+    // (~/.qoder/skills), not this OpenCode profile — without a link its prompt
+    // reports "No skills are currently available" and the Skill tool has
+    // nothing invocable. Point it at the deployed pack so qodercli natively
+    // enumerates and can invoke the same skills (mirrors how OpenCode scans
+    // its global skills dir). Runs on every start; an existing dir/junction is
+    // never touched, so the user's own qodercli skills win.
+    link_qoder_skills_dir(&dst);
 }
+
+/// Point qodercli's user skills dir (`~/.qoder/skills`) at the deployed pack.
+/// A directory junction (`mklink /J`) needs no admin rights, unlike a symlink.
+/// Only created when absent — existing junctions/directories are left alone.
+#[cfg(windows)]
+fn link_qoder_skills_dir(dst: &Path) {
+    let Ok(userprofile) = std::env::var("USERPROFILE") else { return };
+    let link = Path::new(&userprofile).join(".qoder").join("skills");
+    if link.exists() {
+        return;
+    }
+    if std::fs::create_dir_all(link.parent().unwrap()).is_err() {
+        return;
+    }
+    match std::process::Command::new("cmd")
+        .args(["/C", "mklink", "/J", &link.to_string_lossy(), &dst.to_string_lossy()])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+    {
+        Ok(s) if s.success() => {}
+        Ok(s) => eprintln!(
+            "failed to link ~/.qoder/skills -> {} (exit {:?}); a stale link may need manual cleanup",
+            dst.display(),
+            s.code()
+        ),
+        Err(e) => eprintln!("failed to run mklink for ~/.qoder/skills: {e}"),
+    }
+}
+
+/// Non-Windows: no-op — the Qoder CLI resolves skills differently off Windows
+/// and the junction approach does not apply.
+#[cfg(not(windows))]
+fn link_qoder_skills_dir(_dst: &Path) {}
 
 /// Ship the bundled goal plugin (one self-contained JS file, see
 /// scripts/dev/fetch-goal-plugin.sh) into the app-private OpenCode profile and
@@ -886,7 +929,7 @@ pub fn open_workspace_base(app: AppHandle) -> Result<(), String> {
 #[tauri::command(async)]
 pub fn set_workspace(
     app: AppHandle,
-    _state: State<'_, RuntimeState>,
+    state: State<'_, RuntimeState>,
     path: String,
 ) -> Result<String, String> {
     let dir = PathBuf::from(&path);
@@ -913,6 +956,15 @@ pub fn set_workspace(
     // canonical base file, so a machine configured in Settings is visible to
     // every session's agent without reaching outside the workspace.
     crate::compute::materialize_active(&app);
+
+    // Qoder sidecar pins its working directory at spawn time (`--cwd`), unlike
+    // OpenCode's per-directory instances. When the workspace moves (e.g. a new
+    // research project), restart it so new sessions are created under the new
+    // folder and show up under the project rather than the generic session list.
+    if let Some(_url) = restart_qoder_sidecar_if_running(&app, &state)? {
+        // sidecar restarted; its /session now reports the new cwd
+    }
+
     Ok(canon.to_string_lossy().to_string())
 }
 

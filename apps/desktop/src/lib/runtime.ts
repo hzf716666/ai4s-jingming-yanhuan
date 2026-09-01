@@ -50,6 +50,7 @@ import { deriveArtifact } from "./artifacts";
 import { provenanceInputsFromEvent, recordProvenance } from "./provenance";
 import { recordRun, runInputFromEvent } from "./runs";
 import { splitReview } from "./review";
+import { splitTierChart } from "./tierChart";
 import { notifyPermissionRequest } from "./systemNotification";
 import { fallbackDefaultModel } from "@/components/settings/modelCatalog";
 import { normalizeProviderNames } from "@/lib/providerDisplay";
@@ -627,6 +628,17 @@ function activeVariant(state: RuntimeState): string | undefined {
     .find((p) => p.id === defaultModel.slice(0, i))
     ?.models.find((m) => m.id === defaultModel.slice(i + 1));
   return model?.variants?.includes(reasoningVariant) ? reasoningVariant : undefined;
+}
+
+/** 归一化目录路径: 去掉 Windows \\?\ 前缀, 统一正斜杠、去尾斜杠、小写。
+ *  opencode 存 E:/jb/...(正斜杠), 应用 project.path 存 E:\jb\...(反斜杠) — 不归一化会导致会话分组失败。 */
+export function normalizeDir(p?: string | null): string {
+  if (!p) return "";
+  let s = p;
+  if (s.startsWith("\\\\?\\")) s = s.slice(4);
+  s = s.replace(/\\/g, "/");
+  s = s.replace(/\/+$/, "");
+  return s.toLowerCase();
 }
 
 export const useRuntimeStore = create<RuntimeState>((set, get) => ({
@@ -1438,7 +1450,12 @@ export const useRuntimeStore = create<RuntimeState>((set, get) => ({
         // path for parent links after a reload (no live task event to learn from).
         const sessionParents = { ...s.sessionParents };
         for (const m of sessions) if (m.parentId) sessionParents[m.id] = m.parentId;
-        return { sessions, sessionParents };
+        // 归一化 directory(反斜杠/\?\前缀/正斜杠差异)以与项目路径做键匹配
+        const norm = sessions.map((m) => ({
+          ...m,
+          directory: m.directory ? normalizeDir(m.directory) || m.directory : m.directory,
+        }));
+        return { sessions: norm, sessionParents };
       });
     } catch {
       /* ignore transient list failures */
@@ -1980,12 +1997,15 @@ export function foldEvent(
   const index = { ...state.index };
   switch (event.type) {
     case "text.updated": {
-      // A ```review fence in the agent's text becomes a structured reviewer card.
+      // A ```review fence in the agent's text becomes a structured reviewer card;
+      // a ```tierchart fence becomes the four-tier probability gauge.
       const { clean, review } = splitReview(event.text);
+      const { clean: clean2, chart } = splitTierChart(clean);
+      const withClean = chart ? clean2 : clean;
       const key = `text:${event.partId}`;
-      if (key in index) blocks[index[key]] = { kind: "agent", markdown: clean };
+      if (key in index) blocks[index[key]] = { kind: "agent", markdown: withClean };
       else {
-        blocks.push({ kind: "agent", markdown: clean });
+        blocks.push({ kind: "agent", markdown: withClean });
         index[key] = blocks.length - 1;
       }
       if (review) {
@@ -1994,6 +2014,14 @@ export function foldEvent(
         else {
           blocks.push(review);
           index[rkey] = blocks.length - 1;
+        }
+      }
+      if (chart) {
+        const ckey = `tierchart:${event.partId}`;
+        if (ckey in index) blocks[index[ckey]] = chart;
+        else {
+          blocks.push(chart);
+          index[ckey] = blocks.length - 1;
         }
       }
       return { blocks, index };
@@ -2190,8 +2218,10 @@ export function historyToThread(messages: HistoryMessage[], commands?: CommandIn
       for (const p of m.parts) {
         if (p.type === "text" && p.text?.trim()) {
           const { clean, review } = splitReview(p.text);
-          if (clean) blocks.push({ kind: "agent", markdown: clean });
+          const { clean: clean2, chart } = splitTierChart(clean);
+          if (clean2) blocks.push({ kind: "agent", markdown: clean2 });
           if (review) blocks.push(review);
+          if (chart) blocks.push(chart);
         }
         else if (p.type === "reasoning" && p.text?.trim()) {
           blocks.push({ kind: "reasoning", text: p.text });

@@ -13,6 +13,8 @@ import { ExtractionListPage } from "./routes/data/ExtractionListPage";
 import { ExtractionNewPage } from "./routes/data/ExtractionNewPage";
 import { ExtractionProgressPage } from "./routes/data/ExtractionProgressPage";
 import { ExtractionResultPage } from "./routes/data/ExtractionResultPage";
+import { KnowledgeGraphPage } from "./routes/data/KnowledgeGraphPage";
+import { DataRecordsPage } from "./routes/data/DataRecordsPage";
 import { NotFound } from "./routes/NotFound";
 
 export const routes: RouteObject[] = [
@@ -32,6 +34,8 @@ export const routes: RouteObject[] = [
       { path: "settings", element: <SettingsPage /> },
       { path: "settings/:section", element: <SettingsPage /> },
       { path: "data/map", element: <DataMapPage /> },
+      { path: "data/knowledge-graph", element: <KnowledgeGraphPage /> },
+      { path: "data/records", element: <DataRecordsPage /> },
       { path: "data/extraction", element: <ExtractionListPage /> },
       { path: "data/extraction/new", element: <ExtractionNewPage /> },
       { path: "data/extraction/:taskId/progress", element: <ExtractionProgressPage /> },
