@@ -16,8 +16,8 @@ describe("PhaseView", () => {
   it("renders the system, phase counts, hull path, and stable labels", () => {
     const { container } = render(<PhaseView filename="LiO.phase" text={DOC} />);
     expect(container.textContent).toContain("Li–O");
-    expect(container.textContent).toContain("stable");
-    expect(container.textContent).toContain("formation energy (eV/atom)");
+    expect(container.textContent).toContain("稳定");
+    expect(container.textContent).toContain("形成能 (eV/atom)");
     // a hull polyline + a circle per entry
     expect(container.querySelector("path")).not.toBeNull();
     expect(container.querySelectorAll("circle").length).toBe(4);
@@ -27,6 +27,6 @@ describe("PhaseView", () => {
 
   it("shows a friendly error for a non-binary or malformed file", () => {
     render(<PhaseView filename="bad.phase" text={JSON.stringify({ elements: ["A"], entries: [] })} />);
-    expect(screen.getByText(/Could not read this phase diagram/)).toBeInTheDocument();
+    expect(screen.getByText(/无法读取此相图/)).toBeInTheDocument();
   });
 });

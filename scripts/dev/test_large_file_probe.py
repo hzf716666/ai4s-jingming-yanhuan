@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the large-file probe (runtime/skills/core/large-file).
+"""Tests for the large-file probe (runtime/skills/00-通用工具/大文件安全读取).
 
 Run: python scripts/dev/test_large_file_probe.py
 Stdlib unittest only.
@@ -15,7 +15,7 @@ sys.dont_write_bytecode = True
 
 _MOD = (
     Path(__file__).resolve().parents[2]
-    / "runtime/skills/core/large-file/large_file_probe.py"
+    / "runtime/skills/00-通用工具/大文件安全读取/large_file_probe.py"
 )
 _spec = importlib.util.spec_from_file_location("large_file_probe", _MOD)
 assert _spec and _spec.loader

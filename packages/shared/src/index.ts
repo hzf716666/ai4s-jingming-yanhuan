@@ -515,3 +515,43 @@ export function seriesColor(i: number, theme: ChartTheme): string {
   const c = chartPalette(theme).categorical;
   return c[((i % c.length) + c.length) % c.length];
 }
+
+// ---- 生成物影响力预测(impact scoring) ----
+
+/** 影响力分位档: P75+/P50-74/P25-49/<P25(对应 UI 蓝紫系徽章). */
+export type ImpactTier = "top" | "high" | "mid" | "low";
+
+export interface ImpactBaselinePaper {
+  openalex_id?: string;
+  title: string;
+  year?: number;
+  journal?: string | null;
+  similarity?: number;
+}
+
+/** POST /api/impact/score 响应 — 生成物"若发表"的先验影响力估计(非质量裁决). */
+export interface ImpactScore {
+  /** LLM 通路是否可用(false = 规则兜底或语料未就绪). */
+  available: boolean;
+  /** 融合分 0-1(0.6×absolute + 0.4×pairwise). */
+  percentile: number | null;
+  /** 通路A: LLM 直接赋的分位. */
+  p_absolute: number | null;
+  /** 通路B: 与真实基线论文成对判定的胜率. */
+  p_pairwise: number | null;
+  tier: ImpactTier | null;
+  confidence: "high" | "medium" | "low";
+  entropy: number;
+  /** 通路B 对比用的真实基线论文. */
+  baseline_papers: ImpactBaselinePaper[];
+  reasons: string[];
+  models: string[];
+  /** 判定领域(相对哪个领域的分位刻度量). */
+  field_used: string;
+  computed_at: string;
+  meta: {
+    corpus_size: number;
+    corpus_covered_years: number[];
+    scorer_version: string;
+  };
+}

@@ -1,0 +1,177 @@
+[
+  {
+    "name": "Academy of Management Journal",
+    "field": "business",
+    "fallback_issns": [
+      "0001-4273",
+      "1930-3807"
+    ]
+  },
+  {
+    "name": "Academy of Management Review",
+    "field": "business",
+    "fallback_issns": [
+      "0363-7425",
+      "1930-3807"
+    ]
+  },
+  {
+    "name": "Administrative Science Quarterly",
+    "field": "business",
+    "fallback_issns": [
+      "0001-8392",
+      "1930-3807"
+    ]
+  },
+  {
+    "name": "Strategic Management Journal",
+    "field": "business",
+    "fallback_issns": [
+      "0143-2095",
+      "1097-0266"
+    ]
+  },
+  {
+    "name": "Journal of Applied Psychology",
+    "field": "psychology",
+    "fallback_issns": [
+      "0021-9010",
+      "1939-1854"
+    ]
+  },
+  {
+    "name": "Journal of Management",
+    "field": "business",
+    "fallback_issns": [
+      "0149-2063",
+      "1557-1211"
+    ]
+  },
+  {
+    "name": "Journal of Management Studies",
+    "field": "business",
+    "fallback_issns": [
+      "0022-2380",
+      "1467-6486"
+    ]
+  },
+  {
+    "name": "Journal of Organizational Behavior",
+    "field": "psychology",
+    "fallback_issns": [
+      "0894-3796",
+      "1099-1379"
+    ]
+  },
+  {
+    "name": "Human Resource Management",
+    "field": "business",
+    "fallback_issns": [
+      "0090-4848",
+      "1099-050x"
+    ]
+  },
+  {
+    "name": "The Leadership Quarterly",
+    "field": "psychology",
+    "fallback_issns": [
+      "1048-9843",
+      "1873-3409"
+    ]
+  },
+  {
+    "name": "MIS Quarterly",
+    "field": "business",
+    "fallback_issns": [
+      "0276-7783",
+      "2162-9730"
+    ]
+  },
+  {
+    "name": "Information Systems Research",
+    "field": "business",
+    "fallback_issns": [
+      "1047-7047",
+      "1526-5536"
+    ]
+  },
+  {
+    "name": "Management Science",
+    "field": "business",
+    "fallback_issns": [
+      "0025-1909",
+      "1526-5501"
+    ]
+  },
+  {
+    "name": "Operations Research",
+    "field": "business",
+    "fallback_issns": [
+      "0030-364x",
+      "1526-5463"
+    ]
+  },
+  {
+    "name": "American Economic Review",
+    "field": "economics",
+    "fallback_issns": [
+      "0002-8282"
+    ]
+  },
+  {
+    "name": "The Quarterly Journal of Economics",
+    "field": "economics",
+    "fallback_issns": [
+      "0033-5533",
+      "1531-4650"
+    ]
+  },
+  {
+    "name": "Journal of Political Economy",
+    "field": "economics",
+    "fallback_issns": [
+      "0022-3808",
+      "1537-534x"
+    ]
+  },
+  {
+    "name": "Econometrica",
+    "field": "economics",
+    "fallback_issns": [
+      "0012-9682",
+      "1468-0262"
+    ]
+  },
+  {
+    "name": "Journal of Finance",
+    "field": "business",
+    "fallback_issns": [
+      "0022-1082",
+      "1540-6261"
+    ]
+  },
+  {
+    "name": "Journal of Financial Economics",
+    "field": "business",
+    "fallback_issns": [
+      "0304-405x",
+      "1879-0874"
+    ]
+  },
+  {
+    "name": "Review of Financial Studies",
+    "field": "business",
+    "fallback_issns": [
+      "0893-9454",
+      "1465-7368"
+    ]
+  },
+  {
+    "name": "Journal of International Business Studies",
+    "field": "business",
+    "fallback_issns": [
+      "0047-2506",
+      "1478-6990"
+    ]
+  }
+]

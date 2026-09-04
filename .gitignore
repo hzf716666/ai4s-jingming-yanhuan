@@ -53,6 +53,14 @@ secrets/
 packages/data-integration/output/
 packages/data-integration/output_test/
 packages/data-integration/server_data/
+packages/data-integration/models/
+
+# Local embedding cache (rebuild via impact_corpus.py embed --batch 64, ~4h)
+packages/data-integration/data/impact_corpus/impact_embeddings.npy
+packages/data-integration/data/impact_corpus/embed_log.txt
+packages/data-integration/data/impact_corpus/fetch_log.txt
+packages/data-integration/data/impact_corpus/eval_p1*.log
+packages/data-integration/data/impact_corpus/raw/
 
 # Office temp lock files
 ~$*
@@ -82,3 +90,14 @@ videos/
 # Local video-production tooling (fetched hyperframes skill packs)
 .agents/
 skills-lock.json
+
+# Local runtime installs (OpenCode / Qoder sidecars, downloaded per-machine)
+runtime/opencode-profile/
+runtime/qoder-sidecar/
+
+# Per-project research archives (each is its own git repo with own history)
+projects-live/
+
+# Local API keys / model weights / huggingface caches (per-machine)
+/models/
+/bge-m3/

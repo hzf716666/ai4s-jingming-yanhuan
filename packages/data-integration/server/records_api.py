@@ -40,32 +40,45 @@ def categorize(indicator: str) -> str:
     return "其他"
 
 # ---------- source 解析: 文件名 + sheet + 磁盘路径 ----------
-_SRC_RE = re.compile(r"([^/\\]+\.(?:xlsx|xls|csv|pdf|docx))", re.I)
+_SRC_RE = re.compile(r"(?:^|[\s/\\])([^/\\\s]+\.(?:xlsx|xls|csv|pdf|docx))", re.I)
 _SHEET_RE = re.compile(r"sheet\s*=\s*([\w\-\u4e00-\u9fa5]+)", re.I)
 _PAGE_RE = re.compile(r"[pP]age\s*=\s*(\d+)")
+_URL_RE = re.compile(r"source_url\s*=\s*(https?://\S+)", re.I)
 
 def _build_file_index() -> dict[str, Path]:
     idx: dict[str, Path] = {}
-    for root in (YEARBOOK_ROOT, SST_CUBE_ROOT):
+    # 除年鉴/抽取输出外, 也扫 AI/研究流可能落盘的目录: OECD 下载、进行中项目、抽取任务
+    EXTRA_ROOTS = [
+        Path(r"E:\tb\oecd_data"),
+        Path(r"E:\tb\jingming-yanhuan\projects-live"),
+        Path(__file__).resolve().parent.parent / "server_data" / "tasks",
+    ]
+    for root in [YEARBOOK_ROOT, SST_CUBE_ROOT, *EXTRA_ROOTS]:
         if not root.exists():
             continue
         try:
             for p in root.rglob("*"):
                 if p.suffix.lower() in (".xlsx", ".xls", ".csv", ".pdf", ".docx"):
-                    idx[p.name] = p
+                    # 先扫到的目录优先(年鉴/抽取输出 > 附加目录)
+                    idx.setdefault(p.name, p)
         except OSError:
             continue
     return idx
 
 FILE_INDEX = _build_file_index()
 
-def _parse_source(src: str) -> dict:
+def _parse_source(src: str, note: str = "") -> dict:
     raw = src or ""
-    parts = [p.strip() for p in raw.split("/") if p.strip()]
+    # 文件名优先从 source 取, source 没有时从 note 兜底(如 "提取自 auto_gerd.csv")
     file = ""
     m = _SRC_RE.search(raw)
     if m:
         file = m.group(1).strip()
+    else:
+        m2 = _SRC_RE.search(note or "")
+        if m2:
+            file = m2.group(1).strip()
+    parts = [p.strip() for p in raw.split("/") if p.strip()]
     table = parts[0] if parts else ""
     sheet = ""
     ms = _SHEET_RE.search(raw)
@@ -75,12 +88,17 @@ def _parse_source(src: str) -> dict:
     mp = _PAGE_RE.search(raw)
     if mp:
         page = int(mp.group(1))
+    url = ""
+    mu = _URL_RE.search(note or "")
+    if mu:
+        url = mu.group(1)
     file_path = str(FILE_INDEX.get(file, "")) if file else ""
     return {
         "file": file,
         "table": table,
         "sheet": sheet,
         "page": page,
+        "url": url,
         "filePath": file_path,
         "external": bool(file_path),
     }
@@ -116,7 +134,7 @@ def _conn() -> sqlite3.Connection:
     return con
 
 
-def list_records_impl(indicator=None, space=None, year=None, status=None, q=None, category=None, space_prefix=None):
+def list_records_impl(indicator=None, space=None, year=None, status=None, q=None, category=None, space_prefix=None, limit=None):
     con = _conn()
     rows = con.execute(
         "SELECT id, time, space, value, unit, indicator, source, note FROM fact_records ORDER BY indicator, space, time"
@@ -159,7 +177,7 @@ def list_records_impl(indicator=None, space=None, year=None, status=None, q=None
 
         evidence = []
         for r in recs:
-            meta = _parse_source(r["source"])
+            meta = _parse_source(r["source"], r["note"] or "")
             evidence.append({
                 "sourceId": r["id"],
                 "source": r["source"],
@@ -167,6 +185,7 @@ def list_records_impl(indicator=None, space=None, year=None, status=None, q=None
                 "table": meta["table"],
                 "sheet": meta["sheet"],
                 "page": meta["page"],
+                "url": meta["url"],
                 "filePath": meta["filePath"],
                 "external": meta["external"],
                 "value": r["value"],
@@ -192,15 +211,17 @@ def list_records_impl(indicator=None, space=None, year=None, status=None, q=None
 
     # 每条记录附加同级分项(基于全量, 不受 space/indicator 过滤影响, 供组合加总校验)
     # 注意: 同 indicator + 同 unit + 同 year 才是一组可加总分项(跨年不得混加)
+    # 按 (indicator, unit, year) 分组索引后再关联, 避免全量两两比较的 O(N²)
+    peers_index: dict[tuple, list] = defaultdict(list)
     for it in items:
-        unit = it["unit"] or ""
-        peers = [i2 for i2 in items
-                 if i2["key"] != it["key"] and (i2["unit"] or "") == unit
-                 and i2["year"] == it["year"]
-                 and "合计" not in i2["space"] and "全国" not in i2["space"]
-                 and i2["indicator"] == it["indicator"]]
-        it["peers"] = [{"key": p["key"], "space": p["space"], "value": p["value"],
-                        "year": p["year"]} for p in peers[:300]]
+        if "合计" not in it["space"] and "全国" not in it["space"]:
+            peers_index[(it["indicator"], it["unit"] or "", it["year"])].append(it)
+    for it in items:
+        cands = peers_index.get((it["indicator"], it["unit"] or "", it["year"]), [])
+        it["peers"] = [
+            {"key": c["key"], "space": c["space"], "value": c["value"], "year": c["year"]}
+            for c in cands if c["key"] != it["key"]
+        ][:300]
 
     if indicator:
         items = [i for i in items if indicator.lower() in i["indicator"].lower()]
@@ -219,7 +240,11 @@ def list_records_impl(indicator=None, space=None, year=None, status=None, q=None
         items = [i for i in items if ql in i["indicator"].lower() or ql in i["space"].lower()]
 
     items.sort(key=lambda x: (x["reviewStatus"] == "pending_review", -x["confidenceScore"]), reverse=True)
-    return {"records": items, "total": len(items)}
+    total = len(items)
+    # 默认限流: 全量(4w+ 条合并记录)响应过大; 前端用搜索/筛选缩小范围
+    if limit and limit > 0:
+        items = items[:limit]
+    return {"records": items, "total": total}
 
 
 @router.get("")
@@ -231,14 +256,15 @@ def list_records(
     q: Optional[str] = None,
     category: Optional[str] = None,
     space_prefix: Optional[str] = None,
+    limit: Optional[int] = 3000,
 ):
-    return list_records_impl(indicator, space, year, status, q, category, space_prefix)
+    return list_records_impl(indicator, space, year, status, q, category, space_prefix, limit)
 
 
 @router.get("/categories")
 def categories():
-    con = _conn()
-    rows = con.execute("SELECT indicator FROM fact_records").fetchall()
+    conn = _conn()
+    rows = conn.execute("SELECT indicator FROM fact_records").fetchall()
     counts: Counter = Counter(categorize(r["indicator"]) for r in rows)
     items = [{"name": c, "count": n} for c, n in counts.most_common()]
     return {"categories": items}

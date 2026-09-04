@@ -75,6 +75,40 @@ def _detect_table_orientation(rows: list[list[Any]]) -> str:
     return "cross_section"
 
 
+def _find_header_row(rows: list[list[Any]]) -> int:
+    """在前 8 行中选"最像表头"的行(带单位/首列为地区/年份关键词)。
+
+    年鉴 xlsx 前几行常为标题(中英文)或说明, 直接取 rows[0] 会把表头当数据丢失整表。
+    """
+    best_idx, best_score = 0, -1.0
+    for i in range(min(8, len(rows))):
+        cells = [str(c).strip() if c is not None else "" for c in rows[i]]
+        score = 0.0
+        if any(extract_unit(c) for c in cells):
+            score += 3.0
+        if re.match(r"^(地区|年份|时间|园区|单位|指标|项目|Year|Region|Time)$", cells[0]):
+            score += 2.5
+        elif re.search(r"[\u4e00-\u9fff]", cells[0]) and not is_number(cells[0]):
+            score += 1.0
+        if is_number(cells[0]):
+            score -= 2.0
+        if score > best_score:
+            best_idx, best_score = i, score
+    return best_idx
+
+
+def _try_merge_subheader(row_after: list[Any]) -> bool:
+    """rows[h+1] 是否为多级表头子行: 首列空且其余列无数字。"""
+    if not row_after:
+        return False
+    cells = [str(c).strip() if c is not None else "" for c in row_after]
+    if cells[0]:
+        return False
+    if any(is_number(c) and c for c in cells[1:]):
+        return False
+    return any(c for c in cells[1:])
+
+
 def parse_xlsx(file_path: str | Path, source_label: str = "") -> list[Record]:
     """Parse an xlsx file into seven-tuple records.
 
@@ -101,8 +135,19 @@ def parse_xlsx(file_path: str | Path, source_label: str = "") -> list[Record]:
         if len(rows) < 2:
             continue
 
-        header_row = [str(c) if c is not None else "" for c in rows[0]]
-        orientation = _detect_table_orientation(rows)
+        # 表头搜索(跳过标题行) + 多级表头子行合并
+        header_idx = _find_header_row(rows)
+        header_row = [str(c).strip() if c is not None else "" for c in rows[header_idx]]
+        data_start = header_idx + 1
+        if data_start < len(rows) and _try_merge_subheader(rows[data_start]):
+            sub = [str(c).strip() if c is not None else "" for c in rows[data_start]]
+            for i, (h, s) in enumerate(zip(header_row, sub)):
+                if not h and s:
+                    header_row[i] = s
+            data_start += 1
+        data_rows = rows[data_start:]
+
+        orientation = _detect_table_orientation(rows[header_idx:] + data_rows)
         unit = ""
 
         for cell in header_row:
@@ -111,7 +156,7 @@ def parse_xlsx(file_path: str | Path, source_label: str = "") -> list[Record]:
                 unit = u
                 break
 
-        for row in rows[1:]:
+        for row in data_rows:
             if not row or not row[0]:
                 continue
             first_val = str(row[0]).strip()
@@ -125,7 +170,8 @@ def parse_xlsx(file_path: str | Path, source_label: str = "") -> list[Record]:
                 time_val = first_val
                 space_val = "全国"
             else:
-                if not any(k in first_val for k in _REGION_KEYWORDS):
+                # 截面表: 首列含中文(省/市/园区名)即认定为空间, 不再限定省级关键词
+                if not re.search(r"[\u4e00-\u9fff]", first_val) or len(first_val) < 2:
                     continue
                 time_val = ""
                 space_val = first_val
@@ -138,7 +184,7 @@ def parse_xlsx(file_path: str | Path, source_label: str = "") -> list[Record]:
                     continue
 
                 cn_name, _ = split_cn_en(header)
-                indicator = cn_name or header
+                indicator = re.sub(r"[①②③④⑤⑥⑦⑧⑨⑩*★]", "", cn_name or header).strip()
                 col_unit = extract_unit(header) or unit
 
                 if is_number(cell):

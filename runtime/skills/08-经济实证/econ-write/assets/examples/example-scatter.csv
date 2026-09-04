@@ -1,0 +1,13 @@
+dose,response,treatment
+0.1,1.2,Control
+0.2,1.5,Control
+0.3,1.7,Control
+0.4,1.9,Control
+0.5,2.0,Control
+0.6,2.2,Control
+0.1,1.6,Treatment
+0.2,1.9,Treatment
+0.3,2.3,Treatment
+0.4,2.7,Treatment
+0.5,3.0,Treatment
+0.6,3.4,Treatment

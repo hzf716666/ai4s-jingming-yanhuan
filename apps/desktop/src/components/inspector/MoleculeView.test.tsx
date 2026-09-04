@@ -29,7 +29,7 @@ describe("MoleculeView", () => {
     render(<MoleculeView filename="1abc.pdb" text={"ATOM  1  C   LIG\nATOM  2  O   LIG"} />);
     await waitFor(() => expect(viewer.addModel).toHaveBeenCalled());
     expect(viewer.addModel).toHaveBeenCalledWith(expect.stringContaining("ATOM"), "pdb");
-    expect(await screen.findByText("3 atoms")).toBeInTheDocument();
+    expect(await screen.findByText("3 个原子")).toBeInTheDocument();
     expect(screen.getByText("PDB")).toBeInTheDocument();
   });
 
@@ -48,7 +48,7 @@ describe("MoleculeView", () => {
     await waitFor(() => expect(viewer.setStyle).toHaveBeenCalled());
     viewer.setStyle.mockClear();
 
-    await userEvent.click(screen.getByRole("button", { name: "Sphere" }));
+    await userEvent.click(screen.getByRole("button", { name: "球状" }));
     await waitFor(() =>
       expect(viewer.setStyle).toHaveBeenCalledWith({}, expect.objectContaining({ sphere: expect.anything() })),
     );
@@ -58,18 +58,18 @@ describe("MoleculeView", () => {
     const { rerender } = render(<MoleculeView filename="ligand.mol" text="small molecule" />);
     await waitFor(() => expect(viewer.addModel).toHaveBeenCalled());
     // A small molecule: cartoon would crash 3Dmol on missing resn, so it's hidden.
-    expect(screen.queryByRole("button", { name: "Cartoon" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Stick" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "卡通" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "棒状" })).toBeInTheDocument();
 
     // A protein (many alpha carbons) gets the cartoon option.
     const protein = Array.from({ length: 25 }, (_, i) => `ATOM  ${i} CA  ALA`).join("\n");
     rerender(<MoleculeView filename="1abc.pdb" text={protein} />);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Cartoon" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "卡通" })).toBeInTheDocument());
   });
 
   it("explains a SMILES file with no parseable structures", async () => {
     render(<MoleculeView filename="empty.smi" text={"   \n# comment\n"} />);
-    expect(await screen.findByText(/No chemical structures found/)).toBeInTheDocument();
+    expect(await screen.findByText(/此文件中未找到化学结构/)).toBeInTheDocument();
     expect(viewer.addModel).not.toHaveBeenCalled();
   });
 });

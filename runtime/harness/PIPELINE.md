@@ -22,15 +22,15 @@
 
 | 阶段 | 做什么 | 产物 | 门禁检查 | 工具 |
 |---|---|---|---|---|
-| P1 拆解 | 假设拆成 3~6 个子问题;每个子问题须声明四件套(X, Y, 识别策略, 数据需求) | `sub_problems.json` | `--stage p1` | 技能 `econ-decompose-question` |
-| P1.5 文献 | 用 paper-search MCP(OpenAlex)自主检索相关文献;**禁止凭记忆编造** | `literature_review.md` + `references.json` | `--stage p1_5` | 技能 `econ-literature` |
-| P2 过滤 | 三关过滤;A/B/C 分级;**请用户确认 A 档清单** | `filtered_problems.json` | `--stage p2` | 技能 `econ-filter-subproblems` |
-| P2.5 数据缺口 | **测到数据缺失必须主动找外部数据源**(统计局/OECD/年鉴/数据库),产出补充数据 | `data_gap_report.md` + `data_supplement.json` | `--stage p2_5` | 技能 `econ-data-fill` |
+| P1 拆解 | 假设拆成 3~6 个子问题;每个子问题须声明四件套(X, Y, 识别策略, 数据需求) | `sub_problems.json` | `--stage p1` | 技能 `econ-decompose` |
+| P1.5 文献 | 用 paper-search MCP(OpenAlex)自主检索相关文献;**禁止凭记忆编造** | `literature_review.md` + `references.json` | `--stage p1_5` | 技能 `econ-decompose` |
+| P2 过滤 | 三关过滤;A/B/C 分级;**请用户确认 A 档清单** | `filtered_problems.json` | `--stage p2` | 技能 `econ-data` |
+| P2.5 数据缺口 | **P1 标了 data_gap 或 P2 过滤发现缺失 → 立即(不等后续)主动找外部数据源**(统计局/OECD/清科/年鉴),产出补充数据并追加 data/records.json | `data_gap_report.md` + `data_supplement.json` | `--stage p2_5` | 技能 `econ-data` |
 | P3 盘点 | 探针摸数据(面板结构/口径断点/异常值) | `data_profile.md` + `data_inventory.json` | `--stage p3` | `python tools/probe_profile.py .` |
 | P4 实验 | 每个 A 档子问题写脚本并执行(≤5 轮修复) | `results/<sid>/run_XX/` | `--stage p4` | `python tools/runner.py run . <sid>` |
-| P5 整合 | 汇总结果,判定支持/弱支持/不支持/证据不足 | `per_hypothesis_verdict.md` | `--stage p5` | 技能 `econ-synthesize-results` |
-| P6 写作 | 经管模板论文(变量表→描述统计→基准检验→稳健性→异质性) | `paper/main.md` | `--stage p6` | 技能 `econ-write-paper` |
-| P7 评审 | 统计自检(效应量+CI/稳健性≥2/因果语言/口径) | `review_report.md` | `--stage p7` | 技能 `econ-stat-review` |
+| P5 整合 | 汇总结果,判定支持/弱支持/不支持/证据不足 | `per_hypothesis_verdict.md` | `--stage p5` | 技能 `econ-synthesis` |
+| P6 写作 | 经管模板论文(变量表→描述统计→基准检验→稳健性→异质性) | `paper/main.md` | `--stage p6` | 技能 `econ-write` |
+| P7 评审 | 统计自检(效应量+CI/稳健性≥2/因果语言/口径) | `review_report.md` | `--stage p7` | 技能 `econ-review` |
 
 ## 统计护栏(硬规则,runner audit 自动检查)
 
@@ -43,7 +43,8 @@
 
 ## 两个强制(借鉴 AutoResearchClaw)
 
-1. **数据缺失必须主动找**:子问题用到但 data/ 没有的指标,先执行 `econ-data-fill` 去外部源(统计局/OECD/年鉴)找,找到追加进 data/records.json;**找不到才允许**标 B/C 档并说明尝试过的源。
+1. **数据缺失必须主动找**:子问题用到但 data/ 没有的指标,先执行 `econ-data` 去外部源(统计局/OECD/年鉴)找,找到追加进 data/records.json;**找不到才允许**标 B/C 档并说明尝试过的源。
+   > **采集完成必做**: 追加完 records.json 后, 执行 `python packages/data-integration/scripts/sync_project_data_to_panel.py --project <项目目录>`(或调 8787 同样接口), 把数据同步进**数据面板/数据地图/知识图谱**(幂等)。不执行视为 P2.5 未完成。
 2. **文献必须真实引用**:论文每节引用 references.json 里的论文(来自 paper-search MCP 检索,带 DOI),禁止无来源引用、禁止编造文献。P1.5 是门禁(引用不足不通过),论文写完需自查引用与 references.json 一致。
 
 ## 识别策略声明(经管实证灵魂)
@@ -56,5 +57,5 @@
 ## 启动顺序
 
 1. 读 `README.md`(任务书)+ 本文件 + `data/` 目录
-2. 调用技能 `econ-decompose-question` 开始 P1
+2. 调用技能 `econ-decompose` 开始 P1
 3. 按"自主推进协议"持续执行到 P7,仅在两处暂停点停下来问用户

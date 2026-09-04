@@ -1,14 +1,6 @@
 import { create } from "zustand";
-import { detectInitialLocale, LOCALE_KEY } from "@/i18n/config";
 import { isMacUA, isTauri, trafficLightsPresent } from "./tauri";
 
-export type Theme = "light" | "warm" | "dark";
-
-export const THEMES: readonly Theme[] = ["light", "warm", "dark"];
-
-const THEME_KEY = "jingming.theme.v2";
-/** Two-theme era key: its "light" was the warm paper palette, now called "warm". */
-const LEGACY_THEME_KEY = "jingming.theme";
 const SIDEBAR_WIDTH_KEY = "jingming.sidebar.width";
 const SIDEBAR_COLLAPSED_KEY = "jingming.sidebar.collapsed";
 const INSPECTOR_WIDTH_KEY = "jingming.inspector.width";
@@ -25,17 +17,6 @@ export const SIDEBAR_DEFAULT = 232;
 export const INSPECTOR_MIN = 360;
 export const INSPECTOR_MAX = 960;
 export const INSPECTOR_DEFAULT = 560;
-
-function initialTheme(): Theme {
-  if (typeof window === "undefined") return "light";
-  const saved = window.localStorage.getItem(THEME_KEY);
-  if (saved === "light" || saved === "warm" || saved === "dark") return saved;
-  const legacy = window.localStorage.getItem(LEGACY_THEME_KEY);
-  if (legacy === "dark") return "dark";
-  if (legacy === "light") return "warm";
-  const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-  return prefersDark ? "dark" : "light";
-}
 
 function initialSidebarWidth(): number {
   if (typeof window === "undefined") return SIDEBAR_DEFAULT;
@@ -63,9 +44,6 @@ function initialZoom(): number {
 }
 
 interface UiState {
-  theme: Theme;
-  /** Active UI locale (BCP-47). Persisted; mirrors the `theme` pattern. */
-  locale: string;
   inspectorOpen: boolean;
   /** Right-pane width in px (persisted); the pane can also be maximized to
    *  cover the whole window (session-ephemeral, reset when the pane closes). */
@@ -84,9 +62,6 @@ interface UiState {
   /** One-shot text placed into the composer by another surface (e.g. the
    *  provenance Reproduce action) — consumed on the next composer render. */
   composerDraft: string | null;
-  setTheme: (theme: Theme) => void;
-  toggleTheme: () => void;
-  setLocale: (locale: string) => void;
   setInspectorOpen: (open: boolean) => void;
   setInspectorWidth: (width: number) => void;
   setInspectorMaximized: (maximized: boolean) => void;
@@ -102,8 +77,6 @@ interface UiState {
 }
 
 export const useUiStore = create<UiState>((set, get) => ({
-  theme: initialTheme(),
-  locale: detectInitialLocale(),
   inspectorOpen: true,
   sidebarCollapsed:
     typeof window !== "undefined" && window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "1",
@@ -111,15 +84,6 @@ export const useUiStore = create<UiState>((set, get) => ({
   isFullscreen: false,
   paletteOpen: false,
   zoom: initialZoom(),
-  setTheme: (theme) => {
-    if (typeof window !== "undefined") window.localStorage.setItem(THEME_KEY, theme);
-    set({ theme });
-  },
-  toggleTheme: () => get().setTheme(THEMES[(THEMES.indexOf(get().theme) + 1) % THEMES.length]),
-  setLocale: (locale) => {
-    if (typeof window !== "undefined") window.localStorage.setItem(LOCALE_KEY, locale);
-    set({ locale });
-  },
   setInspectorOpen: (inspectorOpen) => set({ inspectorOpen }),
   inspectorWidth: initialInspectorWidth(),
   inspectorMaximized: false,

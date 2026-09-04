@@ -1,0 +1,34 @@
+{
+ "status": "ok",
+ "watermark": "11068",
+ "node_types": {
+  "Actor": 8,
+  "Cluster": 65,
+  "Indicator": 125,
+  "Industry": 25,
+  "Instrument": 12,
+  "Policy": 13,
+  "Region": 399,
+  "STCluster": 6,
+  "Stage": 4
+ },
+ "edge_types": {
+  "at_stage": 52,
+  "belongs_to": 40,
+  "co_located": 47,
+  "co_mentioned": 165,
+  "contains": 59,
+  "has_data": 4358,
+  "initiated_by": 7,
+  "located_in": 63,
+  "measured_by": 34,
+  "operates": 10,
+  "supports": 234
+ },
+ "graph_reviews": {
+  "keep": 92,
+  "merge": 2,
+  "reject": 19
+ },
+ "note": "实时 FKG（kg_nodes/kg_edges + graph_reviews 审核）"
+}

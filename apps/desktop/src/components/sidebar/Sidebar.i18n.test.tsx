@@ -1,19 +1,14 @@
 import { screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
-import { useUiStore } from "@/lib/store";
+import { describe, expect, it } from "vitest";
 import { renderAt } from "@/test/render";
 
-// COPYCAT RULE: useUiStore is module-global; reset the locale after each test
-// so this suite never bleeds a non-English locale into other test files.
-afterEach(() => useUiStore.getState().setLocale("en"));
-
 describe("Sidebar i18n", () => {
-  it("renders migrated nav labels and section heading in English", async () => {
+  it("renders migrated nav labels and section heading in Chinese", async () => {
     renderAt("/files");
 
     const nav = await screen.findByRole("navigation");
-    expect(within(nav).getByText("Files")).toBeInTheDocument();
-    expect(screen.getByText("Sessions")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Settings" })).toBeInTheDocument();
+    expect(within(nav).getByText("文件")).toBeInTheDocument();
+    expect(screen.getByText("会话")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "设置" })).toBeInTheDocument();
   });
 });

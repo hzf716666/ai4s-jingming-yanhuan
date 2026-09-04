@@ -1,29 +1,17 @@
 import { render, waitFor } from "@testing-library/react";
-import { act } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { LocaleProvider } from "./LocaleProvider";
-import { useUiStore } from "@/lib/store";
 import i18n from "@/i18n";
 
-afterEach(async () => {
-  await act(async () => {
-    useUiStore.getState().setLocale("en");
-  });
-});
-
-describe("LocaleProvider", () => {
-  it("applies the current locale to <html lang> and dir", () => {
+describe("LocaleProvider (单语言构建)", () => {
+  it("applies the fixed zh-Hans locale to <html lang> and dir", () => {
     render(<LocaleProvider><span>x</span></LocaleProvider>);
-    expect(document.documentElement.lang).toBe("en");
+    expect(document.documentElement.lang).toBe("zh-Hans");
     expect(document.documentElement.dir).toBe("ltr");
   });
 
-  it("changes i18next language and html attrs when locale changes", async () => {
+  it("sets the i18next language to zh-Hans", async () => {
     render(<LocaleProvider><span>x</span></LocaleProvider>);
-    await act(async () => {
-      useUiStore.getState().setLocale("ja");
-    });
-    expect(document.documentElement.lang).toBe("ja");
-    await waitFor(() => expect(i18n.language).toBe("ja"));
+    await waitFor(() => expect(i18n.language).toBe("zh-Hans"));
   });
 });

@@ -68,7 +68,7 @@ describe("ProvenancePanel", () => {
     // Latest version starts expanded: its code, model, and session link show.
     expect(screen.getByText(codeBlock("print(2)"))).toBeInTheDocument();
     expect(screen.getByText("anthropic/claude")).toBeInTheDocument();
-    expect(screen.getByText("Open conversation")).toBeInTheDocument();
+    expect(screen.getByText("打开对话")).toBeInTheDocument();
   });
 
   it("expands an older version to reveal its code", async () => {
@@ -87,7 +87,7 @@ describe("ProvenancePanel", () => {
     // Latest version (expanded) shows its captured environment.
     expect(await screen.findByText("py 3.12.4 · macos-aarch64 · app 0.1.0")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /Reproduce/ }));
+    await userEvent.click(screen.getByRole("button", { name: /复现/ }));
     const draft = useUiStore.getState().composerDraft;
     expect(draft).toContain("Reproduce `fig/plot.py` (provenance v2)");
     expect(draft).toContain("Python 3.12.4");
@@ -102,10 +102,10 @@ describe("ProvenancePanel", () => {
     readEnvLockfile.mockResolvedValue("numpy==2.0.1\npandas==2.2.2\nscipy==1.14.0");
     renderPanel();
 
-    await userEvent.click(await screen.findByRole("button", { name: /3 packages/ }));
+    await userEvent.click(await screen.findByRole("button", { name: /3 个软件包/ }));
     expect(readEnvLockfile).toHaveBeenCalledWith("deadbeef");
     expect(await screen.findByText(/numpy==2.0.1/)).toBeInTheDocument();
-    expect(screen.getByText(/pip freeze · 3 packages/)).toBeInTheDocument();
+    expect(screen.getByText(/pip freeze · 3 个软件包/)).toBeInTheDocument();
   });
 
   it("shows a run-produced version as produced by its run, with a recipe reproduce", async () => {
@@ -128,12 +128,12 @@ describe("ProvenancePanel", () => {
     renderPanel();
 
     // Not the misleading "content not captured" text — it points at the run.
-    expect(await screen.findByText(/Produced by run/)).toBeInTheDocument();
-    expect(screen.queryByText(/Content not captured/)).not.toBeInTheDocument();
+    expect(await screen.findByText(/由运行产生/)).toBeInTheDocument();
+    expect(screen.queryByText(/此版本的内容未被捕获/)).not.toBeInTheDocument();
     expect(screen.getByText(/python train.py --lr 3e-4/)).toBeInTheDocument();
 
     // Reproduce drafts the RUN recipe (re-run the command), not re-authoring.
-    await userEvent.click(screen.getByRole("button", { name: /Reproduce/ }));
+    await userEvent.click(screen.getByRole("button", { name: /复现/ }));
     const draft = useUiStore.getState().composerDraft;
     expect(draft).toContain("Reproduce run `run_abc123`");
     expect(draft).toContain("python train.py --lr 3e-4");
@@ -156,14 +156,14 @@ describe("ProvenancePanel", () => {
 
     expect(await screen.findByText("+print(2)")).toBeInTheDocument();
     expect(screen.getByText("-print(1)")).toBeInTheDocument();
-    expect(screen.queryByText(/Content not captured/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/此版本的内容未被捕获/)).not.toBeInTheDocument();
   });
 
   it("explains the empty state", async () => {
     listProvenance.mockResolvedValue([]);
     renderPanel();
 
-    expect(await screen.findByText(/No versions recorded yet/)).toBeInTheDocument();
+    expect(await screen.findByText(/尚无记录的版本。每次代理写入/)).toBeInTheDocument();
     expect(screen.getByText("fig/plot.py")).toBeInTheDocument();
   });
 });

@@ -32,7 +32,7 @@ vi.mock("@jingming/sdk", () => {
     }
     onEvent() {}
     async connect() {
-      this.statusCb("ready");
+      this.statusCb("就绪");
     }
     async listSessions() {
       return [];
@@ -60,8 +60,8 @@ describe("WorkspaceChip", () => {
 
   it("is a bare folder icon for a fresh draft (dated folder is the default)", () => {
     render(<WorkspaceChip />);
-    const btn = screen.getByRole("button", { name: "Choose session folder" });
-    expect(btn.title).toContain("new dated folder");
+    const btn = screen.getByRole("button", { name: "选择会话文件夹" });
+    expect(btn.title).toContain("新建的日期文件夹");
     // No folder name shown until the user actually picks one.
     expect(screen.queryByText("base")).not.toBeInTheDocument();
   });
@@ -69,14 +69,14 @@ describe("WorkspaceChip", () => {
   it("picking a folder pins it and shows its name", async () => {
     mocks.pickedFolder = "/ws/mine";
     render(<WorkspaceChip />);
-    await userEvent.click(screen.getByRole("button", { name: "Choose session folder" }));
+    await userEvent.click(screen.getByRole("button", { name: "选择会话文件夹" }));
     await waitFor(() => expect(useRuntimeStore.getState().workspacePinned).toBe(true));
     expect(await screen.findByText("mine")).toBeInTheDocument();
   });
 
   it("cancelling the picker changes nothing", async () => {
     render(<WorkspaceChip />);
-    await userEvent.click(screen.getByRole("button", { name: "Choose session folder" }));
+    await userEvent.click(screen.getByRole("button", { name: "选择会话文件夹" }));
     expect(useRuntimeStore.getState().workspacePinned).toBe(false);
   });
 

@@ -1,14 +1,12 @@
 import { useEffect, type ReactNode } from "react";
-import { useUiStore } from "@/lib/store";
 import { isMacUA, isTauri, setWindowTheme } from "@/lib/tauri";
 
-/** Applies the current theme to the document root. */
+/** 应用固定深色外观（单主题构建），把 data-theme 和原生窗口主题设为 dark。 */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const theme = useUiStore((s) => s.theme);
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    void setWindowTheme(theme === "dark");
-  }, [theme]);
+    document.documentElement.dataset.theme = "dark";
+    void setWindowTheme(true);
+  }, []);
   // The macOS desktop window has a vibrancy material behind the webview
   // (tauri.macos.conf.json); flag the root so CSS can let the sidebar show it.
   useEffect(() => {

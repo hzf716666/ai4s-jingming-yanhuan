@@ -12,12 +12,12 @@ describe("GenomeView", () => {
     // chr1 is busiest (2 features) → default contig; both features drawn as rects.
     const rects = container.querySelectorAll("svg rect");
     expect(rects.length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/2 features/)).toBeInTheDocument();
+    expect(screen.getByText(/2 个特征/)).toBeInTheDocument();
   });
 
   it("offers a contig selector when multiple contigs are present", () => {
     render(<GenomeView filename="ann.bed" text={BED} />);
-    const select = screen.getByRole("combobox", { name: /contig/i });
+    const select = screen.getByRole("combobox", { name: /重叠群/ });
     expect(select).toBeInTheDocument();
     // Two contigs listed; chr1 first (busiest).
     const options = screen.getAllByRole("option");
@@ -26,12 +26,12 @@ describe("GenomeView", () => {
 
   it("switches contigs", async () => {
     render(<GenomeView filename="ann.bed" text={BED} />);
-    await userEvent.selectOptions(screen.getByRole("combobox", { name: /contig/i }), "1");
-    expect(screen.getByText(/1 features/)).toBeInTheDocument(); // chr2 has one
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: /重叠群/ }), "1");
+    expect(screen.getByText(/1 个特征/)).toBeInTheDocument(); // chr2 has one
   });
 
   it("shows an empty state for a file with no features", () => {
     render(<GenomeView filename="empty.gff" text="##gff-version 3\n# nothing else\n" />);
-    expect(screen.getByText(/No features found/)).toBeInTheDocument();
+    expect(screen.getByText(/此 GFF 文件中未找到特征/)).toBeInTheDocument();
   });
 });

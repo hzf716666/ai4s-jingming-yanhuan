@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contracts/handoff_contract.schema.json",
+  "title": "执行交接契约（step_handoff / execution_result）",
+  "description": "按 OneSkills 架构文档 §4.4 实现。编排层向执行层传递 step_handoff；执行层完成后必须返回 execution_result（status/artifacts/observation），不得自行延续上下文。",
+  "oneOf": [
+    {
+      "title": "step_handoff",
+      "type": "object",
+      "required": ["step_id", "execution_skill", "step_goal"],
+      "properties": {
+        "step_id": { "type": "string" },
+        "execution_skill": { "type": "string", "description": "econ-review / econ-decompose / econ-data / econ-run / econ-synthesis / econ-write / 云端计算 / 大文件安全读取" },
+        "step_goal": { "type": "string" },
+        "task_context": {
+          "type": "object",
+          "properties": {
+            "user_goal": { "type": "string" },
+            "constraints": { "type": "array" },
+            "relevant_artifacts": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "resource_bindings": { "type": "array", "description": "resource_retrieval_result 绑定（契约：消费 content）" },
+        "retry_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    {
+      "title": "execution_result",
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "type": "string", "enum": ["success", "partial", "failed", "blocked"] },
+        "artifacts": { "type": "array", "items": { "type": "object" } },
+        "observation": {
+          "type": "object",
+          "required": ["summary"],
+          "properties": {
+            "summary": { "type": "string" },
+            "completed": { "type": "array", "items": { "type": "string" } },
+            "missing": { "type": "array", "items": { "type": "string" } },
+            "risks": { "type": "array", "items": { "type": "string" } },
+            "next_suggestion": { "type": "string" }
+          }
+        },
+        "evidence": { "type": "string", "description": "失败/部分完成时的证据记录" }
+      }
+    }
+  ]
+}

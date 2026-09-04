@@ -5,7 +5,7 @@ import {
   FileSpreadsheet, FileText, ExternalLink, Search, FolderTree, AlertTriangle, FileDown,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { openExternalPath, revealExternalPath } from "@/lib/artifactFile";
+import { revealExternalPath, openExternalUrl } from "@/lib/artifactFile";
 
 // vite dev(5174/5173)下走代理同源 /api/records; Tauri/生产直接用后端地址
 const API = import.meta.env.DEV ? "/api/records" : "http://127.0.0.1:8787/api/records";
@@ -20,6 +20,7 @@ interface EvidenceEntry {
   table: string;
   sheet: string;
   page: number | null;
+  url?: string;
   filePath: string;
   external: boolean;
   value: number | null;
@@ -52,6 +53,8 @@ const CONF_META: Record<Confidence, { label: string; cls: string; dot: string }>
 export function DataRecordsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [records, setRecords] = useState<DataItem[] | null>(null);
+  // 服务端全量条数(前端只拿到前 3000), 用于提示"还可筛选缩小范围"
+  const [totalAll, setTotalAll] = useState(0);
   const [categories, setCategories] = useState<{ name: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
@@ -70,7 +73,7 @@ export function DataRecordsPage() {
     fetch(`${API}/categories`)
       .then((r) => r.json())
       .then((d) => setCategories(d.categories ?? []))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const fetchRecords = useCallback(async () => {
@@ -88,6 +91,7 @@ export function DataRecordsPage() {
       if (!r.ok) throw new Error("HTTP " + r.status);
       const d = await r.json();
       setRecords(d.records);
+      setTotalAll(d.total ?? d.records?.length ?? 0);
       setLoading(false);
     } catch (e) { setLoading(false); }
   }, [query, statusFilter, categoryFilter, targetIndicator, targetYear, targetSpace]);
@@ -156,7 +160,7 @@ export function DataRecordsPage() {
         <div className="ml-auto flex items-center gap-2">
           {stats && (
             <>
-              <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted"><Database size={11} /> {stats.total} 条</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted"><Database size={11} /> {stats.total} 条{totalAll > stats.total ? ` / 共 ${totalAll}` : ""}</span>
               <span className="inline-flex items-center gap-1 rounded-full bg-ok/10 px-2 py-0.5 text-[11px] text-ok"><ShieldCheck size={11} /> 高置信 {stats.high}</span>
               {stats.pending > 0 && <span className="inline-flex items-center gap-1 rounded-full bg-warn/10 px-2 py-0.5 text-[11px] text-warn"><ShieldAlert size={11} /> 待审 {stats.pending}</span>}
               <button
@@ -191,7 +195,7 @@ export function DataRecordsPage() {
             <button key={v} onClick={() => setStatusFilter(v)} className={cn("block w-full rounded px-2 py-1 text-left text-[11.5px]", statusFilter === v ? "bg-warn/10 text-warn" : "text-muted hover:bg-surface-2 hover:text-text")}>{l}</button>
           ))}
           <div className="mt-3 rounded border border-border-faint px-2 py-1.5 text-[10px] leading-relaxed text-muted">
-            点来源证据卡的「打开源文件」可直接跳到年鉴对应表/sheet(文件在 E:\tb\B中国火炬统计年鉴)。
+            点来源证据卡的「定位文件」可直接在文件管理器中显示年鉴对应文件
           </div>
         </aside>
 
@@ -281,7 +285,7 @@ export function DataRecordsPage() {
                     <div key={e.sourceId} className="rounded-lg border border-border bg-bg p-2.5">
                       <div className="flex items-center gap-1.5">
                         {e.external ? <FileSpreadsheet size={12} className="shrink-0 text-accent" /> : <FileText size={12} className="shrink-0 text-accent" />}
-                        <span className="truncate text-[11.5px] font-medium">{e.file || "未知文件"}</span>
+                        <span className="truncate text-[11.5px] font-medium">{e.file || (e.url ? "来源网页" : "未知文件")}</span>
                         <span className={cn("ml-auto shrink-0 rounded px-1.5 py-0.5 text-[10px]", consistent ? "bg-ok/10 text-ok" : "bg-error/10 text-error")}>{consistent ? "一致" : "冲突"}</span>
                       </div>
                       <div className="mt-1 flex items-center gap-2 pl-4 text-[10.5px] text-muted">
@@ -290,9 +294,14 @@ export function DataRecordsPage() {
                         {e.page && <span>· 第{e.page}页</span>}
                         <span className="ml-auto tabular-nums">{e.value != null ? e.value.toLocaleString("zh-CN") : "—"}</span>
                       </div>
+                      {e.url && (
+                        <div className="mt-1.5 flex items-center gap-2 pl-4">
+                          <button onClick={() => openExternalUrl(e.url!)} title={e.url} className="flex items-center gap-1 rounded border border-accent/30 px-2 py-0.5 text-[10.5px] text-accent hover:bg-accent/10"><ExternalLink size={10} /> 打开来源网页</button>
+                          <span className="truncate text-[10px] text-muted">{e.url.replace(/^https?:\/\//, "").slice(0, 60)}</span>
+                        </div>
+                      )}
                       {e.external && (
                         <div className="mt-1.5 flex items-center gap-2 pl-4">
-                          <button onClick={() => openExternalPath(e.filePath || e.file)} title={e.filePath || e.file} className="flex items-center gap-1 rounded border border-accent/30 px-2 py-0.5 text-[10.5px] text-accent hover:bg-accent/10"><ExternalLink size={10} /> 打开源文件{e.page ? ` · 第${e.page}页` : ""}</button>
                           <button onClick={() => revealExternalPath(e.filePath || e.file)} className="flex items-center gap-1 rounded px-2 py-0.5 text-[10.5px] text-muted hover:text-text">定位文件</button>
                         </div>
                       )}

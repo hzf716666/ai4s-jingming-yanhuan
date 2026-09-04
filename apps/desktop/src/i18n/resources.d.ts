@@ -1,26 +1,26 @@
 import "i18next";
 
-import type enCommon from "./locales/en/common.json";
-import type enNav from "./locales/en/nav.json";
-import type enSettings from "./locales/en/settings.json";
-import type enRuns from "./locales/en/runs.json";
-import type enSession from "./locales/en/session.json";
-import type enInspector from "./locales/en/inspector.json";
-import type enErrors from "./locales/en/errors.json";
-import type enPages from "./locales/en/pages.json";
+import type zhCommon from "./locales/zh-Hans/common.json";
+import type zhNav from "./locales/zh-Hans/nav.json";
+import type zhSettings from "./locales/zh-Hans/settings.json";
+import type zhRuns from "./locales/zh-Hans/runs.json";
+import type zhSession from "./locales/zh-Hans/session.json";
+import type zhInspector from "./locales/zh-Hans/inspector.json";
+import type zhErrors from "./locales/zh-Hans/errors.json";
+import type zhPages from "./locales/zh-Hans/pages.json";
 
 declare module "i18next" {
   interface CustomTypeOptions {
     defaultNS: "common";
     resources: {
-      common: typeof enCommon;
-      nav: typeof enNav;
-      settings: typeof enSettings;
-      runs: typeof enRuns;
-      session: typeof enSession;
-      inspector: typeof enInspector;
-      errors: typeof enErrors;
-      pages: typeof enPages;
+      common: typeof zhCommon;
+      nav: typeof zhNav;
+      settings: typeof zhSettings;
+      runs: typeof zhRuns;
+      session: typeof zhSession;
+      inspector: typeof zhInspector;
+      errors: typeof zhErrors;
+      pages: typeof zhPages;
     };
   }
 }

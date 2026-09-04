@@ -18,7 +18,7 @@ describe("FitsView", () => {
     expect(container.textContent).toContain("Jy/beam");
     expect(container.querySelector("canvas")).not.toBeNull();
     // stretch + colormap segmented controls are present
-    for (const label of ["linear", "log", "asinh", "magma", "viridis", "gray"]) {
+    for (const label of ["线性", "对数", "asinh", "magma", "viridis", "gray"]) {
       expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
     }
   });
@@ -27,7 +27,7 @@ describe("FitsView", () => {
     const { container } = render(
       <FitsView filename="spec.fits" bytes={toBuffer(FITS_SPECTRUM_1D_B64)} />,
     );
-    expect(screen.getByText(/spectrum · 16 samples/)).toBeInTheDocument();
+    expect(screen.getByText(/光谱 · 16 个样本/)).toBeInTheDocument();
     const path = container.querySelector("path");
     expect(path).not.toBeNull();
     expect(path!.getAttribute("d")!.startsWith("M")).toBe(true);
@@ -37,6 +37,6 @@ describe("FitsView", () => {
 
   it("shows a friendly error for a non-FITS buffer", () => {
     render(<FitsView filename="bad.fits" bytes={new Uint8Array([1, 2, 3, 4]).buffer} />);
-    expect(screen.getByText(/Could not read this FITS file/)).toBeInTheDocument();
+    expect(screen.getByText(/无法读取此 FITS 文件/)).toBeInTheDocument();
   });
 });

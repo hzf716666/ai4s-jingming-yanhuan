@@ -1,13 +1,14 @@
 // Built-in example projects (P0-1 / P1-1): real, small datasets bundled as
 // Tauri resources and copied into the workspace on demand, so the agent runs a
-// genuine analysis on genuine data — including a non-bio one (climate-trends).
+// genuine analysis on genuine data — the bundled example is an economics one
+// (gerd-trends, OECD MSTI R&D expenditure).
 use std::path::Path;
 use tauri::{path::BaseDirectory, AppHandle, Manager};
 
 use crate::runtime::workspace_dir;
 
 /// Bundled example projects; the command rejects anything else.
-const EXAMPLES: &[&str] = &["climate-trends"];
+const EXAMPLES: &[&str] = &["gerd-trends"];
 
 /// Copy `src` into `dst` recursively WITHOUT overwriting existing files — a
 /// re-installed example must never clobber the user's edited copy.

@@ -374,8 +374,8 @@ def test_requirement_config():
 
 
 def test_llm_interface():
-    """Test LLM interface graceful fallback."""
-    llm = LLMInterface()
+    """Test LLM interface graceful fallback (explicit-empty key = disabled)."""
+    llm = LLMInterface(api_key="")
     assert not llm.available
     result = llm.generate_schema("collect GDP data")
     assert result is None

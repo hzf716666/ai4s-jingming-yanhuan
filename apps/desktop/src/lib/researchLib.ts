@@ -67,7 +67,9 @@ ${h.expected_finding}
 
 ## 支撑证据
 
-${(h.evidence ?? []).map((e) => `- ${e.k}: ${e.v}`).join("\n")}
+${Array.isArray(h.evidence)
+  ? h.evidence.map((e) => (typeof e === "string" ? `- ${e}` : `- ${e.k}: ${e.v}`)).join("\n")
+  : h.evidence ? `- ${h.evidence}` : ""}
 
 ## 数据文件(在本目录 data/ 下)
 
@@ -79,13 +81,13 @@ ${(h.evidence ?? []).map((e) => `- ${e.k}: ${e.v}`).join("\n")}
 
 ## 执行流程(必须按序,每阶段产物落盘后向用户汇报)
 
-1. **P1 拆解** — 用技能 \`econ-decompose-question\` 把本假设拆成子问题树,落到 \`sub_problems.json\`
-2. **P2 过滤** — 用技能 \`econ-filter-subproblems\` 三关过滤(A/B/C 分级),落到 \`filtered_problems.json\`;**等待用户确认 A 档清单**
+1. **P1 拆解** — 用技能 \`econ-decompose\` 把本假设拆成子问题树,落到 \`sub_problems.json\`
+2. **P2 过滤** — 用技能 \`econ-data\` 三关过滤(A/B/C 分级),落到 \`filtered_problems.json\`;**等待用户确认 A 档清单**
 3. **P3 数据盘点** — \`python tools/probe_profile.py <项目目录>\`,产出 \`data_profile.md\`
-4. **P4 实验** — 对每个 A 档子问题:skill \`econ-run-experiment\` 写脚本 + \`python tools/runner.py run . <sid>\`,结果落 \`results/<sid>/run_XX/\`
-5. **P5 整合** — skill \`econ-synthesize-results\`,产出 \`per_hypothesis_verdict.md\`(支持/弱支持/不支持/证据不足)
-6. **P6 写作** — skill \`econ-write-paper\`,按经管模板产出 \`paper/main.md\`
-7. **P7 评审** — skill \`econ-stat-review\`,产出 \`review_report.md\`;评审不过按建议回改(最多 2 轮)
+4. **P4 实验** — 对每个 A 档子问题:skill \`econ-run\` 写脚本 + \`python tools/runner.py run . <sid>\`,结果落 \`results/<sid>/run_XX/\`
+5. **P5 整合** — skill \`econ-synthesis\`,产出 \`per_hypothesis_verdict.md\`(支持/弱支持/不支持/证据不足)
+6. **P6 写作** — skill \`econ-write\`,按经管模板产出 \`paper/main.md\`
+7. **P7 评审** — skill \`econ-review\`,产出 \`review_report.md\`;评审不过按建议回改(最多 2 轮)
 
 **统计护栏**:显著结果必须附效应量+CI;主结论须 ≥2 项稳健性检验;观测数据禁用因果语言(只能"相关/关联/差异");每个 run 记录数据快照 hash。
 详情见 \`PIPELINE.md\` 与 \`tools/method_cards/\`(12 张经管方法卡)。

@@ -61,9 +61,9 @@ export function useStartResearch() {
       await runtime.sendPrompt(
         `这是研究项目 ${h.id} 的任务书(README.md),数据已写入 data/ 目录,流程指引与工装已随项目注入(PIPELINE.md / tools/runner.py / tools/probe_profile.py / tools/method_cards/)。` +
         `请先阅读 README.md、PIPELINE.md 与 data/,然后按七阶段流水线执行: ` +
-        `P1 econ-decompose-question 拆解(sub_problems.json) → P2 econ-filter-subproblems 过滤(filtered_problems.json,需用户确认 A 档) → ` +
+        `P1 econ-decompose 拆解(sub_problems.json) → P2 econ-data 过滤(filtered_problems.json,需用户确认 A 档) → ` +
         `P3 tools/probe_profile.py 数据盘点 → P4 tools/runner.py 运行实验(results/<sid>/run_XX) → ` +
-        `P5 econ-synthesize-results 判定 per_hypothesis_verdict.md → P6 econ-write-paper 论文 paper/main.md → P7 econ-stat-review 评审 review_report.md。` +
+        `P5 econ-synthesis 判定 per_hypothesis_verdict.md → P6 econ-write 论文 paper/main.md → P7 econ-review 评审 review_report.md。` +
         `统计护栏:显著结果附效应量+CI,主结论 ≥2 稳健性检验,观测数据禁用因果语言。每完成一阶段向我汇报产物与关键结论。`,
       );
 

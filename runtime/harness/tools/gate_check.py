@@ -47,6 +47,14 @@ def check_p1(proj: Path) -> list[str]:
         ident = s.get("identification") or {}
         if "causal_claim" not in ident:
             fails.append(f"{s.get('id','?')} identification 缺 causal_claim")
+    # 【自动门禁】: 标了 data_gap 的子问题必须已处理(有 data_gap_report 或 data_supplement)
+    gap_sids = [s.get("id") for s in subs if s.get("data_gap")]
+    if gap_sids:
+        has_report = (proj / "data_gap_report.md").is_file()
+        supp = read_json(proj / "data_supplement.json") or {}
+        has_supp = bool(supp.get("supplements"))
+        if not (has_report or has_supp):
+            fails.append(f"DATA_GAP 未处理: {len(gap_sids)} 个子问题标了 data_gap({gap_sids[:3]}...) 但无 data_gap_report.md —— 必须调用 econ-data 去外部源补齐或记录尝试, 再重跑 P1 gate")
     return fails
 
 
@@ -89,7 +97,11 @@ def check_p2_5(proj: Path) -> list[str]:
     """P2.5 数据缺口: 每个 A 档子问题若 data_gap 为真, 必须有补充数据或 gap report 说明. """
     flt = read_json(proj / "filtered_problems.json") or {}
     a_items = [it for it in (flt.get("items") or []) if it.get("level") == "A"]
-    gaps = [it for it in a_items if it.get("data_gap")]
+    gaps = [it for it in (flt.get("items") or []) if it.get("data_gap")]
+    if not gaps:
+        # 无 gap 标记时回退: 仍要求所有 A 档子问题(下钻 sub_problems)无未处理 gap
+        sp = read_json(proj / "sub_problems.json") or {}
+        gaps = [s for s in (sp.get("subproblems") or []) if s.get("data_gap")]
     if not gaps:
         return []
     fails = []

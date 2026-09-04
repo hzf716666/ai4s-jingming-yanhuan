@@ -1,17 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it } from "vitest";
-import { useUiStore } from "@/lib/store";
+import { describe, expect, it } from "vitest";
 import { ArtifactCard } from "./ArtifactCard";
 import { StepSummaryRow } from "./StepSummaryRow";
 import { ThreadView } from "./ThreadView";
 
-// COPYCAT RULE: useUiStore is module-global; reset the locale after each test
-// so this suite never bleeds a non-English locale into other test files.
-afterEach(() => useUiStore.getState().setLocale("en"));
-
 describe("ArtifactCard strings (i18n)", () => {
-  it("renders the artifact kind, the producing tool, and the Open action in English", () => {
+  it("renders the artifact kind, the producing tool, and the Open action in Chinese", () => {
     render(
       <ArtifactCard
         block={{
@@ -24,21 +19,21 @@ describe("ArtifactCard strings (i18n)", () => {
         onOpen={() => {}}
       />,
     );
-    expect(screen.getByText("figure")).toBeInTheDocument();
-    expect(screen.getByText("· via write")).toBeInTheDocument();
-    expect(screen.getByText("Open")).toBeInTheDocument();
+    expect(screen.getByText("图表")).toBeInTheDocument();
+    expect(screen.getByText("· 通过 write")).toBeInTheDocument();
+    expect(screen.getByText("打开")).toBeInTheDocument();
   });
 });
 
 describe("StepSummaryRow strings (i18n)", () => {
-  it("renders the step count in English", () => {
+  it("renders the step count in Chinese", () => {
     render(<StepSummaryRow block={{ kind: "step-summary", summary: "Prepped the dataset", steps: 3 }} />);
-    expect(screen.getByText("3 steps")).toBeInTheDocument();
+    expect(screen.getByText("3 个步骤")).toBeInTheDocument();
   });
 });
 
 describe("ThreadView strings (i18n)", () => {
-  it("renders the example badge and sample-session notice in English", () => {
+  it("renders the example badge and sample-session notice in Chinese", () => {
     render(
       <MemoryRouter>
         <ThreadView
@@ -52,10 +47,10 @@ describe("ThreadView strings (i18n)", () => {
         />
       </MemoryRouter>,
     );
-    expect(screen.getByText("Example · read-only")).toBeInTheDocument();
+    expect(screen.getByText("示例 · 只读")).toBeInTheDocument();
     expect(
-      screen.getByText("This is a sample session. Start a live agent session to chat for real."),
+      screen.getByText("这是一个示例会话。请启动一个实时代理会话以进行真实对话。"),
     ).toBeInTheDocument();
-    expect(screen.getByText("New session")).toBeInTheDocument();
+    expect(screen.getByText("新建会话")).toBeInTheDocument();
   });
 });

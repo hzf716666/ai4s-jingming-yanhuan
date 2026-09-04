@@ -51,6 +51,21 @@ from src.llm_interface import LLMInterface
 SUPPORTED_EXTENSIONS = (".xlsx", ".xls", ".csv", ".pdf", ".docx", ".pptx")
 
 
+def _load_v2_config() -> dict:
+    """Load data/pipeline_v2_config.json (v2 管线开关/后端/参数).
+
+    JINGMING_V2_CONFIG 可指向自定义 JSON(测试/CI 用)。
+    """
+    try:
+        override = os.environ.get("JINGMING_V2_CONFIG")
+        p = Path(override) if override else (
+            Path(__file__).resolve().parent.parent / "data" / "pipeline_v2_config.json")
+        with open(p, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
 def scan_data_sources(input_dir: str) -> list[dict]:
     """Scan input directory for data files and assess quality.
 
@@ -72,7 +87,7 @@ def scan_data_sources(input_dir: str) -> list[dict]:
     return sources
 
 
-def parse_all_sources(input_dir: str, llm=None) -> list[Record]:
+def parse_all_sources(input_dir: str, llm=None, v2_config: dict | None = None) -> list[Record]:
     """M3: Run all parsing pipelines on all data sources.
 
     Args:
@@ -112,8 +127,34 @@ def parse_all_sources(input_dir: str, llm=None) -> list[Record]:
                 print(f"  [chart_reverse] {f}: {len(recs_d)} records")
 
                 recs_e = parse_pdf_ocr(fpath, source_label)
+
+                # v2: 结构解析后端(扫描件/复杂版式) — 按配置 replace/overlay 规则OCR
+                v2_records: list[Record] = []
+                if v2_config and v2_config.get("structure_enabled", True):
+                    from src.pipelines.structure_v2 import detect_pdf_kind, parse_structure_v2
+                    kind = detect_pdf_kind(fpath, v2_config.get("structure_min_chars_per_page", 30))
+                    if kind in v2_config.get("structure_pdf_types", ["scanned", "complex"]):
+                        v2_records, _v2stats = parse_structure_v2(
+                            fpath, source_label, config=v2_config, llm=llm)
+                        print(f"  [structure_v2:{_v2stats.get('backend') or 'none'}] {f}: "
+                              f"{len(v2_records)} records (failures={_v2stats.get('failures')})")
+                if v2_records and v2_config.get("structure_pdf_mode", "replace") == "replace":
+                    print(f"  [structure_v2 replace] OCR 同源 {len(recs_e)} 条被替换")
+                    recs_e = []
                 all_records.extend(recs_e)
                 print(f"  [ocr] {f}: {len(recs_e)} records")
+                all_records.extend(v2_records)
+
+                # v2: 图表取数 VLM(规则产出可疑时补取)
+                if (v2_config and v2_config.get("chart_vlm_enabled", True)
+                        and llm is not None and getattr(llm, "available", False)):
+                    from src.pipelines.chart_vlm import maybe_chart_vlm
+                    recs_vlm, cstats = maybe_chart_vlm(fpath, recs_d, source_label, llm, v2_config)
+                    if recs_vlm:
+                        all_records.extend(recs_vlm)
+                        print(f"  [chart_vlm] {f}: {len(recs_vlm)} records "
+                              f"(ok={cstats.get('ok')}, low_conf={cstats.get('low_conf')}, "
+                              f"failed={cstats.get('failed')})")
 
                 # Text information extraction from PDF paragraphs
                 paragraphs = extract_paragraphs_from_pdf(fpath)
@@ -234,7 +275,8 @@ def run_pipeline(input_dir: str, output_dir: str,
 
     # === M3: Multi-format parsing ===
     print("\n=== M3: Multi-Format Parsing (xlsx/csv/pdf/docx/pptx) ===")
-    records = parse_all_sources(input_dir)
+    v2_config = _load_v2_config()
+    records = parse_all_sources(input_dir, llm=llm, v2_config=v2_config)
     print(f"  Total records extracted: {len(records)}")
 
     # === M4: Data integration ===
@@ -249,6 +291,14 @@ def run_pipeline(input_dir: str, output_dir: str,
     records = match_schema(records, alias_map)
     matched = sum(1 for r in records if "schema_unmatched" not in (r.note or ""))
     print(f"    Schema matched: {matched}/{len(records)}")
+
+    # v2: LLM 语义匹配补层(仅处理规则未命中, 白名单多选一)
+    if v2_config and v2_config.get("schema_llm_enabled", True):
+        from src.schema_llm import match_unmatched
+        records, schema_cands = match_unmatched(records, llm, output_dir=sst_dir,
+                                                config=v2_config)
+        n_auto = sum(1 for c in schema_cands if c.get("candidate"))
+        print(f"    Schema LLM: candidates={len(schema_cands)}, auto-applied={n_auto}")
 
     print("  Step 3: Exchange Rate Conversion (IMF/SNA 2008)...")
     records = apply_exchange_rate(records)
@@ -285,6 +335,18 @@ def run_pipeline(input_dir: str, output_dir: str,
     print(f"    F1={gt_result['F1']}, Precision={gt_result['precision']}, "
           f"Recall={gt_result['recall']}")
     print(f"    Traps rejected: {gt_result['traps_rejected']}/{gt_result['traps_total']}")
+
+    print("  5e: Content Audit (LLM 内容级抽检, LAED 2026)...")
+    aud_report = {"skipped": "disabled"}
+    if v2_config and v2_config.get("content_audit_enabled", True):
+        from src.content_audit import content_audit, write_audit_report
+        aud_report = content_audit(records, llm=llm, config=v2_config)
+        if "errors" in aud_report:
+            write_audit_report(aud_report, sst_dir)
+            print(f"    checked={aud_report['checked']}, errors={len(aud_report['errors'])}, "
+                  f"per_type={aud_report['per_type']}")
+        else:
+            print(f"    skipped[{aud_report.get('skipped')}]")
 
     # === M7: GIS association ===
     print("\n=== M7: GIS Association (Lloyd + H3) ===")
@@ -350,6 +412,7 @@ def run_pipeline(input_dir: str, output_dir: str,
         "summarizability_violations": len(summ_violations),
         "source_count": len(sources),
         "average_quality": round(avg_quality, 3),
+        "content_audit": aud_report.get("per_type", aud_report.get("skipped")),
         "reverse_F1": gt_result["F1"],
         "h3_points": len(h3_points),
         "db_records": db_stats["total_records"],
@@ -393,6 +456,7 @@ def _generate_report(summary: dict, sources: list, gt_result: dict) -> str:
         f"| 口径调整 | {summary['caliber_changes']} |",
         f"| 结构突变 | {summary['structural_breaks']} |",
         f"| 数据源质量评估 | {summary['source_count']}源 (平均{summary['average_quality']}) |",
+        f"| 内容级抽检 | {summary.get('content_audit')} |",
         f"| Summarizability违反 | {summary['summarizability_violations']} |",
         f"| 反向真值F1 | {summary['reverse_F1']} |",
         f"| H3空间点 | {summary['h3_points']} |",

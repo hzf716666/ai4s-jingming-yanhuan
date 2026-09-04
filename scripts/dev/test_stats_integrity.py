@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the analysis-integrity gate (runtime/skills/core/stats-integrity).
+"""Tests for the analysis-integrity gate (runtime/skills/08-经济实证/econ-synthesis).
 
 Run: python scripts/dev/test_stats_integrity.py
 Stdlib unittest only.
@@ -15,7 +15,7 @@ sys.dont_write_bytecode = True  # never leave __pycache__ in the shipped skill d
 
 _MOD = (
     Path(__file__).resolve().parents[2]
-    / "runtime/skills/core/stats-integrity/stats_integrity_check.py"
+    / "runtime/skills/08-经济实证/econ-synthesis/scripts/stats_integrity_check.py"
 )
 _spec = importlib.util.spec_from_file_location("stats_integrity_check", _MOD)
 assert _spec and _spec.loader

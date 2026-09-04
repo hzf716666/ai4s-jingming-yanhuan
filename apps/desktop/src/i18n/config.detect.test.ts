@@ -23,25 +23,25 @@ function mockNavigatorLanguage(language: string) {
   return () => Object.defineProperty(navigator, "language", { value: original, configurable: true });
 }
 
-describe("detectInitialLocale", () => {
+describe("detectInitialLocale (单语言构建)", () => {
   const restoreFns: Array<() => void> = [];
 
   afterEach(() => {
     while (restoreFns.length) restoreFns.pop()!();
   });
 
-  it("returns a stored valid locale when localStorage has one", () => {
+  it("returns zh-Hans even when localStorage holds an old non-Chinese locale", () => {
     restoreFns.push(mockStorage("ja"), mockNavigatorLanguage("de"));
-    expect(detectInitialLocale()).toBe("ja");
+    expect(detectInitialLocale()).toBe("zh-Hans");
   });
 
-  it("falls back through navigator.language when nothing is stored", () => {
+  it("returns zh-Hans when nothing is stored and the browser is non-Chinese", () => {
     restoreFns.push(mockStorage(null), mockNavigatorLanguage("fr-CA"));
-    expect(detectInitialLocale()).toBe("fr");
+    expect(detectInitialLocale()).toBe("zh-Hans");
   });
 
-  it("returns en when neither storage nor navigator yields a shipped locale", () => {
+  it("returns zh-Hans for any browser language", () => {
     restoreFns.push(mockStorage(null), mockNavigatorLanguage("xx-YY"));
-    expect(detectInitialLocale()).toBe("en");
+    expect(detectInitialLocale()).toBe("zh-Hans");
   });
 });

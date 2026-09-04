@@ -41,7 +41,7 @@ describe("FilePreviewInspector — markdown", () => {
   it("toggles to the raw source under the Code tab", async () => {
     render(<FilePreviewInspector data={md} onClose={() => {}} />);
     await screen.findByRole("heading", { name: "Findings" });
-    await userEvent.click(screen.getByRole("button", { name: /Code/ }));
+    await userEvent.click(screen.getByRole("button", { name: /代码/ }));
     expect(screen.getByText(/# Findings/)).toBeInTheDocument();
   });
 
@@ -70,8 +70,8 @@ describe("FilePreviewInspector — binary file behind a text preview", () => {
       artifact: "data",
     };
     render(<FilePreviewInspector data={bin} onClose={() => {}} />);
-    expect(await screen.findByText(/binary and has no preview/)).toBeInTheDocument();
-    expect(screen.queryByText(/available in the desktop app/)).not.toBeInTheDocument();
+    expect(await screen.findByText(/此文件为二进制文件，无法预览/)).toBeInTheDocument();
+    expect(screen.queryByText(/预览功能在桌面应用中可用/)).not.toBeInTheDocument();
   });
 });
 
@@ -86,8 +86,8 @@ describe("PreviewError", () => {
         onOpenExternally={onOpen}
       />,
     );
-    expect(screen.getByText(/huge\.nc is too large to preview/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: /Open externally/ }));
+    expect(screen.getByText(/huge\.nc 过大，无法预览/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /在外部打开/ }));
     expect(onOpen).toHaveBeenCalledOnce();
   });
 
@@ -108,7 +108,7 @@ describe("PreviewError", () => {
         onOpenExternally={() => {}}
       />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /Inspect without loading/i }));
+    await userEvent.click(screen.getByRole("button", { name: /无需加载即可检查/ }));
     // The pointer's key facts render — the format value, the read count, and
     // that it was sampled, not loaded.
     expect(await screen.findByText("fastq")).toBeInTheDocument(); // the Format cell, exact
@@ -122,13 +122,13 @@ describe("PreviewError", () => {
     render(
       <PreviewError error="file too large to preview" filename="x.bam" path="x.bam" onOpenExternally={() => {}} />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /Inspect without loading/i }));
+    await userEvent.click(screen.getByRole("button", { name: /无需加载即可检查/ }));
     expect(await screen.findByText(/no Python found/)).toBeInTheDocument();
   });
 
   it("renders other errors as a plain line, no card", () => {
-    render(<PreviewError error="Preview is available in the desktop app." filename="x.bin" onOpenExternally={() => {}} />);
-    expect(screen.getByText(/available in the desktop app/)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Open externally/ })).not.toBeInTheDocument();
+    render(<PreviewError error="预览功能在桌面应用中可用。" filename="x.bin" onOpenExternally={() => {}} />);
+    expect(screen.getByText(/预览功能在桌面应用中可用/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /在外部打开/ })).not.toBeInTheDocument();
   });
 });

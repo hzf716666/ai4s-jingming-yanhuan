@@ -5,12 +5,12 @@ import { ToolCallRow } from "./ToolCallRow";
 import { useRuntimeStore } from "@/lib/runtime";
 
 const STATUSES: [ToolCallStatus, string][] = [
-  ["pending", "Pending"],
-  ["running", "Running"],
-  ["waiting-approval", "Waiting"],
-  ["success", "Success"],
-  ["warning", "Warning"],
-  ["failed", "Failed"],
+  ["pending", "待处理"],
+  ["running", "运行中"],
+  ["waiting-approval", "等待中"],
+  ["success", "成功"],
+  ["warning", "警告"],
+  ["failed", "失败"],
 ];
 
 describe("ToolCallRow", () => {

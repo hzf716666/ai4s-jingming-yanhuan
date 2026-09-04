@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contracts/planner_contract.schema.json",
+  "title": "Planner 契约（专家规划）",
+  "description": "按 OneSkills 架构文档 §4.3 实现。econ-planner（专家层）只产出规划，不写代码、不执行任务；编排层负责融合各 planner_proposal 为 global_plan。",
+  "type": "object",
+  "properties": {
+    "planner_id": { "type": "string" },
+    "covered_aspect": { "type": "string", "description": "覆盖的规划方面：scoping/hypothesis/experiment_design/filter_plan/decision" },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+    "plan_fragment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stage_id", "goal"],
+        "properties": {
+          "stage_id": { "type": "string", "description": "P0~P7 或子阶段" },
+          "goal": { "type": "string" },
+          "depends_on": { "type": "array", "items": { "type": "string" } },
+          "execution_skill": { "type": "string", "description": "建议执行的技能（econ-review/econ-decompose/...）" },
+          "required_resources": { "type": "array", "items": { "type": "string" }, "description": "需向 econ-resources 请求的资源" },
+          "expected_artifacts": { "type": "array", "items": { "type": "string" }, "description": "期望产物：sub_problems.json / data_profile.md / ..." },
+          "completion_criteria": { "type": "array", "items": { "type": "string" } },
+          "fallback": { "type": "string" }
+        }
+      }
+    },
+    "risks": { "type": "array", "items": { "type": "string" } },
+    "conflicts": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["planner_id", "plan_fragment"]
+}

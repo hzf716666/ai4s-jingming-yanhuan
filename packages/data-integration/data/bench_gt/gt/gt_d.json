@@ -1,0 +1,17 @@
+{
+  "scene": "D-6-1",
+  "source": "E:/tb/B中国火炬统计年鉴/B中国火炬统计年鉴/第6部分 国家火炬特色产业基地/6-1_火炬特色产业基地主要情况.xlsx",
+  "data_year_note": "长时序表, 年份在列0显式给出",
+  "annotated_by": "openpyxl 直接读值 + 表头结构人工核验",
+  "annotated_at": "2026-09-02",
+  "records": [
+    {"time": "2003", "space": "全国", "indicator": "统计基地数", "value": 47, "unit": "个", "source_hint": "6-1.xlsx 第4行 第2列"},
+    {"time": "2003", "space": "全国", "indicator": "基地内企业数", "value": 4272, "unit": "个", "source_hint": "6-1.xlsx 第4行 第3列"},
+    {"time": "2004", "space": "全国", "indicator": "总收入", "value": 7181.0, "unit": "亿元", "source_hint": "6-1.xlsx 第5行 第6列"},
+    {"time": "2005", "space": "全国", "indicator": "工业总产值", "value": 11765.4, "unit": "亿元", "source_hint": "6-1.xlsx 第6行 第5列"},
+    {"time": "2005", "space": "全国", "indicator": "上缴税额", "value": 643.4, "unit": "亿元", "source_hint": "6-1.xlsx 第6行 第7列"},
+    {"time": "2007", "space": "全国", "indicator": "利润总额", "value": 1348.9, "unit": "亿元", "source_hint": "6-1.xlsx 第8行 第8列"},
+    {"time": "2007", "space": "全国", "indicator": "出口创汇", "value": 578.5, "unit": "亿美元", "source_hint": "6-1.xlsx 第8行 第9列"},
+    {"time": "2006", "space": "全国", "indicator": "统计基地数", "value": 133, "unit": "个", "source_hint": "6-1.xlsx 第7行 第2列"}
+  ]
+}

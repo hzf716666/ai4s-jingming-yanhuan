@@ -1,0 +1,22 @@
+{
+  "structure_backend": "auto",
+  "structure_enabled": true,
+  "structure_pdf_mode": "replace",
+  "structure_pdf_types": [
+    "scanned",
+    "complex"
+  ],
+  "structure_min_chars_per_page": 30,
+  "structure_vlm_max_pages": 8,
+  "chart_vlm_enabled": true,
+  "chart_vlm_model": "qwen3.8-max",
+  "chart_vlm_retry_model": "qwen3.5-omni-plus",
+  "chart_rule_fallback": true,
+  "schema_llm_enabled": true,
+  "schema_llm_batch_size": 20,
+  "schema_llm_auto_confidence": 0.8,
+  "content_audit_enabled": true,
+  "content_audit_sample_rate": 0.1,
+  "content_audit_max_items": 200,
+  "bench_enabled": false
+}

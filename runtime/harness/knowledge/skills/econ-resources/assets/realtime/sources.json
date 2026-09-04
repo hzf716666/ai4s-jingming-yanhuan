@@ -1,0 +1,768 @@
+{
+ "status": "ok",
+ "count": 76,
+ "total_records": 11039,
+ "sources": [
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-3_各高新区企业主要经济指标.xlsx / sheet=1-8",
+   "records": 865,
+   "indicators": 5,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 173
+  },
+  {
+   "source": "耦合 part1 × part9",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "耦合 part1 × part8",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "耦合 part1 × part7",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "耦合 part1 × part6",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "耦合 part1 × part5",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "耦合 part1 × part4",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "耦合 part1 × part3",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "耦合 part1 × part2",
+   "records": 585,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-6_各国家高新区企业R&D活动与研究开发情况.xlsx / sheet=1-4",
+   "records": 537,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 179
+  },
+  {
+   "source": "火炬年鉴 创新型产业集群 / 7-2_创新型产业集群主要经济指标.xlsx / sheet=1",
+   "records": 248,
+   "indicators": 8,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-1_高新区企业主要经济指标①④.xlsx / sheet=1",
+   "records": 240,
+   "indicators": 8,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-2_各地区科技型企业孵化器基本情况.xlsx / sheet=1",
+   "records": 216,
+   "indicators": 6,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 国家大学科技园 / 4-5_各地区国家大学科技园在孵和毕业企业情况.xlsx / sheet=1",
+   "records": 216,
+   "indicators": 6,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 创新型产业集群 / 7-4_创新型产业集群主要服务机构情况.xlsx / sheet=1",
+   "records": 214,
+   "indicators": 7,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31
+  },
+  {
+   "source": "火炬年鉴 创新型产业集群 / 7-3_创新型产业集群主要科技活动成果情况.xlsx / sheet=1",
+   "records": 214,
+   "indicators": 7,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-2_高新区企业主要经济指标（按地区分类）.xlsx / sheet=1-2",
+   "records": 212,
+   "indicators": 6,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "OECD MSTI",
+   "records": 184,
+   "indicators": 4,
+   "year_range": [
+    "2019",
+    "2024"
+   ],
+   "spaces": 10
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-5_各地区科技型企业孵化器当年在孵企业情况.xlsx / sheet=1",
+   "records": 180,
+   "indicators": 5,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-1_全国科技型企业孵化器主要经济指标.xlsx / sheet=1",
+   "records": 180,
+   "indicators": 6,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-4_各高新区企业收入情况.xlsx / sheet=1-4",
+   "records": 179,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 179
+  },
+  {
+   "source": "火炬年鉴 国家火炬特色产业基地 / 6-2_各地区火炬特色产业基地经济指标.xlsx / sheet=1",
+   "records": 165,
+   "indicators": 5,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 33
+  },
+  {
+   "source": "火炬年鉴 全国高新技术企业 / 2-1_全国高新技术企业主要经济指标.xlsx / sheet=1",
+   "records": 145,
+   "indicators": 5,
+   "year_range": [
+    "1996",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 国家火炬软件产业基地 / 5-6_软件产业基地出口和利税情况.xlsx / sheet=1",
+   "records": 134,
+   "indicators": 5,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28
+  },
+  {
+   "source": "火炬年鉴 国家技术转移机构 / 9-4_各地区国家技术转移机构服务情况.xlsx / sheet=1",
+   "records": 132,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 33
+  },
+  {
+   "source": "火炬年鉴 国家火炬软件产业基地 / 5-5_软件产业基地收入情况.xlsx / sheet=1-2",
+   "records": 120,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30
+  },
+  {
+   "source": "火炬年鉴 国家火炬软件产业基地 / 5-3_软件产业基地从业人员情况.xlsx / sheet=1",
+   "records": 112,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28
+  },
+  {
+   "source": "火炬年鉴 国家火炬软件产业基地 / 5-2_软件产业基地场地情况.xlsx / sheet=1",
+   "records": 112,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28
+  },
+  {
+   "source": "火炬年鉴 国家大学科技园 / 4-2_各地区国家大学科技园基本情况.xlsx / sheet=1",
+   "records": 108,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-10_各省、自治区、直辖市技术合同登记情况.xlsx / sheet=1",
+   "records": 95,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 32
+  },
+  {
+   "source": "火炬年鉴 国家火炬特色产业基地 / 6-1_火炬特色产业基地主要情况.xlsx / sheet=1",
+   "records": 88,
+   "indicators": 4,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 国家火炬软件产业基地 / 5-4_软件产业基地软件人员分布情况.xlsx / sheet=1",
+   "records": 84,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-3_各地区科技型企业孵化器孵化企业情况.xlsx / sheet=1",
+   "records": 72,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-1_全国技术合同成交情况.xlsx / sheet=1",
+   "records": 72,
+   "indicators": 3,
+   "year_range": [
+    "2001",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-11_各省、自治区、直辖市技术交易情况.xlsx / sheet=1",
+   "records": 72,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 国家火炬软件产业基地 / 5-1_软件产业基地主要经济指标.xlsx / sheet=1",
+   "records": 66,
+   "indicators": 3,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 创新型产业集群 / 7-1_创新型产业集群主要情况①.xlsx / sheet=1",
+   "records": 66,
+   "indicators": 6,
+   "year_range": [
+    "2014",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 全国高新技术企业 / 2-11_各地区高新技术企业R&D活动与研究开发情况.xlsx / sheet=1",
+   "records": 66,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 国家大学科技园 / 4-1_国家大学科技园主要经济指标.xlsx / sheet=1",
+   "records": 63,
+   "indicators": 3,
+   "year_range": [
+    "2004",
+    "2024"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-2_技术合同类别构成情况.xlsx / sheet=1",
+   "records": 47,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 24
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-7_卖方机构构成及交易情况.xlsx / sheet=1",
+   "records": 45,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 16
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-6_技术合同计划项目构成情况.xlsx / sheet=1",
+   "records": 44,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 22
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-7_高新区企业主要经济指标（按登记注册统计类别分类）.xlsx / sheet=1-2",
+   "records": 40,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 10
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-6_各地区国家级科技型企业孵化器基本情况.xlsx / sheet=1",
+   "records": 37,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 37
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-4_各地区科技型企业孵化器孵化场地情况.xlsx / sheet=1",
+   "records": 36,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-10_计划单列市科技型企业孵化器基本情况.xlsx / sheet=1",
+   "records": 36,
+   "indicators": 6,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 6
+  },
+  {
+   "source": "火炬年鉴 国家大学科技园 / 4-3_各地区国家大学科技园人员情况.xlsx / sheet=1",
+   "records": 36,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36
+  },
+  {
+   "source": "火炬年鉴 国家火炬特色产业基地 / 6-3_各地区火炬特色产业基地人员分布情况.xlsx / sheet=1",
+   "records": 33,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 33
+  },
+  {
+   "source": "火炬年鉴 国家技术转移机构 / 9-3_各地区国家技术转移机构促成技术转移情况.xlsx / sheet=1-2",
+   "records": 33,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 33
+  },
+  {
+   "source": "火炬年鉴 国家技术转移机构 / 9-1_各地区国家技术转移机构法人构成情况.xlsx / sheet=1",
+   "records": 33,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 33
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-9_大额技术合同构成情况.xlsx / sheet=1",
+   "records": 33,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 24
+  },
+  {
+   "source": "耦合 part2 × part9",
+   "records": 30,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-13_计划单列市科技型企业孵化器当年在孵企业情况.xlsx / sheet=1",
+   "records": 30,
+   "indicators": 5,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 6
+  },
+  {
+   "source": "火炬年鉴 国家大学科技园 / 4-9_计划单列市国家大学科技园在孵和毕业企业情况.xlsx / sheet=1",
+   "records": 30,
+   "indicators": 6,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 5
+  },
+  {
+   "source": "火炬年鉴 全国高新技术企业 / 2-5_各地区高新技术企业收入情况.xlsx / sheet=1",
+   "records": 30,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-13_高新区高技术产业制造业企业主要经济指标（按行业类别分类）.xlsx / sheet=1-2",
+   "records": 28,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 7
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-5_技术合同社会-经济目标构成情况.xlsx / sheet=1",
+   "records": 26,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 13
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-14_高新区高技术产业服务业企业主要经济指标（按行业类别分类）.xlsx / sheet=1-2",
+   "records": 24,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 8
+  },
+  {
+   "source": "xlsx:input/gdp_2018_2023.xlsx/GDP",
+   "records": 24,
+   "indicators": 4,
+   "year_range": [
+    "2018",
+    "2023"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-4_技术合同技术领域构成情况.xlsx / sheet=1",
+   "records": 22,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 11
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-3_技术合同知识产权构成情况.xlsx / sheet=1",
+   "records": 22,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 11
+  },
+  {
+   "source": "火炬年鉴 国家高新技术产业开发区 / 1-10_高新区企业主要经济指标（按企业划型标准分类）.xlsx / sheet=1-2",
+   "records": 20,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 5
+  },
+  {
+   "source": "火炬年鉴 国家火炬特色产业基地 / 6-4_计划单列市火炬特色产业基地经济指标.xlsx / sheet=1",
+   "records": 20,
+   "indicators": 5,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 4
+  },
+  {
+   "source": "火炬年鉴 国家技术转移机构 / 9-8_计划单列市国家技术转移机构服务情况.xlsx / sheet=1",
+   "records": 20,
+   "indicators": 4,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 5
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-13_副省级城市技术交易情况.xlsx / sheet=1",
+   "records": 20,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 10
+  },
+  {
+   "source": "xlsx:input/gdp_2018_2023.xlsx/Regional GDP",
+   "records": 16,
+   "indicators": 2,
+   "year_range": [
+    "",
+    ""
+   ],
+   "spaces": 8
+  },
+  {
+   "source": "火炬年鉴 国家大学科技园 / 4-6_计划单列市国家大学科技园基本情况.xlsx / sheet=1",
+   "records": 15,
+   "indicators": 3,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 5
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-8_买方机构构成及交易情况.xlsx / sheet=1",
+   "records": 15,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 14
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-20_粤港澳大湾区技术交易情况.xlsx / sheet=1",
+   "records": 14,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 7
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-11_计划单列市科技型企业孵化器孵化企业情况.xlsx / sheet=1",
+   "records": 12,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 6
+  },
+  {
+   "source": "火炬年鉴 全国技术市场 / 8-12_计划单列市技术交易情况.xlsx / sheet=1",
+   "records": 10,
+   "indicators": 2,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 5
+  },
+  {
+   "source": "火炬年鉴 科技企业孵化器 / 3-12_计划单列市科技型企业孵化器孵化场地情况.xlsx / sheet=1",
+   "records": 6,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 6
+  },
+  {
+   "source": "火炬年鉴 国家大学科技园 / 4-7_计划单列市国家大学科技园人员情况.xlsx / sheet=1",
+   "records": 5,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 5
+  },
+  {
+   "source": "OECD ANBERD",
+   "records": 5,
+   "indicators": 1,
+   "year_range": [
+    "2019",
+    "2023"
+   ],
+   "spaces": 1
+  },
+  {
+   "source": "火炬年鉴 国家火炬特色产业基地 / 6-5_计划单列市火炬特色产业基地人员分布情况.xlsx / sheet=1",
+   "records": 4,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 4
+  },
+  {
+   "source": "中国火炬统计年鉴2025.pdf/p1/chart0",
+   "records": 1,
+   "indicators": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 1
+  }
+ ],
+ "note": "活清单：每次刷新自动包含 AI 新补数与已入库来源；权威渠道模板见 assets/datasources.json"
+}

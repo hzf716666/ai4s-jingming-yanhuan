@@ -4,7 +4,6 @@ import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
 import {
   FileSearch,
-  Moon,
   NotebookPen,
   PackagePlus,
   Plus,
@@ -29,7 +28,6 @@ export function CommandPalette() {
   const { t } = useTranslation("nav");
   const open = useUiStore((s) => s.paletteOpen);
   const setOpen = useUiStore((s) => s.setPaletteOpen);
-  const toggleTheme = useUiStore((s) => s.toggleTheme);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,7 +64,6 @@ export function CommandPalette() {
     { id: "notebooks", label: t("commandPalette.actions.openNotebooks"), icon: <NotebookPen size={16} />, run: () => { navigate("/notebooks"); close(); } },
     { id: "skills", label: t("commandPalette.actions.manageSkills"), icon: <PackagePlus size={16} />, run: () => { navigate("/skills"); close(); } },
     { id: "settings", label: t("commandPalette.actions.openSettings"), icon: <Settings size={16} />, run: () => { navigate("/settings"); close(); } },
-    { id: "theme", label: t("commandPalette.actions.toggleTheme"), icon: <Moon size={16} />, run: () => { toggleTheme(); close(); } },
   ];
 
   if (!open) return null;

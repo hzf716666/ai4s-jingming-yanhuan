@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contracts/task_state.schema.json",
+  "title": "Task State 契约（唯一事实源）",
+  "description": "按 OneSkills 架构文档 §4.1 实现：任务从创建到完成的全部状态，跨多轮规划与执行的唯一事实源。更新规则：①每次调用专家前先提供当前状态摘要 ②每次调用执行技能后先进入 observation 再写 artifacts ③partial 记已完成/缺失/建议 ④failed 先记失败证据再决定修复或阻断 ⑤repair 只针对最新 observation ⑥在更新后的状态上重新选 next_step。",
+  "type": "object",
+  "required": ["task_id", "user_goal", "current_phase"],
+  "properties": {
+    "task_id": { "type": "string", "description": "任务 ID" },
+    "user_goal": { "type": "string", "description": "用户最终目标" },
+    "current_phase": {
+      "type": "string",
+      "enum": ["intake", "planning", "execution", "observation", "repair", "validation", "complete", "blocked"]
+    },
+    "planning_mode": { "type": "string", "enum": ["direct_step", "expert_proposal_synthesis", "null"] },
+    "intent_profile": { "type": "object", "description": "意图画像：domain/stage_hint/keywords/route_scores" },
+    "planner_candidates": { "type": "array", "items": { "type": "object" } },
+    "planner_proposals": { "type": "array", "items": { "type": "object" } },
+    "global_plan": {
+      "type": "array",
+      "description": "编排层定稿的执行序列（按 stage 排序）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step_id": { "type": "string" },
+          "stage": { "type": "integer", "description": "P0~P7 / 50 资源 / 60 工具" },
+          "execution_skill": { "type": "string" },
+          "goal": { "type": "string" },
+          "depends_on": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "active_step": { "type": "object" },
+    "resource_bindings": { "type": "array", "items": { "type": "object" } },
+    "artifacts": {
+      "type": "array",
+      "description": "生产文件契约：sub_problems.json / data_profile.md / results/<sid>/run_XX / per_hypothesis_verdict.md / paper/main.md / review_report.md",
+      "items": { "type": "object", "properties": { "path": { "type": "string" }, "stage": { "type": "integer" }, "status": { "type": "string" } } }
+    },
+    "observations": { "type": "array", "items": { "type": "object" } },
+    "constraints": { "type": "array" },
+    "completion_criteria": { "type": "array" }
+  }
+}

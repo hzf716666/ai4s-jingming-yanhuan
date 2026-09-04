@@ -27,11 +27,11 @@ describe("SessionPage", () => {
   it("renders the figure session with the artifact inspector", () => {
     renderAt(`${base}/figure-canvas`);
     expect(document.querySelector('[data-variant="artifact"]')).toBeInTheDocument();
-    expect(screen.getByText("Download script")).toBeInTheDocument();
+    expect(screen.getByText("下载脚本")).toBeInTheDocument();
   });
 
   it("shows a not-found state for an unknown session", () => {
     renderAt(`${base}/nope`);
-    expect(screen.getByText("Session not found")).toBeInTheDocument();
+    expect(screen.getByText("未找到会话")).toBeInTheDocument();
   });
 });

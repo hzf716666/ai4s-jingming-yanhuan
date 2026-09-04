@@ -69,8 +69,9 @@ competitors.
   figure **and** one report artifact, each linked to the code that made them,
   without the user leaving the app.
 - **Status.** ✅ The empty session offers one-click workflow starters (demo
-  end-to-end analysis, analyze-my-data, audit-a-report, and the climate-trends
-  example on real bundled data); the demo starter verifiably produces code →
+  end-to-end econometric analysis, analyze-my-data, audit-a-report, and the
+  gerd-trends example on real bundled OECD data); the demo starter verifiably
+  produces code →
   figure → report → stats in one turn, all files surfaced as artifacts with
   provenance. Minor gap: bci-trends is still repo-only.
 
@@ -393,7 +394,7 @@ competitors.
 - **Acceptance.** At least one non-bio example project ships alongside the bio
   demo; a new field's connector needs no core change.
 - **Status.** 🟡 Skills + MCP management shipped and pluggable; non-bio showcase
-  shipped (`examples/climate-trends/`, real NASA GISTEMP v4, bundled, one-click).
+  shipped (`examples/gerd-trends/`, real OECD MSTI R&D data, bundled, one-click).
   Non-bio depth now spans all five targeted disciplines via connectors
   (P1-2), domain viewers (P1-3), and correctness gates (P0-5: physics/earth/
   biology/chemistry). Gap: deeper per-field coverage (astronomy catalogs, a

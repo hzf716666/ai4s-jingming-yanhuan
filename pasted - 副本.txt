@@ -1,0 +1,151 @@
+景明研环假设生成全链路详解
+一、最底层：为什么假设生成要建"知识图谱"而不是直接问大模型
+核心洞察（来自 EO-agents 论文）：在数据密集型的研究领域，"假设"的本质是两个可执行实体的可共分析关系——而不是一句自由文本。EO-agents 把假设生成建在 NASA 知识图谱上（1,475 数据集 / 7 类节点 / 9 类关系），用 GNN 排序"数据集配对"，再让 LLM 从 200 个配对中生成假设。
+
+它验证了一件事：如果没有结构化图谱，LLM 生成的假设是"编出来的好看的话"；有了图谱，假设变成"图上真有一条边可以检验"。
+
+景明研环的 FKG（Fusion Knowledge Graph，双集群融合图谱）也是这个思路——你的数据面板整理出 11,039 条 fact_records（指标×空间×年份×值×置信度×来源数），这些去重/对齐后，长成图谱，图谱再衍生出"信号"，假设就长在信号上。
+
+为什么是"图谱"而不是"关系型表格"：
+
+表格体现不了"武汉市含 65 个集群、这些集群属于哪些行业、受哪些政策覆盖、处于哪些阶段"这种多对多网状结构；
+假设生成需要"跳出单表"——它要回答"影响 X 的因素可能还有 Y"，而这要求 X 和 Y 之间有显式关联路径（不一定直连，可以是三跳）；
+图谱的边天然编码了"假设的候选组合"——正如 EO-agents 用 "co-usage" 边（两个数据集被同一篇论文用）作为监督，我们用 co_mentioned/co_located（两个节点被同一条记录提及 / 在地理上同域）作为潜在关系。
+二、FKG 图谱结构设计（9 类节点，为什么这样分）
+从 sync_kg_graph.py 的 FKG_CATEGORIES 看，节点类别严格固定 9 种：
+
+
+text
+FKG_CATEGORIES = ["Region", "Cluster", "STCluster", "Industry", "Actor", "Instrument", "Policy", "Stage", "Indicator"]
+各类节点对应 fkg_graph_view.json 的 stats.node_types（schema 层 218 个语义节点，渲染层 510 个含派生）：
+
+类别	数量	角色	在"假设"里的地位
+Region	56	省/都市圈/市/区县	空间载体，「创新极化 vs 产业空转」等地理错配假设的因变量/自变量
+Cluster	65	国家级/省级产业创新集群（黄石大冶湖、十堰商用车等）	核心实体——"产业集群"是研究对象本体
+STCluster	6	科技创新集群（武汉市光电子信息等）	双螺旋的"科技链"一端，与 Cluster 对照
+Industry	14	新一代信息技术、新能源、新材料、生物医药……	行业维度，用于跨行业配置错配假设
+Actor	8	高校/科研院所/企业/金融机构等创新主体	主体行为，决定"谁在创新"
+Instrument	12	政策工具（种子基金、拨转股、概念验证基金集群、知识价值信用贷款……）	处理变量候选——DID/IV 的天然来源
+Policy	13	政策性文件/计划	政策级变量
+Stage	4	种子期/初创期/成长期/成熟期	生命周期维度——"阶段适配"假设的调节变量
+Indicator	40	专利占比、R&D 强度、高企占比等指标	数值载体——直接参与回归的"变量"
+为什么恰好这 9 类——正好映射双螺旋理论（论文视角）的三创融合结构：
+
+产业链：Cluster (产业创新集群) + Industry (行业)
+创新链：STCluster (科技创新集群) + Actor (创新主体) + Indicator (研发/专利类)
+空间承载：Region (区域承载)
+制度/金融：Policy + Instrument (政策工具, 金融工具)
+时序：Stage (阶段)
+一句话：图谱 = 用 9 类节点把"区域经济创新体系"的六大板块（产业/科技/空间/主体/工具/阶段）编码成一张可推理的网。这与 EO-agents 的 7 类节点（Publication/Dataset/ScienceKeyword/Instrument/Platform/Project/DataCenter）是同一个思想——假定生成不该只靠文本语义，要靠实体类型体系。
+
+三、图谱的边（729 条语义边）
+stats.edge_types 显示 10 种边界关系：
+
+边类型	数量	语义	在假设生成里的作用
+contains	77	区域包含（省→市→区县，省→都市圈）	空间层级结构
+located_in	63	集群/高校/金融机构在某区域	空间锚定
+at_stage	52	集群处于哪个生命周期阶段	阶段适配假设的核心边
+belongs_to	40	集群归属某行业	行业对比的基础
+initiated_by	7	政策/工具出台主体	政策归属
+supports	234	政策工具支持某某（集群/主体/阶段）	处理变量的主要来源
+operates	10	主体运作某机构	行为关联
+measured_by	34	指标测量某某实体	Indicator 是"数值"的挂靠点
+co_located	47	两实体同县域/同产业	空间共现（派生）
+co_mentioned	165	两实体被同一记录提及	语义共现（派生，最强假设线索）
+注意：co_located / co_mentioned 是从 fact_records 里"统计派生"的（stats.derived_co_located=47, derived_co_mentioned=165），这正是 EO-agents 里 "co-usage" 边的经管版——你在谱图上找到"什么和什么总是一起出现"，就找到了一类候选假设。
+
+四、图谱之上的"信号层"（为什么 signals 是假设的直接输入）
+图谱 218 节点对 LLM 太大/太抽象；我们从图谱统计出 12 个 signal（fkg_graph_view.json.signals），这才是生成假设的颗粒度恰好的输入。信号分五系：
+
+系	信号	统计了什么	支撑哪类假设
+A 配置系	A1 都市圈专利/集群比	武汉 89% vs 襄阳 6.1% vs 宜荆荆 4.9%	创新极化-产业空转（镜像错配）
+A2 行业专利/VC	vc_per_patent 高低与专利占比	资本-专利错配（金融化悖论）
+A3 集群R&D vs 行业R&D	gap（新材料 +1.97pp）	高研低转断层
+B 绩效系	B1 高企占比+等级	黄石 84.21% 省级优秀	高比例低绩效悖论
+B2 绩效分圈/分级	武汉优秀8/省级10	层级绩效结构差异
+C 空间系	C1 县域金字塔	高位极化 11 个	县域创新资源不公
+C2 头部县域	前五县 17/26 种子集群	头部集中度
+D 工具系	D1 政策工具/阶段覆盖	种子/初创/成长	政策-阶段适配
+D2 金融/集群	新一代信息 310 vs 新能源 0	金融-集群断裂
+E 转化系	E1 知识贷款	639亿元/1万家	信贷转化低效
+为什么设计成 A/B/C/D/E 五系——这本身是你的研究视角（三创融合）：A 配置（创新要素怎么配）、B 绩效（配置出什么结果）、C 空间（在哪一层）、D 工具（用什么机制）、E 转化（转化成什么价值）。五系覆盖了"配置→结果→空间→机制→转化"的完整价值链，因此假设不会只局限在因果关系，还能生成"错配/断层/极化/适配"这类结构性命题。
+
+五、生成链路（当前实现）
+L1 上下文拼装（_user_prompt）——喂给 LLM 的 6 段
+
+text
+① 本次反馈(adopt/reject + note)
+② 历史否决硬约束(_rejected_constraints_block)  ← 不靠相似度, 全量最新 30 条
+③ 图谱信号聚焦(_signals_context, top_k=12)      ← BGE 余弦排序选 12 条
+④ 动机锚定(smotiv.motivation_block)              ← 每条信号的 problem/challenge/solution
+⑤ 向量记忆召回(memory_context, top_k=6, threshold=0.40)
+⑥ 现有候选假设(_trim_existing)
+为什么"聚焦 12 条"而不是全给——这是 EO-agents Filter-Generator 解耦的落地。EO-agents 用 GNN 把 217 万数据集配对排序到 200 个，Generator 只看 200。我们没训练 GNN（档 2 未跑），用 BGE-M3 余弦相似度把 query（用户评价+现有假设标题）与 12 个信号 key 排序，取 top 12——让 Generator 每次看到"与用户关注点最相关的 12 个信号"，而不是 12 个固定信号。这直接解决了"假设总扎堆 A1/B1"的多样性坍缩问题。
+
+L2 LLM 三档回退
+
+text
+DashScope(qwen-plus) → 失败降级 qwen-turbo → 失败 OpenCode serve(@4096) → 规则回退
+temperature=0.8（多样性）。注意：OpenCode 那档是"桌面应用自带 AI 后端"，无 key 时也能跑，这是你机器的特殊价值。
+
+L3 输出解析 + 类型规范化（_parse_hypotheses + _normalize_hypothesis）
+去 ```json 围栏 → 找 [...] → json.loads
+必须 id + title
+强制类型：evidence→数组、scores→补 3 键、self_critique→None。修复之前"评审报告启动失败"的字符串 evidence 崩溃点（这也是我上一轮修的 bug）。
+L4 后处理四件套（V2 新增）
+
+text
+postprocess:
+  G1 Gate  → sgate.validate(hs)     ← functor 类型级相容检查(CHECK_A/B/C/D)
+  G2 Yield → _compute_yield(hs)     ← 最大互异集(去重)
+  G3 Crit  → _bulk_self_critique    ← 每条假设判"不可证伪/无识别/粒度不匹配"
+  G4 Motiv → 已在 prompt 注入       ← problem→challenge→solution 锚链
+G1 为什么重要：LLM 会被"表面像研究"的组合骗过（比如把 B1 的"高企占比"当 A2 的"VC 强度"的因变量），Gate 用 SignalSpec 类型系统（12 个信号的 entity/scale/numeric/ordinal）做 4 条检查：
+
+CHECK_A 变量类型匹配（分类 vs 连续）
+CHECK_B 同一实体层面（跨层需聚合）
+CHECK_C 因果方向（无识别策略的"影响/促进"打 info）
+CHECK_D 识别可行性（DID 无处理组 / IV 无工具 / RDD 无有序变量）
+G2 为什么重要：用户之前反馈"假设都长一个样"。Yield 用 graph_pattern/dimension/BGE>0.85 判重，算出最大互异集——让"多样性"从主观感受变为 yield_size=5/7 这种可对比的数字（IDEAgent 的 Yield 指标）。
+
+G3 为什么重要：HypoForge 说"生成阶段没有反馈，用 generator-discriminator 对抗"。我让 LLM 在生成后立即给自己每条假设打"不可证伪/无识别/粒度不匹配"，critical 级打标附到 self_critique 字段（不删）——例如上次 H9 被指出 "N=3 都市圈不支持 Bootstrap 1000 次"。
+
+L5 后台记忆同步
+
+text
+_bg_sync_memory(req, generated=hs)
+  → upsert_hypothesis(existing × N) + upsert_hypothesis(generated × N) ← 新假设也入库!
+  → record_feedback(feedback × N)
+关键修复：新生成的假设也会向量化入库（之前只入 existing，跨轮学习断一半）。
+
+六、评审链路（与生成解耦，可独立调用）
+POST /api/hypotheses/review：
+
+四档：exceptional (Top/AMJ级) / strong (Top-/SMJ级) / fair (Good/中档) / limited (Fair/低档)
+多 judge × 多条件 × 多温度：models=["qwen-plus","qwen-max",...] × blind=true（只给假设文本，不给 evidence） × dual_temp=true（T=0.5 + T=0.3 两轮 ensemble）
+集成：概率平均（剔除 overconfident 模型 max(p)>0.97）→ 香农熵置信度 → 一致性 → 期刊档映射
+入库：memory.record_review(hypothesis_id, result)，评审结论也进向量记忆
+这一层对应 EO-agents 的 2×2×2 factorial（judge × blind/contextual × temperature），也把你之前 reverse-engineered 的 Gatekeeper 四档评审方法论移植过来了。
+
+七、记忆层（跨轮学习）
+
+text
+hypothesis_memory.db (SQLite)
+  embeddings(kind: hypothesis|feedback|review, ref_id, text, vector BLOB, dim, meta)
+  feedback(id, hypothesis_id, verdict, note, created_at)
+嵌入：BGE-M3（本地 CPU ~5.8s/条，启动后台预热）→ 失败回退 DashScope text-embedding-v3 → 失败 hash 词袋(32维)
+检索：余弦相似度，阈值校准为 0.40（实测：相关对 [0.52, 0.76]，不相关 [0.27, 0.32]，分离度 0.198；原 0.45 过严会把 0.52 的弱相关对过滤掉）
+作用：regenerate 时 memory.recall() 找回"历史上与这次任务语义相似的已采纳/已否决假设"，让 LLM 尊重跨轮偏好。
+八、为什么整个系统"假设生成"能成立（一句话总纲）
+数据面板（fact_records）→ 物化出图谱（FKG 9类节点/10种边）→ 图谱统计出信号（A/B/C/D/E 12条）→ 信号按 BGE 相关性聚焦 + 动机锚定后喂给 LLM → LLM 先生成、Gate/Yield/Self-Critique 后验、评审四档定级 → 新假设+评价入向量记忆 → 下一轮 regenerate 带着历史学习生成。
+
+这正是 EO-agents 的 "typed KG → ranker → generator → judge → memory" 流水线在经管场景的落地，而且：
+
+EO-agents 用 GNN 排序 = 我们用 BGE 排序（档 1 的差异，档 2 可升级 GNN）
+EO-agents 的 6 字段假设 schema = 我们的 9+ 字段（多 dimension/graph_pattern/evidence/scores + self_critique）
+EO-agents 的 blind/contextual 2×2×2 = 我们的多模型×盲×多温
+九、当前已知局限（未解决，供后续方向）
+数据量小：signals 只有 12 个、每系 2-3 个 signal——假设的"组合空间"有限，比 EO-agents 的 1,475 数据集少很多。下一步（档 2）可以把信号粒度降到县级/集群级。
+没有 GNN：排序靠 BGE 余弦（语义）而不是图结构（拓扑）；EO-agents 的 GNN-Hetero 在 cold-start 上比 BGE 强 5.2×，因为图结构能传"没见过的组合"。
+HLER 式 dataset-aware 未接：目前假设的"可行性"由 Gate 静态检查 + Self-Critique 启发式，还没真正接 DataProfile（CHNS 那种数据字段盘点）——hypotheses 还没有"这个信号真的能从数据面板算出吗"的强校验。
+评审依赖单租户 OpenAI 型 API：多模型面板受限，盲/知情差异没在 >20 条假设上做统计检验（EO-agents 的重要发现全靠大规模样本）。

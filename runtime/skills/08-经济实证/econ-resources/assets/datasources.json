@@ -1,0 +1,126 @@
+{
+ "version": "1.0.0",
+ "provenance": "清单来自数据补齐通道正文的'外部数据源优先级' + 本项目已实际使用过的本地库（火炬年鉴/OECD fetch_oecd.py/湖北集群报告）。为审核版核心清单，非穷举；新增源时在此登记并标注 provenance。",
+ "note": "本机实测可达性(2026-09-02): 湖北科技厅 kjt.hubei.gov.cn(http 200, 用http别用https)/武汉市统计局 tjj.wuhan.gov.cn(200)/国家统计局 data.stats.gov.cn 页面可达但 easyquery 接口 403(必须浏览器带 Referer)/湖北省政府首页 412(文章页带 UA+Referer 可抓)/各市统计局先 curl 探测/明确不可达: tjj.hubei.gov.cn 年度数据 404、维基百科超时、baike 404。抓取统一: curl -s -L -A 'Mozilla/5.0 ... Chrome/120'。补数规则与尝试矩阵见 econ-data P2.5 与 archives。",
+ "sources": [
+  {
+   "name": "国家统计局",
+   "url": "http://data.stats.gov.cn",
+   "tier": "官方统计",
+   "access": "页面可达/接口403→必须浏览器",
+   "indicators": [
+    "宏观/分省年度指标",
+    "科技经费",
+    "GDP 等"
+   ],
+   "data_format": "space×year×indicator"
+  },
+  {
+   "name": "湖北省统计局",
+   "url": "https://tjj.hubei.gov.cn",
+   "tier": "官方统计",
+   "access": "不可达(年度数据404)",
+   "indicators": [
+    "湖北分市州指标"
+   ]
+  },
+  {
+   "name": "武汉市统计局",
+   "url": "https://tjj.wuhan.gov.cn",
+   "tier": "官方统计",
+   "access": "受限(浏览器优先)",
+   "indicators": [
+    "武汉分口径指标"
+   ]
+  },
+  {
+   "name": "火炬统计年鉴(本地)",
+   "url": "E:\\tb\\B中国火炬统计年鉴",
+   "tier": "本地年鉴",
+   "access": "本地磁盘",
+   "indicators": [
+    "火炬基地/高新区集群 营收/专利/技术交易等",
+    "技术市场表"
+   ],
+   "data_format": "扫描PDF+表, 需OCR"
+  },
+  {
+   "name": "OECD",
+   "url": "https://stats.oecd.org",
+   "tier": "学术/政府公开库",
+   "access": "可用(fetch_oecd.py 已落地)",
+   "indicators": [
+    "MSTI: GERD/占GDP%",
+    "ANBERD"
+   ],
+   "data_format": "API CSV"
+  },
+  {
+   "name": "世界银行",
+   "url": "https://databank.worldbank.org",
+   "tier": "学术/政府公开库",
+   "access": "可用",
+   "indicators": [
+    "Development Indicators 面板"
+   ]
+  },
+  {
+   "name": "IMF",
+   "url": "https://data.imf.org",
+   "tier": "学术/政府公开库",
+   "access": "可用",
+   "indicators": [
+    "IFS/WEO 宏观面板"
+   ]
+  },
+  {
+   "name": "全国科技经费投入统计公报",
+   "url": "https://www.stats.gov.cn",
+   "tier": "官方统计",
+   "access": "受限",
+   "indicators": [
+    "R&D 经费总量/强度"
+   ]
+  },
+  {
+   "name": "Wind/CSMAR",
+   "url": "有账号时",
+   "tier": "企业/行业库",
+   "access": "账号限制",
+   "indicators": [
+    "上市公司财务/治理微观面板"
+   ]
+  },
+  {
+   "name": "上市公司年报(巨潮/上交所)",
+   "url": "http://www.cninfo.com.cn",
+   "tier": "企业/行业库",
+   "access": "可用",
+   "indicators": [
+    "年报文本与财务数据"
+   ]
+  },
+  {
+   "name": "政府工作报告/发改委/科技部公开数据",
+   "url": "https://www.ndrc.gov.cn",
+   "tier": "政策文件",
+   "access": "可用",
+   "indicators": [
+    "规划目标/政策事件时点"
+   ]
+  },
+  {
+   "name": "湖北集群报告",
+   "url": "本地项目文档(表16 引用)",
+   "tier": "本地报告",
+   "access": "本地",
+   "indicators": [
+    "都市圈专利占比/集群数量占比(武汉89%/61.4% 等)",
+    "集群营收增速"
+   ],
+   "provenance": "FKG evidence: 湖北集群报告·表16"
+  }
+ ],
+ "title": "外部源渠道模板（静态层）",
+ "description": "固定的权威数据渠道（渠道不随数据变）。**我们实际已收录哪些源/覆盖哪些年份——看实时层 assets/realtime/sources.json（integration.db fact_records.source 聚合）。** 本文件用于'补数时到哪里找'的渠道优先级与访问方式。"
+}

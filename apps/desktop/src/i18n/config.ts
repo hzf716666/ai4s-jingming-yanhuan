@@ -12,22 +12,15 @@ export interface LocaleMeta {
   shipped: boolean;
 }
 
-export const DEFAULT_LOCALE = "en";
+/** 应用仅提供简体中文界面；其余语言包已随单语言化移除。 */
+export const DEFAULT_LOCALE = "zh-Hans";
 
 /** localStorage key holding the user's chosen locale. */
 export const LOCALE_KEY = "jingming.locale";
 
 /** Registration order is the switcher's display order. */
 export const LOCALES: LocaleMeta[] = [
-  { code: "en", label: "English", nativeName: "English", dir: "ltr", shipped: true },
   { code: "zh-Hans", label: "Simplified Chinese", nativeName: "简体中文", dir: "ltr", shipped: true },
-  { code: "ja", label: "Japanese", nativeName: "日本語", dir: "ltr", shipped: true },
-  { code: "es", label: "Spanish", nativeName: "Español", dir: "ltr", shipped: true },
-  { code: "de", label: "German", nativeName: "Deutsch", dir: "ltr", shipped: true },
-  { code: "fr", label: "French", nativeName: "Français", dir: "ltr", shipped: true },
-  { code: "ko", label: "Korean", nativeName: "한국어", dir: "ltr", shipped: true },
-  { code: "pt-BR", label: "Portuguese (Brazil)", nativeName: "Português (Brasil)", dir: "ltr", shipped: false },
-  { code: "ar", label: "Arabic", nativeName: "العربية", dir: "rtl", shipped: false },
 ];
 
 export function shippedLocales(): LocaleMeta[] {

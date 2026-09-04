@@ -23,10 +23,8 @@ import type {
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useUiStore, ZOOM_MAX, ZOOM_MIN } from "@/lib/store";
-import { shippedLocales } from "@/i18n/config";
 import { getClient, useRuntimeStore } from "@/lib/runtime";
 import { normalizeProviderNames } from "@/lib/providerDisplay";
-import { useUpdateStore } from "@/lib/update";
 import {
   agentBrowserProfiles,
   detectChrome,
@@ -91,10 +89,6 @@ import { cn } from "@/lib/cn";
 export function SettingsPage() {
   // Which settings section is on screen — the sidebar is the navigation.
   const section = resolveSection(useParams().section);
-  const theme = useUiStore((s) => s.theme);
-  const setTheme = useUiStore((s) => s.setTheme);
-  const locale = useUiStore((s) => s.locale);
-  const setLocale = useUiStore((s) => s.setLocale);
   const zoom = useUiStore((s) => s.zoom);
   const zoomBy = useUiStore((s) => s.zoomBy);
   const resetZoom = useUiStore((s) => s.resetZoom);
@@ -115,28 +109,6 @@ export function SettingsPage() {
   const backend = useRuntimeStore((s) => s.backend);
   const setBackend = useRuntimeStore((s) => s.setBackend);
   const connected = status === "ready";
-  const updateEnabled = useUpdateStore((s) => s.enabled);
-  const setUpdateEnabled = useUpdateStore((s) => s.setEnabled);
-  const updateBadgeEnabled = useUpdateStore((s) => s.badgeEnabled);
-  const setUpdateBadgeEnabled = useUpdateStore((s) => s.setBadgeEnabled);
-  const updateStatus = useUpdateStore((s) => s.status);
-  const updateError = useUpdateStore((s) => s.error);
-  const currentVersion = useUpdateStore((s) => s.currentVersion);
-  const latestUpdate = useUpdateStore((s) => s.latest);
-  const hasUpdate = useUpdateStore((s) => s.hasUpdate);
-  const showUpdateBadge = useUpdateStore((s) => s.showBadge);
-  const lastCheckedAt = useUpdateStore((s) => s.lastCheckedAt);
-  const checkForUpdates = useUpdateStore((s) => s.check);
-  const dismissUpdateBadge = useUpdateStore((s) => s.dismissBadge);
-  const updateTone =
-    hasUpdate || updateStatus === "error" ? "error" : updateStatus === "checking" ? "accent" : "ok";
-  const updateLabel = hasUpdate
-    ? t("updates.available")
-    : updateStatus === "checking"
-      ? t("updates.checking")
-      : updateStatus === "error"
-        ? t("updates.failed")
-        : t("updates.upToDate");
 
   // Long-running uv provisioning lives in a store, not here: navigating away
   // must not discard the "setting up…" state or sever the progress stream.
@@ -2019,41 +1991,7 @@ export function SettingsPage() {
         {section === "appearance" && (
         <Section title={t("appearance.title")} flush>
           <div className="divide-y divide-faint">
-            <Row title={t("appearance.themeLabel")}
-              control={
-                <div className="inline-flex shrink-0 gap-0.5">
-                  {/* eslint-disable-next-line i18next/no-literal-string -- internal theme-mode keys, not display text (the visible label is t(`appearance.theme.${mode}`)) */}
-                  {(["light", "warm", "dark"] as const).map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setTheme(mode)}
-                      className={cn(
-                        "rounded-[7px] px-4 py-1.5 text-[13px] transition-colors",
-                        theme === mode ? "bg-surface-2 text-text" : "text-muted hover:text-text",
-                      )}
-                    >
-                      {t(`appearance.theme.${mode}`)}
-                    </button>
-                  ))}
-                </div>
-              }
-            />
-            <Row title={t("language.label")}
-              control={
-                <select
-                  value={locale}
-                  onChange={(e) => setLocale(e.target.value)}
-                  aria-label={t("language.label")}
-                  className={chipCls()}
-                >
-                  {shippedLocales().map((l) => (
-                    <option key={l.code} value={l.code}>
-                      {l.nativeName}
-                    </option>
-                  ))}
-                </select>
-              }
-            />
+            {/* 单主题（深色）+ 单语言（中文）构建：无主题切换与语言选择器 */}
             {/* Zoom is desktop-only: in a browser the browser's own zoom rules. */}
             {isTauri && (
               <Row
@@ -2094,96 +2032,6 @@ export function SettingsPage() {
         </Section>
         )}
 
-        {/* ---- App updates ---- */}
-        {section === "general" && (
-        <Section title={t("updates.title")} hint={t("updates.hint")} flush>
-          <div className="divide-y divide-faint">
-            <Row
-              title={
-                <span className="inline-flex items-center gap-1.5">
-                  <span
-                    className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      updateTone === "error" ? "bg-error" : updateTone === "accent" ? "bg-accent" : "bg-ok",
-                    )}
-                  />
-                  {updateLabel}
-                </span>
-              }
-              hint={[
-                t("updates.currentVersion", { version: currentVersion }),
-                latestUpdate && t("updates.latestVersion", { version: latestUpdate.version }),
-                latestUpdate?.publishedAt &&
-                  t("updates.publishedAt", {
-                    date: new Date(latestUpdate.publishedAt).toLocaleString(locale),
-                  }),
-                lastCheckedAt &&
-                  t("updates.lastChecked", { date: new Date(lastCheckedAt).toLocaleString(locale) }),
-              ]
-                .filter(Boolean)
-                .join(" · ")}
-              control={
-                <div className="flex shrink-0 flex-wrap justify-end gap-2">
-                  <button
-                    className={btnGhost("gap-1.5")}
-                    onClick={() => void checkForUpdates({ manual: true })}
-                    disabled={updateStatus === "checking"}
-                  >
-                    {updateStatus === "checking" ? (
-                      <Loader2 size={13} className="animate-spin" />
-                    ) : (
-                      <RefreshCw size={13} />
-                    )}
-                    {t("updates.checkNow")}
-                  </button>
-                  {latestUpdate?.url && (
-                    <button
-                      className={btnGhost("gap-1.5")}
-                      onClick={() => void openExternal(latestUpdate.url)}
-                    >
-                      <ExternalLink size={13} /> {t("updates.openRelease")}
-                    </button>
-                  )}
-                  {showUpdateBadge && (
-                    <button className={btnGhost()} onClick={dismissUpdateBadge}>
-                      {t("updates.hideBadge")}
-                    </button>
-                  )}
-                </div>
-              }
-            >
-              {updateStatus === "error" && updateError && (
-                <div className="mt-2 text-xs text-error">
-                  {t("updates.checkFailed", { message: updateError })}
-                </div>
-              )}
-            </Row>
-            <Row
-              title={t("updates.autoCheck")}
-              hint={t("updates.autoCheckHint")}
-              control={
-                <Switch
-                  checked={updateEnabled}
-                  onChange={setUpdateEnabled}
-                  label={t("updates.autoCheck")}
-                />
-              }
-            />
-            <Row
-              title={t("updates.showBadge")}
-              hint={t("updates.showBadgeHint")}
-              control={
-                <Switch
-                  checked={updateBadgeEnabled}
-                  onChange={setUpdateBadgeEnabled}
-                  label={t("updates.showBadge")}
-                />
-              }
-            />
-            <div className="px-4 py-3 text-xs leading-relaxed text-muted">{t("updates.privacy")}</div>
-          </div>
-        </Section>
-        )}
       </div>
     </div>
   );

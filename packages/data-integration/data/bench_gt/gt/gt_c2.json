@@ -1,0 +1,15 @@
+{
+  "scene": "C2-wuhan-patent",
+  "source": "https://tjj.wuhan.gov.cn/tjfw/tjgb/202503/t20250327_2558447.shtml 图6 2020-2024年每万人口发明专利拥有量",
+  "gt_basis": "武汉市统计公报 2020-2024 各年度公报原文(每万人口发明专利拥有量, 件), 五源交叉且与增速自洽",
+  "annotated_by": "公报原文数值(官方) 2026-09-03",
+  "annotation_state": "verified",
+  "tolerance_note": "图表为公报配图, 标注值可能取整; 评分容差 2%",
+  "records": [
+    {"time": "2020", "space": "武汉", "indicator": "每万人口发明专利拥有量", "value": 51.87, "unit": "件", "source_hint": "2020年武汉市统计公报"},
+    {"time": "2021", "space": "武汉", "indicator": "每万人口发明专利拥有量", "value": 60.02, "unit": "件", "source_hint": "2021年武汉市统计公报"},
+    {"time": "2022", "space": "武汉", "indicator": "每万人口发明专利拥有量", "value": 69.19, "unit": "件", "source_hint": "2022年武汉市统计公报"},
+    {"time": "2023", "space": "武汉", "indicator": "每万人口发明专利拥有量", "value": 84.25, "unit": "件", "source_hint": "2023年武汉市统计公报"},
+    {"time": "2024", "space": "武汉", "indicator": "每万人口发明专利拥有量", "value": 97.13, "unit": "件", "source_hint": "2024年武汉市统计公报"}
+  ]
+}

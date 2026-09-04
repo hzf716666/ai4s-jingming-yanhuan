@@ -68,7 +68,7 @@ jingming-yanhuan/
 ├── scripts/                  # 构建和发布脚本
 │   ├── dev/                  #   拉取 sidecar/uv/skills/goal-plugin 的脚本
 │   └── release/              #   发布脚本
-├── examples/                 # 内置示例项目（bci-trends、climate-trends）
+├── examples/                 # 内置示例项目（bci-trends、gerd-trends）
 ├── AGENTS.md                 # Agent 上下文规则（CLAUDE.md 是此文件的符号链接）
 ├── PROGRESS.md               # 唯一进度文件
 ├── package.json              # 根 package.json（定义 workspace 脚本）

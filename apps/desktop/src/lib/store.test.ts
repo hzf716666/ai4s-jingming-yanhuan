@@ -1,23 +1,13 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useUiStore } from "./store";
 
-describe("uiStore theme", () => {
-  beforeEach(() => {
-    window.localStorage.clear();
-    useUiStore.setState({ theme: "warm" });
-  });
-
-  it("cycles theme and persists to localStorage", () => {
-    useUiStore.getState().toggleTheme();
-    expect(useUiStore.getState().theme).toBe("dark");
-    expect(window.localStorage.getItem("jingming.theme.v2")).toBe("dark");
-
-    useUiStore.getState().toggleTheme();
-    expect(useUiStore.getState().theme).toBe("light");
-    expect(window.localStorage.getItem("jingming.theme.v2")).toBe("light");
-
-    useUiStore.getState().toggleTheme();
-    expect(useUiStore.getState().theme).toBe("warm");
-    expect(window.localStorage.getItem("jingming.theme.v2")).toBe("warm");
+describe("uiStore (单主题/单语言构建)", () => {
+  it("no longer exposes theme or locale state", () => {
+    const s = useUiStore.getState() as unknown as Record<string, unknown>;
+    expect("theme" in s).toBe(false);
+    expect("setTheme" in s).toBe(false);
+    expect("toggleTheme" in s).toBe(false);
+    expect("locale" in s).toBe(false);
+    expect("setLocale" in s).toBe(false);
   });
 });

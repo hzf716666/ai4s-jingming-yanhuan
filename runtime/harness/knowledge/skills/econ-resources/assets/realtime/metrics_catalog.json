@@ -1,0 +1,2186 @@
+{
+ "status": "ok",
+ "count": 143,
+ "conflicts": [
+  "上缴税额",
+  "上缴税额",
+  "净利润",
+  "净利润",
+  "在孵企业数",
+  "在孵企业数",
+  "场地面积",
+  "场地面积",
+  "工业总产值",
+  "工业总产值",
+  "年末从业人员",
+  "年末从业人员",
+  "管理机构 从业人员总数",
+  "管理机构 从业人员总数",
+  "营业收入",
+  "营业收入"
+ ],
+ "metrics": [
+  {
+   "indicator": "10009",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "1091985",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "1110698435",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "122082",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "1291848",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "1352791022",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "140294861",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "14937",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "15966",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "1636",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "171",
+   "unit": "",
+   "records": 29,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 29,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "1720957",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "1746",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "209835323",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "213",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "2351314",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "2587",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "281",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "300518199",
+   "unit": "",
+   "records": 25,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 25,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "32812",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "3325153",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "334628451",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "3684",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "370031",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "374775002",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "4202818",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "4364821693",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "4499665",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "5108",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "533813",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "562360",
+   "unit": "",
+   "records": 28,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 28,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "570475462",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "604642053",
+   "unit": "",
+   "records": 26,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 26,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "6647",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "74744",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "755359713",
+   "unit": "",
+   "records": 27,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 27,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "788985761",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "79450",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "81",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "84",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "9054470261",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "9513140465",
+   "unit": "",
+   "records": 30,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 30,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "GDP",
+   "unit": "亿元",
+   "records": 14,
+   "year_range": [
+    "",
+    "2023"
+   ],
+   "spaces": 9,
+   "sources": 2,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "GERD人均研发(PPP)",
+   "unit": "USD/人",
+   "records": 46,
+   "year_range": [
+    "2019",
+    "2024"
+   ],
+   "spaces": 10,
+   "sources": 1,
+   "unit_variants": [
+    "USD/人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "GERD占GDP比重",
+   "unit": "%",
+   "records": 46,
+   "year_range": [
+    "2019",
+    "2024"
+   ],
+   "spaces": 10,
+   "sources": 1,
+   "unit_variants": [
+    "%"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "GERD研发总支出(PPP)",
+   "unit": "USD",
+   "records": 46,
+   "year_range": [
+    "2019",
+    "2024"
+   ],
+   "spaces": 10,
+   "sources": 1,
+   "unit_variants": [
+    "USD"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "GERD研发总支出(本币)",
+   "unit": "本币",
+   "records": 46,
+   "year_range": [
+    "2019",
+    "2024"
+   ],
+   "spaces": 10,
+   "sources": 1,
+   "unit_variants": [
+    "本币"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "col_density",
+   "unit": "",
+   "records": 1,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "上缴税费  (100 million",
+   "unit": "亿元",
+   "records": 11,
+   "year_range": [
+    "2014",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "上缴税金",
+   "unit": "千元",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "上缴税额",
+   "unit": "亿元",
+   "records": 29,
+   "year_range": [
+    "1996",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "上缴税额",
+   "unit": "千元",
+   "records": 37,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 37,
+   "sources": 2,
+   "unit_variants": [
+    "亿元",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "上缴税额  (100 million",
+   "unit": "亿元",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "交易额占国内生产总值比重",
+   "unit": "%",
+   "records": 24,
+   "year_range": [
+    "2001",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "%"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "产业链强度_工业实化率",
+   "unit": "ratio",
+   "records": 1832,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 229,
+   "sources": 8,
+   "unit_variants": [
+    "ratio"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "人口",
+   "unit": "万人",
+   "records": 8,
+   "year_range": [
+    "",
+    ""
+   ],
+   "spaces": 8,
+   "sources": 1,
+   "unit_variants": [
+    "万人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "从业人员数",
+   "unit": "人",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "企业从业 人员总数",
+   "unit": "",
+   "records": 37,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 37,
+   "sources": 2,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "企业研发支出(ANBERD)",
+   "unit": "USD",
+   "records": 5,
+   "year_range": [
+    "2019",
+    "2023"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "USD"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "促成项目 成交总数",
+   "unit": "",
+   "records": 33,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 33,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "入统企业数",
+   "unit": "个",
+   "records": 268,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 239,
+   "sources": 7,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "入统基地数",
+   "unit": "个",
+   "records": 37,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 37,
+   "sources": 2,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "入统大学 科技园数量",
+   "unit": "个",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "全时当量",
+   "unit": "人年",
+   "records": 179,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 179,
+   "sources": 1,
+   "unit_variants": [
+    "人年"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "净利润",
+   "unit": "亿元",
+   "records": 29,
+   "year_range": [
+    "1996",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "净利润",
+   "unit": "千元",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "亿元",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "净利润  (100 million",
+   "unit": "亿元",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "出口创汇",
+   "unit": "亿美元",
+   "records": 29,
+   "year_range": [
+    "1996",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿美元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "出口创汇  (100 million",
+   "unit": "亿美元",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿美元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "出口总额",
+   "unit": "千元",
+   "records": 37,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 37,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "创业导师 人数",
+   "unit": "人",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "创新链强度_RD占比",
+   "unit": "ratio",
+   "records": 1454,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 208,
+   "sources": 9,
+   "unit_variants": [
+    "ratio"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "利润总额",
+   "unit": "千元",
+   "records": 37,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 37,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "利润总额①  (100 million",
+   "unit": "亿元",
+   "records": 22,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "利润总额②",
+   "unit": "亿元",
+   "records": 22,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "利润总额②  (100 million",
+   "unit": "亿元",
+   "records": 11,
+   "year_range": [
+    "2014",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "双螺旋协同度",
+   "unit": "ratio²",
+   "records": 1424,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 178,
+   "sources": 8,
+   "unit_variants": [
+    "ratio²"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "合同交易额",
+   "unit": "亿元",
+   "records": 95,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 95,
+   "sources": 6,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "合同数",
+   "unit": "项",
+   "records": 160,
+   "year_range": [
+    "2001",
+    "2024"
+   ],
+   "spaces": 137,
+   "sources": 10,
+   "unit_variants": [
+    "项"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "吸纳技术",
+   "unit": "",
+   "records": 58,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 58,
+   "sources": 4,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "国家高新区数",
+   "unit": "个",
+   "records": 36,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "国家高新区数②",
+   "unit": "个",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "在孵企业",
+   "unit": "个",
+   "records": 71,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 42,
+   "sources": 3,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "在孵企业 从业人员数",
+   "unit": "人",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "在孵企业 总收入",
+   "unit": "千元",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "在孵企业人数",
+   "unit": "万人",
+   "records": 21,
+   "year_range": [
+    "2004",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "万人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "在孵企业从业人员数",
+   "unit": "万人",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "万人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "在孵企业总收入",
+   "unit": "亿元",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "在孵企业数",
+   "unit": "",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "",
+    "个"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "在孵企业数",
+   "unit": "个",
+   "records": 21,
+   "year_range": [
+    "2004",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "",
+    "个"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "场地面积",
+   "unit": "万平方米",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "万平方米",
+    "平方米"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "场地面积",
+   "unit": "平方米",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "万平方米",
+    "平方米"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "基地内企业数",
+   "unit": "个",
+   "records": 59,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 38,
+   "sources": 3,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "基地总人数",
+   "unit": "万人",
+   "records": 22,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "万人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "大学科技园",
+   "unit": "个",
+   "records": 21,
+   "year_range": [
+    "2004",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "孵化器 总收入",
+   "unit": "千元",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "孵化基金 总额",
+   "unit": "千元",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "对公共技术 服务平台投资额",
+   "unit": "千元",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "工业总产值",
+   "unit": "亿元",
+   "records": 29,
+   "year_range": [
+    "1996",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "工业总产值",
+   "unit": "千元",
+   "records": 230,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 230,
+   "sources": 5,
+   "unit_variants": [
+    "亿元",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "工业总产值  (100 million",
+   "unit": "亿元",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "工商注册企业数",
+   "unit": "个",
+   "records": 209,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 209,
+   "sources": 2,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "年末从业 人员",
+   "unit": "万人",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "万人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "年末从业人员",
+   "unit": "万人",
+   "records": 11,
+   "year_range": [
+    "2014",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "万人",
+    "人"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "年末从业人员",
+   "unit": "人",
+   "records": 238,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 238,
+   "sources": 6,
+   "unit_variants": [
+    "万人",
+    "人"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "当年获得 投融资企业数",
+   "unit": "个",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "当年获得孵化 基金在孵企业数",
+   "unit": "个",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "当年获风险 投资额",
+   "unit": "千元",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "总收入",
+   "unit": "千元",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "总收入  (100 million",
+   "unit": "亿元",
+   "records": 22,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "总面积",
+   "unit": "",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "成交金额",
+   "unit": "亿元",
+   "records": 71,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 71,
+   "sources": 3,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "技术合同交易额",
+   "unit": "亿元",
+   "records": 24,
+   "year_range": [
+    "2001",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "排名",
+   "unit": "",
+   "records": 31,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 31,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "服务企业数量",
+   "unit": "家",
+   "records": 38,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 38,
+   "sources": 2,
+   "unit_variants": [
+    "家"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "机构总数①",
+   "unit": "",
+   "records": 33,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 33,
+   "sources": 1,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "机构数",
+   "unit": "个",
+   "records": 16,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 16,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "研究开发人员",
+   "unit": "人",
+   "records": 209,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 209,
+   "sources": 2,
+   "unit_variants": [
+    "人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "研究开发经费 内部支出",
+   "unit": "千元",
+   "records": 36,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 36,
+   "sources": 1,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "研究开发经费内部支出",
+   "unit": "千元",
+   "records": 179,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 179,
+   "sources": 1,
+   "unit_variants": [
+    "千元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "第一产业增加值",
+   "unit": "亿元",
+   "records": 6,
+   "year_range": [
+    "2018",
+    "2023"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "第三产业增加值",
+   "unit": "亿元",
+   "records": 6,
+   "year_range": [
+    "2018",
+    "2023"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "第二产业增加值",
+   "unit": "亿元",
+   "records": 6,
+   "year_range": [
+    "2018",
+    "2023"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "管理机构 从业人员总数",
+   "unit": "",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "",
+    "人"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "管理机构 从业人员总数",
+   "unit": "人",
+   "records": 41,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 41,
+   "sources": 2,
+   "unit_variants": [
+    "",
+    "人"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "管理机构 从业人员数",
+   "unit": "人",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "人"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "累计毕业 企业",
+   "unit": "",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "累计毕业企业",
+   "unit": "个",
+   "records": 71,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 42,
+   "sources": 3,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "组织交易活动",
+   "unit": "次",
+   "records": 38,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 38,
+   "sources": 2,
+   "unit_variants": [
+    "次"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "组织技术转移培训",
+   "unit": "次",
+   "records": 38,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 38,
+   "sources": 2,
+   "unit_variants": [
+    "次"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "统计基地数",
+   "unit": "个",
+   "records": 22,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "统计孵化器数",
+   "unit": "个",
+   "records": 42,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 42,
+   "sources": 2,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "统计孵化器数量",
+   "unit": "个",
+   "records": 67,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 38,
+   "sources": 2,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "统计集群数",
+   "unit": "个",
+   "records": 11,
+   "year_range": [
+    "2014",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "营业收入",
+   "unit": "",
+   "records": 209,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 209,
+   "sources": 2,
+   "unit_variants": [
+    "",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "营业收入",
+   "unit": "千元",
+   "records": 238,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 238,
+   "sources": 6,
+   "unit_variants": [
+    "",
+    "千元"
+   ],
+   "unit_conflict": true
+  },
+  {
+   "indicator": "营业收入  (100 million",
+   "unit": "亿元",
+   "records": 11,
+   "year_range": [
+    "2014",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "营业收入①",
+   "unit": "亿元",
+   "records": 29,
+   "year_range": [
+    "1996",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "营业收入③  (100 million",
+   "unit": "亿元",
+   "records": 30,
+   "year_range": [
+    "1995",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "亿元"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "解决企业需求",
+   "unit": "项",
+   "records": 38,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 38,
+   "sources": 2,
+   "unit_variants": [
+    "项"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "软件产业基地",
+   "unit": "个",
+   "records": 22,
+   "year_range": [
+    "2003",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "输出技术",
+   "unit": "",
+   "records": 58,
+   "year_range": [
+    null,
+    null
+   ],
+   "spaces": 58,
+   "sources": 4,
+   "unit_variants": [
+    ""
+   ],
+   "unit_conflict": false
+  },
+  {
+   "indicator": "集群内企业数",
+   "unit": "个",
+   "records": 11,
+   "year_range": [
+    "2014",
+    "2024"
+   ],
+   "spaces": 1,
+   "sources": 1,
+   "unit_variants": [
+    "个"
+   ],
+   "unit_conflict": false
+  }
+ ],
+ "note": "指标口径断点（同指标多单位）见 conflicts 字段；人工批注见 assets/metrics_dictionary.md"
+}

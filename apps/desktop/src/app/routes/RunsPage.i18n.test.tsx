@@ -1,29 +1,30 @@
 import { screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { renderAt } from "@/test/render";
-import { useUiStore } from "@/lib/store";
 
-// COPYCAT RULE: useUiStore is module-global; reset the locale after each test
-// so this suite never bleeds a non-English locale into other test files.
-afterEach(() => useUiStore.getState().setLocale("en"));
+// COPYCAT RULE: useRuntimeStore is module-global — restore the
+// disconnected default after any test that fakes a "ready" runtime.
+import { useRuntimeStore } from "@/lib/runtime";
+const RUNTIME_DEFAULTS = { status: useRuntimeStore.getState().status, agents: useRuntimeStore.getState().agents };
+afterEach(() => useRuntimeStore.setState(RUNTIME_DEFAULTS));
 
 describe("RunsPage strings (i18n)", () => {
-  it("renders the page heading and description in English", async () => {
+  it("renders the page heading and description in Chinese", async () => {
     renderAt("/runs");
-    expect(await screen.findByRole("heading", { level: 1, name: "Runs" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "运行" })).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Every experiment execution across all sessions — command, code version, environment, hardware, and outputs\./,
+        /跨所有会话的每一次实验执行——命令、代码版本、环境、硬件与输出。/,
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Reproduce")).toBeInTheDocument();
+    expect(screen.getByText("复现")).toBeInTheDocument();
   });
 
-  it("renders the empty state (no runs recorded) in English", async () => {
+  it("renders the empty state (no runs recorded) in Chinese", async () => {
     renderAt("/runs");
-    expect(await screen.findByText("No runs recorded yet")).toBeInTheDocument();
+    expect(await screen.findByText("尚无运行记录")).toBeInTheDocument();
     expect(
-      screen.getByText((_, node) => node?.textContent === "When the agent runs code (e.g. python train.py), each execution is recorded here with its reproducibility recipe."),
+      screen.getByText((_, node) => node?.textContent === "当代理运行代码时（例如 python train.py），每次执行都会连同其可复现方案记录于此。"),
     ).toBeInTheDocument();
   });
 });

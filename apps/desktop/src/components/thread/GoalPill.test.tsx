@@ -35,9 +35,9 @@ describe("GoalPill", () => {
   it("shows the objective, auto-turn count and a pause control while active", async () => {
     render(<GoalPill sessionId="s1" />);
     expect(await screen.findByText("Reproduce figure 3 from the paper")).toBeInTheDocument();
-    expect(screen.getByText("auto-turn 2")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Pause the goal (stops auto-continuation)" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Clear the goal" })).toBeInTheDocument();
+    expect(screen.getByText("自动第 2 轮")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "暂停目标（停止自动续跑）" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "清除目标" })).toBeInTheDocument();
   });
 
   it("pauses via goalUpdate and flips to the resume control", async () => {
@@ -46,12 +46,12 @@ describe("GoalPill", () => {
     await screen.findByText("Reproduce figure 3 from the paper");
 
     await userEvent.click(
-      screen.getByRole("button", { name: "Pause the goal (stops auto-continuation)" }),
+      screen.getByRole("button", { name: "暂停目标（停止自动续跑）" }),
     );
 
     expect(goalUpdate).toHaveBeenCalledWith("s1", "pause");
-    expect(await screen.findByText("paused")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Resume the goal" })).toBeInTheDocument();
+    expect(await screen.findByText("已暂停")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "继续目标" })).toBeInTheDocument();
   });
 
   it("resume kicks one turn via onResumed (a paused session has no idle left)", async () => {
@@ -60,7 +60,7 @@ describe("GoalPill", () => {
     const onResumed = vi.fn();
     render(<GoalPill sessionId="s1" onResumed={onResumed} />);
 
-    await userEvent.click(await screen.findByRole("button", { name: "Resume the goal" }));
+    await userEvent.click(await screen.findByRole("button", { name: "继续目标" }));
 
     expect(goalUpdate).toHaveBeenCalledWith("s1", "resume");
     expect(onResumed).toHaveBeenCalledTimes(1);
@@ -71,7 +71,7 @@ describe("GoalPill", () => {
     const { container } = render(<GoalPill sessionId="s1" />);
     await screen.findByText("Reproduce figure 3 from the paper");
 
-    await userEvent.click(screen.getByRole("button", { name: "Clear the goal" }));
+    await userEvent.click(screen.getByRole("button", { name: "清除目标" }));
 
     expect(goalUpdate).toHaveBeenCalledWith("s1", "clear");
     await act(async () => {});
@@ -85,9 +85,9 @@ describe("GoalPill", () => {
       blocker: "missing dataset",
     });
     render(<GoalPill sessionId="s1" />);
-    expect(await screen.findByText("blocked")).toBeInTheDocument();
+    expect(await screen.findByText("受阻")).toBeInTheDocument();
     // Unmet goals keep only the clear control — nothing to pause.
-    expect(screen.queryByRole("button", { name: /Pause/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /暂停/ })).not.toBeInTheDocument();
   });
 
   it("shows the limit tone for a budget-limited goal", async () => {
@@ -97,6 +97,6 @@ describe("GoalPill", () => {
       lastStatus: "Token budget exhausted",
     });
     render(<GoalPill sessionId="s1" />);
-    expect(await screen.findByText("limit reached")).toBeInTheDocument();
+    expect(await screen.findByText("达到上限")).toBeInTheDocument();
   });
 });

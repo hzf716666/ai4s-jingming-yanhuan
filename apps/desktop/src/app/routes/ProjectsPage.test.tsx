@@ -25,7 +25,7 @@ describe("ProjectsPage", () => {
     });
     renderAt("/projects");
     // Scope to the page's main region — the sidebar also lists project names.
-    await screen.findByPlaceholderText("Search projects");
+    await screen.findByPlaceholderText("搜索项目");
     const page = within(screen.getByRole("main"));
 
     // Both projects render; the imported one carries the source folder name.
@@ -40,7 +40,7 @@ describe("ProjectsPage", () => {
     expect(page.getByText("first pass")).toBeInTheDocument();
 
     // Search filters the list by name.
-    fireEvent.change(screen.getByPlaceholderText("Search projects"), {
+    fireEvent.change(screen.getByPlaceholderText("搜索项目"), {
       target: { value: "bet" },
     });
     expect(page.queryByText("Alpha")).not.toBeInTheDocument();
@@ -52,9 +52,9 @@ describe("ProjectsPage", () => {
       projects: [{ ...base, id: "p1", name: "Alpha", path: "/base/Alpha" }],
     });
     renderAt("/projects");
-    fireEvent.change(await screen.findByPlaceholderText("Search projects"), {
+    fireEvent.change(await screen.findByPlaceholderText("搜索项目"), {
       target: { value: "zzz" },
     });
-    expect(screen.getByText("No projects match.")).toBeInTheDocument();
+    expect(screen.getByText("没有匹配的项目。")).toBeInTheDocument();
   });
 });

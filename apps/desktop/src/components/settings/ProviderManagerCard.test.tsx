@@ -20,7 +20,7 @@ describe("ProviderManagerCard", () => {
         <div>Provider controls</div>
       </ProviderManagerCard>,
     );
-    expect(screen.getByText(/2 connected: OpenAI, OpenCode Zen/)).toBeInTheDocument();
+    expect(screen.getByText(/已连接 2 个：OpenAI, OpenCode Zen/)).toBeInTheDocument();
     expect(screen.queryByText("Provider controls")).not.toBeInTheDocument();
   });
 
@@ -34,7 +34,7 @@ describe("ProviderManagerCard", () => {
         <div>Provider controls</div>
       </ProviderManagerCard>,
     );
-    expect(screen.getByText("1 connected: OpenAI")).toBeInTheDocument();
+    expect(screen.getByText("已连接 1 个：OpenAI")).toBeInTheDocument();
   });
 
   it("requests expansion and exposes controlled expanded content", async () => {
@@ -48,7 +48,7 @@ describe("ProviderManagerCard", () => {
         <div>Provider controls</div>
       </ProviderManagerCard>,
     );
-    await userEvent.click(screen.getByRole("button", { name: "Manage" }));
+    await userEvent.click(screen.getByRole("button", { name: "管理" }));
     expect(onExpandedChange).toHaveBeenCalledWith(true);
     rerender(
       <ProviderManagerCard
@@ -60,7 +60,7 @@ describe("ProviderManagerCard", () => {
       </ProviderManagerCard>,
     );
     expect(screen.getByText("Provider controls")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Collapse" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "收起" })).toHaveAttribute(
       "aria-expanded",
       "true",
     );

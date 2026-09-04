@@ -18,7 +18,7 @@ vi.mock("@/components/notebook/NotebookEditor", () => ({
 }));
 
 const root: DirEntry[] = [
-  { path: "data", name: "data", isDir: true, size: 0, modified: 2 },
+  { path: "数据", name: "数据", isDir: true, size: 0, modified: 2 },
   { path: "figure.png", name: "figure.png", isDir: false, size: 2048, modified: 3 },
   { path: "run.ipynb", name: "run.ipynb", isDir: false, size: 500, modified: 1 },
 ];
@@ -27,7 +27,7 @@ const sub: DirEntry[] = [{ path: "data/genes.bed", name: "genes.bed", isDir: fal
 describe("FilesPage", () => {
   beforeEach(() => {
     listDir.mockReset();
-    listDir.mockImplementation((rel: string) => Promise.resolve(rel === "data" ? sub : root));
+    listDir.mockImplementation((rel: string) => Promise.resolve(rel === "数据" ? sub : root));
   });
 
   it("lists workspace entries with sizes and opens a file in the previewer", async () => {
@@ -47,12 +47,12 @@ describe("FilesPage", () => {
 
   it("navigates into a folder and back via the breadcrumb", async () => {
     render(<FilesPage />);
-    await userEvent.click(await screen.findByText("data"));
+    await userEvent.click(await screen.findByText("数据"));
     expect(await screen.findByText("genes.bed")).toBeInTheDocument();
     // The page is GLOBAL: every listing resolves in the base folder tree.
-    expect(listDir).toHaveBeenCalledWith("data", "base");
+    expect(listDir).toHaveBeenCalledWith("数据", "base");
 
-    await userEvent.click(screen.getByRole("button", { name: "Workspace" }));
+    await userEvent.click(screen.getByRole("button", { name: "工作区" }));
     await waitFor(() => expect(screen.getByText("figure.png")).toBeInTheDocument());
   });
 });

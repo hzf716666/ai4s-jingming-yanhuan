@@ -19,12 +19,12 @@ const block = {
 describe("ReviewerCard", () => {
   it("shows finding badges, check tags, and titles, expanded by default", () => {
     render(<ReviewerCard block={block} />);
-    expect(screen.getByText("Warn")).toBeInTheDocument();
+    expect(screen.getByText("警告")).toBeInTheDocument();
     expect(screen.getByText("Duplicate PMID in plan")).toBeInTheDocument();
     expect(screen.getByText("same PMID for two papers")).toBeInTheDocument();
-    expect(screen.getByText("citation")).toBeInTheDocument();
-    expect(screen.getByText("figure ↔ code")).toBeInTheDocument();
-    expect(screen.getByText("· 2 findings")).toBeInTheDocument();
+    expect(screen.getByText("引用")).toBeInTheDocument();
+    expect(screen.getByText("图表 ↔ 代码")).toBeInTheDocument();
+    expect(screen.getByText("· 2 项发现")).toBeInTheDocument();
   });
 
   it("collapses when the header is clicked", async () => {
@@ -36,14 +36,14 @@ describe("ReviewerCard", () => {
   it("dismisses findings one by one", async () => {
     render(<ReviewerCard block={block} />);
     await userEvent.click(
-      screen.getByRole("button", { name: "Dismiss finding: Duplicate PMID in plan" }),
+      screen.getByRole("button", { name: "忽略发现：Duplicate PMID in plan" }),
     );
     expect(screen.queryByText("Duplicate PMID in plan")).not.toBeInTheDocument();
-    expect(screen.getByText("· 1 finding · 1 dismissed")).toBeInTheDocument();
+    expect(screen.getByText("· 1 项发现 · 1 项已忽略")).toBeInTheDocument();
 
     await userEvent.click(
-      screen.getByRole("button", { name: "Dismiss finding: Figure older than its code" }),
+      screen.getByRole("button", { name: "忽略发现：Figure older than its code" }),
     );
-    expect(screen.getByText("All findings dismissed.")).toBeInTheDocument();
+    expect(screen.getByText("所有发现均已忽略。")).toBeInTheDocument();
   });
 });

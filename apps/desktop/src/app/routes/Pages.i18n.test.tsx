@@ -1,42 +1,37 @@
 import { screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { renderAt } from "@/test/render";
-import { useUiStore } from "@/lib/store";
 import { useRuntimeStore } from "@/lib/runtime";
 
-// COPYCAT RULE: useUiStore is module-global; reset the locale after each test
-// so this suite never bleeds a non-English locale into other test files.
-afterEach(() => useUiStore.getState().setLocale("en"));
-
-// COPYCAT RULE: useRuntimeStore is also module-global — restore the
+// COPYCAT RULE: useRuntimeStore is module-global — restore the
 // disconnected default after any test that fakes a "ready" runtime.
 const RUNTIME_DEFAULTS = { status: useRuntimeStore.getState().status, agents: useRuntimeStore.getState().agents };
 afterEach(() => useRuntimeStore.setState(RUNTIME_DEFAULTS));
 
 describe("NotebooksPage strings (i18n)", () => {
-  it("renders the page heading and the desktop-only empty state in English", async () => {
+  it("renders the page heading and the desktop-only empty state in Chinese", async () => {
     renderAt("/notebooks");
-    expect(await screen.findByRole("heading", { level: 1, name: "Notebooks" })).toBeInTheDocument();
-    expect(screen.getByText("Notebooks are available in the desktop app.")).toBeInTheDocument();
-    expect(screen.getByText("New notebook")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "笔记本" })).toBeInTheDocument();
+    expect(screen.getByText("笔记本功能在桌面应用中可用。")).toBeInTheDocument();
+    expect(screen.getByText("新建笔记本")).toBeInTheDocument();
   });
 });
 
 describe("FilesPage strings (i18n)", () => {
-  it("renders the desktop-only explorer message and the preview prompt in English", async () => {
+  it("renders the desktop-only explorer message and the preview prompt in Chinese", async () => {
     renderAt("/files");
-    expect(await screen.findByText("The file explorer is available in the desktop app.")).toBeInTheDocument();
-    expect(screen.getByText("Select a file to preview it here.")).toBeInTheDocument();
+    expect(await screen.findByText("文件浏览器在桌面应用中可用。")).toBeInTheDocument();
+    expect(screen.getByText("选择一个文件以在此处预览。")).toBeInTheDocument();
   });
 });
 
 describe("SkillsPage strings (i18n)", () => {
-  it("renders the page heading and the disconnected-runtime prompts in English", async () => {
+  it("renders the page heading and the disconnected-runtime prompts in Chinese", async () => {
     renderAt("/skills");
-    expect(await screen.findByRole("heading", { level: 1, name: "Skills & Agents" })).toBeInTheDocument();
-    expect(screen.getByText("Environment detection runs in the desktop app.")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { level: 1, name: "技能与代理" })).toBeInTheDocument();
+    expect(screen.getByText("环境检测功能在桌面应用中运行。")).toBeInTheDocument();
     expect(
-      screen.getByText("Connect the runtime to list the skills and agents it has loaded."),
+      screen.getByText("连接运行时以列出其已加载的技能和代理。"),
     ).toBeInTheDocument();
   });
 
@@ -50,7 +45,7 @@ describe("SkillsPage strings (i18n)", () => {
     });
     renderAt("/skills");
     expect(await screen.findByText("build")).toBeInTheDocument();
-    expect(screen.getByText("primary")).toBeInTheDocument();
+    expect(screen.getByText("主要")).toBeInTheDocument();
     // Unknown mode values (outside the closed set OpenCode emits) render raw, unmodified.
     expect(screen.getByText("future-mode")).toBeInTheDocument();
   });

@@ -1,0 +1,132 @@
+{
+  "scene": "A-2024-p20",
+  "source": "E:/tb/B中国火炬统计年鉴/B中国火炬统计年鉴/中国火炬统计年鉴2024.pdf",
+  "page_pdf": 20,
+  "table": "1-3 各高新区企业主要经济指标(2024卷=2023年数据)",
+  "annotated_by": "VLM 候选 + 用户人工核验(天津滨海营收修正为600875917)",
+  "annotated_at": "2026-09-03",
+  "annotation_state": "verified",
+  "records": [
+    {
+      "time": "",
+      "space": "合计",
+      "indicator": "入统企业数",
+      "value": 223573,
+      "unit": "个",
+      "source_hint": "PDF p20 表1-3 第1行"
+    },
+    {
+      "time": "",
+      "space": "合计",
+      "indicator": "年末从业人员",
+      "value": 26804953,
+      "unit": "人",
+      "source_hint": "PDF p20 表1-3 第1行"
+    },
+    {
+      "time": "",
+      "space": "合计",
+      "indicator": "营业收入",
+      "value": 55014940375,
+      "unit": "千元",
+      "source_hint": "PDF p20 表1-3 第1行"
+    },
+    {
+      "time": "",
+      "space": "合计",
+      "indicator": "工业总产值",
+      "value": 31925945666,
+      "unit": "千元",
+      "source_hint": "PDF p20 表1-3 第1行"
+    },
+    {
+      "time": "",
+      "space": "合计",
+      "indicator": "高新技术企业数",
+      "value": 156763,
+      "unit": "个",
+      "source_hint": "PDF p20 表1-3 第1行"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "入统企业数",
+      "value": 24294,
+      "unit": "个",
+      "source_hint": "PDF p20 表1-3 第2行"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "年末从业人员",
+      "value": 3221028,
+      "unit": "人",
+      "source_hint": "PDF p20 表1-3 第2行"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "营业收入",
+      "value": 9177249574,
+      "unit": "千元",
+      "source_hint": "PDF p20 表1-3 第2行"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "工业总产值",
+      "value": 1304191263,
+      "unit": "千元",
+      "source_hint": "PDF p20 表1-3 第2行"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "高新技术企业数",
+      "value": 17844,
+      "unit": "个",
+      "source_hint": "PDF p20 表1-3 第2行"
+    },
+    {
+      "time": "",
+      "space": "天津滨海",
+      "indicator": "入统企业数",
+      "value": 4680,
+      "unit": "个",
+      "source_hint": "PDF p20 表1-3 第3行"
+    },
+    {
+      "time": "",
+      "space": "天津滨海",
+      "indicator": "年末从业人员",
+      "value": 242310,
+      "unit": "人",
+      "source_hint": "PDF p20 表1-3 第3行"
+    },
+    {
+      "time": "",
+      "space": "天津滨海",
+      "indicator": "营业收入",
+      "value": 600875917,
+      "unit": "千元",
+      "source_hint": "PDF p20 表1-3 第3行"
+    },
+    {
+      "time": "",
+      "space": "天津滨海",
+      "indicator": "工业总产值",
+      "value": 205247212,
+      "unit": "千元",
+      "source_hint": "PDF p20 表1-3 第3行"
+    },
+    {
+      "time": "",
+      "space": "天津滨海",
+      "indicator": "高新技术企业数",
+      "value": 3201,
+      "unit": "个",
+      "source_hint": "PDF p20 表1-3 第3行"
+    }
+  ],
+  "data_year_note": "2024卷=2023年数据; 截面表 GT.time 空(与B场景同口径)"
+}

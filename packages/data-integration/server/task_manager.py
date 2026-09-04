@@ -294,8 +294,9 @@ class TaskManager:
 
         # ---- M3: Parsing ----
         task.set_stage(PipelineStage.M3_PARSING, 5, "开始解析文件")
-        from src.run_pipeline import parse_all_sources
-        records = parse_all_sources(str(task.input_dir), llm=llm)
+        from src.run_pipeline import parse_all_sources, _load_v2_config
+        v2_config = _load_v2_config()
+        records = parse_all_sources(str(task.input_dir), llm=llm, v2_config=v2_config)
         text_ie_count = sum(1 for r in records if "text_ie" in r.source)
         task.add_log(f"  解析完成: {len(records)} 条记录 (文本抽取 {text_ie_count} 条)")
         task.set_stage(PipelineStage.M3_PARSING, 100, f"{len(records)} 条记录")
@@ -359,6 +360,18 @@ class TaskManager:
 
         gt_result = validate_against_groundtruth(records)
         task.add_log(f"  反向校验 F1={gt_result['F1']}")
+
+        # v2: 内容级抽检(LLM 审计语义错误, 只出报告不改值)
+        if v2_config and v2_config.get("content_audit_enabled", True):
+            from src.content_audit import content_audit, write_audit_report
+            aud_report = content_audit(records, llm=llm, config=v2_config)
+            if "errors" in aud_report:
+                write_audit_report(aud_report, task.output_dir)
+                task.add_log(f"  内容抽检: checked={aud_report['checked']} "
+                             f"errors={len(aud_report['errors'])} per_type={aud_report['per_type']}")
+                task.summary["content_audit"] = aud_report["per_type"]
+            else:
+                task.add_log(f"  内容抽检: skipped[{aud_report.get('skipped')}]")
         task.complete_stage(PipelineStage.M5_QUALITY,
                             f"{len(anomalies)} 异常 / {len(breaks)} 突变")
 
@@ -413,13 +426,60 @@ class TaskManager:
         conn.close()
         task.set_stage(PipelineStage.M6_OUTPUT, 90, "SQLite 已生成")
 
+        # 抽取完成 → 写入共享数据面板(integration.db fact_records) → 自动同步到数据地图(zone_facts)
+        # 使"工作台抽取 → 数据列表(/api/records) → 数据地图新字段"三页联动成立。
+        try:
+            import sqlite3 as _sq3
+            import pathlib as _pl
+            int_db = _pl.Path(__file__).resolve().parent.parent / "server_data" / "integration.db"
+            iconn = _sq3.connect(str(int_db))
+            iconn.execute(
+                "CREATE TABLE IF NOT EXISTS fact_records "
+                "(id INTEGER PRIMARY KEY AUTOINCREMENT, time TEXT, space TEXT, value REAL, "
+                "unit TEXT, indicator TEXT, source TEXT, note TEXT)"
+            )
+            inserted = 0
+            for r in records:
+                if not r.indicator:
+                    continue
+                dup = iconn.execute(
+                    "SELECT 1 FROM fact_records WHERE indicator=? AND space=? AND time=? AND value=?",
+                    (r.indicator, r.space, r.time, r.value)).fetchone()
+                if dup:
+                    continue
+                iconn.execute(
+                    "INSERT INTO fact_records (time,space,value,unit,indicator,source,note) "
+                    "VALUES (?,?,?,?,?,?,?)",
+                    (r.time, r.space, r.value, r.unit, r.indicator, r.source, r.note))
+                inserted += 1
+            iconn.commit()
+            iconn.close()
+            task.add_log(f"  已入库数据列表(fact_records): {inserted} 条")
+        except Exception as _e:
+            task.add_log(f"  数据列表入库跳过: {_e}")
+
         # 抽取完成 → 自动同步到数据地图(zone_facts), 使地图/面板/图谱联动
         try:
+            import sys as _sys, pathlib as _pl2
+            pkg = _pl2.Path(__file__).resolve().parent.parent
+            if str(pkg) not in _sys.path:
+                _sys.path.insert(0, str(pkg))
             from scripts.sync_records_to_views import sync_fact_to_zone  # type: ignore
             n_zone = sync_fact_to_zone()
             task.add_log(f"  已同步 {n_zone} 条到数据地图(zone_facts)")
         except Exception as _e:
             task.add_log(f"  zone 同步跳过: {_e}")
+
+        # 知识图谱增量同步(抽取完成自动触发; 幂等, 只处理水位线之后的新记录)
+        try:
+            import sys as _sys2, pathlib as _pl3
+            pkg2 = _pl3.Path(__file__).resolve().parent.parent
+            if str(pkg2) not in _sys2.path:
+                _sys2.path.insert(0, str(pkg2))
+            from scripts.sync_kg_graph import sync_kg  # type: ignore
+            task.add_log(f"  图谱增量: {sync_kg(ai_verify_on=True)}")
+        except Exception as _e2:
+            task.add_log(f"  图谱同步跳过: {_e2}")
 
         # Anomalies / breaks / etc.
         with open(sst_dir / "anomalies.json", "w", encoding="utf-8") as f:

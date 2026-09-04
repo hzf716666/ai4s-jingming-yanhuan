@@ -157,7 +157,7 @@
       "name": "创新链强度_RD占比",
       "title": "创新链强度_RD占比",
       "type": "number",
-      "description": "派生指标: R&D经费 / 营业收入。论文出处: 陈杰杰(2026) p6",
+      "description": "派生指标: R&D经费 / 营业收入。公式出处: 论文 p6",
       "constraints": {"minimum": 0},
       "aliases": ["创新链强度", "RD占比"],
       "sources": ["derived"]
@@ -166,7 +166,7 @@
       "name": "产业链强度_工业实化率",
       "title": "产业链强度_工业实化率",
       "type": "number",
-      "description": "派生指标: 工业总产值 / 营业收入。论文出处: 陈杰杰(2026) p6",
+      "description": "派生指标: 工业总产值 / 营业收入。公式出处: 论文 p6",
       "constraints": {"minimum": 0},
       "aliases": ["产业链强度", "工业实化率"],
       "sources": ["derived"]
@@ -175,7 +175,7 @@
       "name": "双螺旋协同度",
       "title": "双螺旋协同度",
       "type": "number",
-      "description": "派生指标: (R&D/营收) × (工业/营收)。论文出处: 陈杰杰(2026) p6",
+      "description": "派生指标: (R&D/营收) × (工业/营收)。公式出处: 论文 p6",
       "constraints": {"minimum": 0},
       "aliases": ["双螺旋协同度", "双螺旋"],
       "sources": ["derived"]
@@ -184,7 +184,7 @@
       "name": "技术转移转化率",
       "title": "技术转移转化率",
       "type": "number",
-      "description": "派生指标: 技术合同成交额 / R&D。论文出处: 陈杰杰(2026) p2+p6",
+      "description": "派生指标: 技术合同成交额 / R&D。公式出处: 论文 p2+p6",
       "constraints": {"minimum": 0},
       "aliases": ["技术转移转化率", "技术转化率"],
       "sources": ["derived"]
@@ -193,7 +193,7 @@
       "name": "企业主体地位",
       "title": "企业主体地位",
       "type": "number",
-      "description": "派生指标: 高企数 / 入统企业数。论文出处: 陈杰杰(2026) p6",
+      "description": "派生指标: 高企数 / 入统企业数。公式出处: 论文 p6",
       "constraints": {"minimum": 0},
       "aliases": ["企业主体地位"],
       "sources": ["derived"]

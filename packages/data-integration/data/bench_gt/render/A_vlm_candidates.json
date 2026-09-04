@@ -1,0 +1,92 @@
+[
+ {
+  "space": "合计",
+  "indicator": "入统企业数",
+  "value": 223573,
+  "unit": "个"
+ },
+ {
+  "space": "合计",
+  "indicator": "年末从业人员",
+  "value": 26804953,
+  "unit": "人"
+ },
+ {
+  "space": "合计",
+  "indicator": "营业收入",
+  "value": 55014940375,
+  "unit": "千元"
+ },
+ {
+  "space": "合计",
+  "indicator": "工业总产值",
+  "value": 31925945666,
+  "unit": "千元"
+ },
+ {
+  "space": "合计",
+  "indicator": "高新技术企业数",
+  "value": 156763,
+  "unit": "个"
+ },
+ {
+  "space": "北京中关村",
+  "indicator": "入统企业数",
+  "value": 24294,
+  "unit": "个"
+ },
+ {
+  "space": "北京中关村",
+  "indicator": "年末从业人员",
+  "value": 3221028,
+  "unit": "人"
+ },
+ {
+  "space": "北京中关村",
+  "indicator": "营业收入",
+  "value": 9177249574,
+  "unit": "千元"
+ },
+ {
+  "space": "北京中关村",
+  "indicator": "工业总产值",
+  "value": 1304191263,
+  "unit": "千元"
+ },
+ {
+  "space": "北京中关村",
+  "indicator": "高新技术企业数",
+  "value": 17844,
+  "unit": "个"
+ },
+ {
+  "space": "天津滨海",
+  "indicator": "入统企业数",
+  "value": 4680,
+  "unit": "个"
+ },
+ {
+  "space": "天津滨海",
+  "indicator": "年末从业人员",
+  "value": 242310,
+  "unit": "人"
+ },
+ {
+  "space": "天津滨海",
+  "indicator": "营业收入",
+  "value": 6008785197,
+  "unit": "千元"
+ },
+ {
+  "space": "天津滨海",
+  "indicator": "工业总产值",
+  "value": 205247212,
+  "unit": "千元"
+ },
+ {
+  "space": "天津滨海",
+  "indicator": "高新技术企业数",
+  "value": 3201,
+  "unit": "个"
+ }
+]

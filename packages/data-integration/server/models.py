@@ -110,8 +110,10 @@ class ResultResponse(BaseModel):
 class LLMConfig(BaseModel):
     provider: str = "dashscope"
     api_key: str = ""
-    model: str = "qwen-plus"
+    model: str = "qwen3.7-plus"
     enabled: bool = False
+    # 空 = DashScope(百炼); 配置后走 OpenAI 兼容端点(如 opencode zen)
+    base_url: str = ""
 
 
 class LLMConfigResponse(BaseModel):

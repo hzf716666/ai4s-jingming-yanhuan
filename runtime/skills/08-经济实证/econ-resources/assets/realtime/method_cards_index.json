@@ -1,0 +1,90 @@
+{
+ "count": 12,
+ "cards": [
+  {
+   "id": "m01",
+   "file": "method_cards/m01.md",
+   "title": "m01 方法卡 | 比例检验 + 二项检验(组间占比差异)",
+   "scene": "X 是二元/占比指标,Y 是分组或占比,检验两(多)组占比是否显著不同(如 地区 A 专利占比 vs 地区 B)",
+   "data_requirement": "两组计数(n_i, k_i)或占比 + 分母"
+  },
+  {
+   "id": "m02",
+   "file": "method_cards/m02.md",
+   "title": "m02 方法卡 | 均值差异 t 检验(含 Welch)",
+   "scene": "Y 是连续变量,分组比较两组均值差异(如 高企占比高的集群 vs 低的)",
+   "data_requirement": "两组连续值 + 组标签"
+  },
+  {
+   "id": "m03",
+   "file": "method_cards/m03.md",
+   "title": "m03 方法卡 | Spearman/Pearson 相关 + 偏相关",
+   "scene": "两个连续/有序变量的单调关联;也可用于结构指数与结果变量的相关性",
+   "data_requirement": "两列数值,同空间单元对齐"
+  },
+  {
+   "id": "m04",
+   "file": "method_cards/m04.md",
+   "title": "m04 方法卡 | 面板固定效应(region×year)",
+   "scene": "time×space×indicator 面板数据的主回归卡;双固定效应吸收空间/时间不变量",
+   "data_requirement": "面板:unit, year, Y, X, controls"
+  },
+  {
+   "id": "m05",
+   "file": "method_cards/m05.md",
+   "title": "m05 方法卡 | 事件研究(时滞动态效应)",
+   "scene": "政策/试点前后多期动态效应;H-D1 伙伴保 2026 试点前后",
+   "data_requirement": "面板 + 事件时点 + 政策日"
+  },
+  {
+   "id": "m06",
+   "file": "method_cards/m06.md",
+   "title": "m06 方法卡 | DID(平行趋势 + 安慰剂)",
+   "scene": "处理组/对照组 + 政策时点;经典准实验",
+   "data_requirement": "两组多年面板;需平行趋势成立区段"
+  },
+  {
+   "id": "m07",
+   "file": "method_cards/m07.md",
+   "title": "m07 方法卡 | IV-2SLS",
+   "scene": "内生解释变量需工具变量;如 集群 VC 对绩效(VC 受区位内生影响)",
+   "data_requirement": "工具变量 Z(外生+相关性可论证)"
+  },
+  {
+   "id": "m08",
+   "file": "method_cards/m08.md",
+   "title": "m08 方法卡 | PSM 倾向得分匹配",
+   "scene": "处理组/对照组不平衡时匹配;资助特征→匹配 可用于异质性",
+   "data_requirement": "协变量 + 处理标签;样本 ≥100 更稳"
+  },
+  {
+   "id": "m09",
+   "file": "method_cards/m09.md",
+   "title": "m09 方法卡 | RDD 断点回归",
+   "scene": "存在门槛(资助金额阈值/绩效分数线)",
+   "data_requirement": "运行变量 + 阈值;局部多期带宽"
+  },
+  {
+   "id": "m10",
+   "file": "method_cards/m10.md",
+   "title": "m10 方法卡 | 合成控制",
+   "scene": "单个处理单元 + 多期面板(国家/省份级)",
+   "data_requirement": "处理前 ≥10 期,对照池大且可解释"
+  },
+  {
+   "id": "m11",
+   "file": "method_cards/m11.md",
+   "title": "m11 方法卡 | 分解指数(份额/结构分解)",
+   "scene": "错配类假设天然方法:总差异 = 结构效应 + 强度效应",
+   "data_requirement": "两期或多组的结构占比 + 强度(如 专利占比=集群占比×密度)"
+  },
+  {
+   "id": "m12",
+   "file": "method_cards/m12.md",
+   "title": "m12 方法卡 | Bootstrap 置信区间/小样本校正",
+   "scene": "小样本(N<30)检验、相关 CI 的稳健替代;所有 m01-m04 的配套",
+   "data_requirement": "原样本即可"
+  }
+ ],
+ "note": "方法卡为静态方法知识；全文随研究项目注入 tools/method_cards/"
+}

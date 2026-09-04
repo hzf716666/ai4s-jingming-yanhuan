@@ -74,8 +74,8 @@ describe("groupToolBlocks", () => {
         blocks={[tool({}), tool({ status: "failed", output: "404 not found" })]}
       />,
     );
-    expect(screen.getByText(/2 commands/)).toBeInTheDocument();
-    expect(screen.getByText(/1 failed/)).toBeInTheDocument();
+    expect(screen.getByText(/运行了 2 个命令/)).toBeInTheDocument();
+    expect(screen.getByText(/1 个失败/)).toBeInTheDocument();
   });
 });
 
@@ -88,14 +88,14 @@ describe("summarizeGroup", () => {
         tool({ verb: "Created", tool: "write" }),
         tool({}),
       ]),
-    ).toBe("Ran 3 commands, created a file");
+    ).toBe("运行了 3 个命令, 创建了 1 个文件");
   });
 });
 
 describe("ToolGroup", () => {
   it("collapses a settled group to its summary; expands on click", () => {
     render(<ToolGroup blocks={[tool({ title: "pwd" }), tool({ title: "ls" })]} />);
-    const summary = screen.getByRole("button", { name: /Ran 2 commands/ });
+    const summary = screen.getByRole("button", { name: /运行了 2 个命令/ });
     expect(summary).toBeInTheDocument();
     fireEvent.click(summary);
     expect(screen.getByText("pwd")).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe("ToolGroup", () => {
   it("a single quiet step renders as a plain row, no group chrome", () => {
     render(<ToolGroup blocks={[tool({ title: "pwd" })]} />);
     expect(screen.getByText("pwd")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /command/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /运行了/ })).not.toBeInTheDocument();
   });
 
   it("expanding a bash row reveals the full command and output", () => {

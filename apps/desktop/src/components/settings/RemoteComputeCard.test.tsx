@@ -49,7 +49,7 @@ describe("RemoteComputeCard", () => {
     render(<RemoteComputeCard />);
 
     expect(await screen.findByText("home-3090")).toBeInTheDocument();
-    expect(await screen.findByText(/16 cores/)).toBeInTheDocument();
+    expect(await screen.findByText(/16 个核心/)).toBeInTheDocument();
     expect(screen.getByText(/2× RTX 3090/)).toBeInTheDocument();
     expect(bridge.computeJobs).not.toHaveBeenCalled();
   });
@@ -64,7 +64,7 @@ describe("RemoteComputeCard", () => {
     render(<RemoteComputeCard />);
 
     await userEvent.type(screen.getByRole("combobox"), "home-3090");
-    await userEvent.click(screen.getByRole("button", { name: "Add" }));
+    await userEvent.click(screen.getByRole("button", { name: "添加" }));
     await waitFor(() => expect(bridge.addComputeMachine).toHaveBeenCalledWith("home-3090", undefined));
     expect(bridge.computeMachines).toHaveBeenCalledTimes(2);
     await waitFor(() => expect(bridge.computeProbe).toHaveBeenCalledWith("home-3090"));

@@ -16,7 +16,7 @@ sys.dont_write_bytecode = True
 
 _MOD = (
     Path(__file__).resolve().parents[2]
-    / "runtime/skills/core/traceability-review/pdf_extract.py"
+    / "runtime/skills/08-经济实证/econ-synthesis/scripts/pdf_extract.py"
 )
 _spec = importlib.util.spec_from_file_location("pdf_extract", _MOD)
 assert _spec and _spec.loader

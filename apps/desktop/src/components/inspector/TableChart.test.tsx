@@ -17,7 +17,7 @@ const T: ParsedTable = {
 describe("TableChart", () => {
   it("renders chart-type controls, an X picker, and the numeric series", () => {
     const { container } = render(<TableChart table={T} />);
-    for (const t of ["line", "bar", "scatter"]) {
+    for (const t of ["折线图", "柱状图", "散点图"]) {
       expect(screen.getByRole("button", { name: t })).toBeInTheDocument();
     }
     // numeric series toggles present (sales, returns); the categorical "month" is not a series
@@ -29,13 +29,13 @@ describe("TableChart", () => {
 
   it("switches to a line chart, drawing polylines", async () => {
     const { container } = render(<TableChart table={T} />);
-    await userEvent.click(screen.getByRole("button", { name: "line" }));
+    await userEvent.click(screen.getByRole("button", { name: "折线图" }));
     expect(container.querySelector("path")).not.toBeNull();
   });
 
   it("shows a message when there is nothing numeric to plot", () => {
     const t: ParsedTable = { columns: ["a", "b"], rows: [["x", "y"]], truncated: false };
     render(<TableChart table={t} />);
-    expect(screen.getByText(/No numeric columns to chart/)).toBeInTheDocument();
+    expect(screen.getByText(/没有可绘制的数值列/)).toBeInTheDocument();
   });
 });

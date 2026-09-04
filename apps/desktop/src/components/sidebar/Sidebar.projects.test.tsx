@@ -36,14 +36,14 @@ describe("Sidebar projects", () => {
     expect(screen.queryByText("subtask")).not.toBeInTheDocument();
     // The project offers its own "new session" entry point.
     expect(
-      screen.getByRole("button", { name: "New session in BCI Trends" }),
+      screen.getByRole("button", { name: "在“BCI Trends”中新建会话" }),
     ).toBeInTheDocument();
   });
 
   it("offers a new-project entry when no projects exist yet", async () => {
     renderAt("/files");
     // Header [+] (the add-project menu trigger) plus the ghost row.
-    expect((await screen.findAllByRole("button", { name: "New project" })).length).toBeGreaterThan(0);
+    expect((await screen.findAllByRole("button", { name: "新建项目" })).length).toBeGreaterThan(0);
   });
 
   it("badges an imported project (referenced in place, not auto-committed)", async () => {
@@ -52,6 +52,6 @@ describe("Sidebar projects", () => {
     });
     renderAt("/files");
     expect(await screen.findByText("My Repo")).toBeInTheDocument();
-    expect(screen.getByText("imported")).toBeInTheDocument();
+    expect(screen.getByText("导入")).toBeInTheDocument();
   });
 });

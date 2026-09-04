@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1680 1180" width="1680" height="1180" font-family="PingFang SC, Microsoft YaHei, Noto Sans SC, sans-serif">
+  <defs>
+    <marker id="ahAcc" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4d9df6"/>
+    </marker>
+    <marker id="ahWarn" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#d7a24a"/>
+    </marker>
+    <marker id="ahOk" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6bb07d"/>
+    </marker>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="1680" height="1180" rx="28" fill="#16151a" stroke="#33313c"/>
+
+  <!-- title -->
+  <text x="76" y="64" font-size="32" font-weight="700" fill="#ece9e2">景明研环 · 业务总体架构</text>
+  <text x="76" y="98" font-size="14.5" fill="#9a958c">本地优先 · 模型无关的可验证科研平台 —— 数据 → 假设 → 实验 → 撰写 → 影响力，全程可溯源、可复现</text>
+  <text x="1604" y="48" font-size="12" fill="#6b6a70" text-anchor="end">业务视角 · 2026-09</text>
+
+  <!-- ===== Band A: 用户与场景 ===== -->
+  <rect x="40" y="118" width="1600" height="128" rx="14" fill="#1e1d24" stroke="#33313c"/>
+  <rect x="64" y="134" width="300" height="30" rx="15" fill="#26252d" stroke="#33313c"/>
+  <text x="92" y="155" font-size="14" font-weight="700" fill="#ece9e2">① 用户与场景</text>
+
+  <rect x="64" y="184" width="250" height="44" rx="10" fill="#26252d" stroke="#33313c"/>
+  <text x="189" y="211" font-size="14" font-weight="600" fill="#c6c2b9" text-anchor="middle">科研人员</text>
+  <rect x="334" y="184" width="250" height="44" rx="10" fill="#26252d" stroke="#33313c"/>
+  <text x="459" y="211" font-size="14" font-weight="600" fill="#c6c2b9" text-anchor="middle">硕博研究生</text>
+  <rect x="604" y="184" width="250" height="44" rx="10" fill="#26252d" stroke="#33313c"/>
+  <text x="729" y="211" font-size="14" font-weight="600" fill="#c6c2b9" text-anchor="middle">AI for Science 开发者</text>
+
+  <line x1="876" y1="206" x2="908" y2="206" stroke="#4d9df6" stroke-width="2.5" marker-end="url(#ahAcc)"/>
+  <rect x="918" y="184" width="646" height="44" rx="10" fill="rgba(77,157,246,0.10)" stroke="rgba(77,157,246,0.4)"/>
+  <text x="1241" y="211" font-size="14.5" fill="#a8c9f5" text-anchor="middle">关键场景：从模糊研究需求 → 数据查找整理 → 假设探索 → 实验验证 → 论文与材料产出</text>
+
+  <!-- ===== Band B: 核心业务闭环 ===== -->
+  <rect x="40" y="270" width="1600" height="452" rx="14" fill="#1e1d24" stroke="#33313c"/>
+  <rect x="64" y="286" width="640" height="30" rx="15" fill="#26252d" stroke="#33313c"/>
+  <text x="92" y="307" font-size="14" font-weight="700" fill="#ece9e2">② 核心业务闭环 · 五层业务能力（前向传导 + 三条回流 + 人工介入）</text>
+
+  <!-- stage cards -->
+  <g font-size="12.5">
+    <!-- B1 -->
+    <rect x="64" y="336" width="292" height="252" rx="12" fill="#26252d" stroke="#33313c"/>
+    <text x="78" y="368" font-size="16" font-weight="700"><tspan fill="#4d9df6">B1</tspan><tspan fill="#ece9e2"> 数据查找与整合</tspan></text>
+    <line x1="78" y1="380" x2="342" y2="380" stroke="#33313c"/>
+    <circle cx="82" cy="400" r="2.2" fill="#4d9df6"/><text x="92" y="405" fill="#c6c2b9">多源扫描：年鉴 / 名单 / 报告 / 公报</text>
+    <circle cx="82" cy="424" r="2.2" fill="#4d9df6"/><text x="92" y="429" fill="#c6c2b9">五管线解析：xlsx / PDF / OCR / 图表 / PPT</text>
+    <circle cx="82" cy="448" r="2.2" fill="#4d9df6"/><text x="92" y="453" fill="#c6c2b9">单位口径统一 → 四档证据链融合</text>
+    <circle cx="82" cy="472" r="2.2" fill="#4d9df6"/><text x="92" y="477" fill="#c6c2b9">三级质检 → 闭环修正 · 缺失自动回补</text>
+    <text x="78" y="516" font-size="12.5" font-weight="600" fill="#7aa5f0">产出：事实长表 · 面板宽表 · 时空立方体</text>
+    <rect x="76" y="584" width="268" height="2" rx="1" fill="#4d9df6" opacity="0.55"/>
+
+    <!-- B2 -->
+    <rect x="378" y="336" width="292" height="252" rx="12" fill="#26252d" stroke="#33313c"/>
+    <text x="392" y="368" font-size="16" font-weight="700"><tspan fill="#4d9df6">B2</tspan><tspan fill="#ece9e2"> 假设生成与研究计划</tspan></text>
+    <line x1="392" y1="380" x2="656" y2="380" stroke="#33313c"/>
+    <circle cx="396" cy="400" r="2.2" fill="#4d9df6"/><text x="406" y="405" fill="#c6c2b9">信号汇总：图谱与数据 12 类信号</text>
+    <circle cx="396" cy="424" r="2.2" fill="#4d9df6"/><text x="406" y="429" fill="#c6c2b9">候选假设：证据 + 替代解释 + 预测</text>
+    <circle cx="396" cy="448" r="2.2" fill="#4d9df6"/><text x="406" y="453" fill="#c6c2b9">四维评审漏斗：否决 / 试算 / 校正</text>
+    <circle cx="396" cy="472" r="2.2" fill="#4d9df6"/><text x="406" y="477" fill="#c6c2b9">研究计划与验证方案（评审确认）</text>
+    <text x="392" y="516" font-size="12.5" font-weight="600" fill="#7aa5f0">产出：可执行研究计划 · 证据支撑假设</text>
+    <rect x="390" y="584" width="268" height="2" rx="1" fill="#4d9df6" opacity="0.55"/>
+    <circle cx="650" cy="356" r="11" fill="rgba(107,176,125,0.15)" stroke="rgba(107,176,125,0.5)"/>
+    <text x="650" y="360" font-size="11" fill="#6bb07d" text-anchor="middle">人</text>
+
+    <!-- B3 -->
+    <rect x="692" y="336" width="292" height="252" rx="12" fill="#26252d" stroke="#33313c"/>
+    <text x="706" y="368" font-size="16" font-weight="700"><tspan fill="#4d9df6">B3</tspan><tspan fill="#ece9e2"> 实验规划与迭代</tspan></text>
+    <line x1="706" y1="380" x2="970" y2="380" stroke="#33313c"/>
+    <circle cx="710" cy="400" r="2.2" fill="#4d9df6"/><text x="720" y="405" fill="#c6c2b9">三关过滤 → 数据缺口自动补数</text>
+    <circle cx="710" cy="424" r="2.2" fill="#4d9df6"/><text x="720" y="429" fill="#c6c2b9">拆解 → 实验 → 整合 任务调度</text>
+    <circle cx="710" cy="448" r="2.2" fill="#4d9df6"/><text x="720" y="453" fill="#c6c2b9">统计硬核查：显著 / 稳健 / 偏差</text>
+    <circle cx="710" cy="472" r="2.2" fill="#4d9df6"/><text x="720" y="477" fill="#c6c2b9">结果与置信度回流（暂停点）</text>
+    <text x="706" y="516" font-size="12.5" font-weight="600" fill="#7aa5f0">产出：可信实验结果 · 迭代台账</text>
+    <rect x="704" y="584" width="268" height="2" rx="1" fill="#4d9df6" opacity="0.55"/>
+    <circle cx="964" cy="356" r="11" fill="rgba(107,176,125,0.15)" stroke="rgba(107,176,125,0.5)"/>
+    <text x="964" y="360" font-size="11" fill="#6bb07d" text-anchor="middle">人</text>
+
+    <!-- B4 -->
+    <rect x="1006" y="336" width="292" height="252" rx="12" fill="#26252d" stroke="#33313c"/>
+    <text x="1020" y="368" font-size="16" font-weight="700"><tspan fill="#4d9df6">B4</tspan><tspan fill="#ece9e2"> 结果撰写</tspan></text>
+    <line x1="1020" y1="380" x2="1284" y2="380" stroke="#33313c"/>
+    <circle cx="1024" cy="400" r="2.2" fill="#4d9df6"/><text x="1034" y="405" fill="#c6c2b9">模板组织：引言 / 方法 / 结果 / 讨论</text>
+    <circle cx="1024" cy="424" r="2.2" fill="#4d9df6"/><text x="1034" y="429" fill="#c6c2b9">引用门禁：文献必引 · 禁编造 · 真 DOI</text>
+    <circle cx="1024" cy="448" r="2.2" fill="#4d9df6"/><text x="1034" y="453" fill="#c6c2b9">图表与数据资产一并落盘</text>
+    <circle cx="1024" cy="472" r="2.2" fill="#4d9df6"/><text x="1034" y="477" fill="#c6c2b9">结果由证据与实验口径支撑</text>
+    <text x="1020" y="516" font-size="12.5" font-weight="600" fill="#7aa5f0">产出：可复现论文与材料包</text>
+    <rect x="1018" y="584" width="268" height="2" rx="1" fill="#4d9df6" opacity="0.55"/>
+
+    <!-- B5 -->
+    <rect x="1320" y="336" width="292" height="252" rx="12" fill="#26252d" stroke="#33313c"/>
+    <text x="1334" y="368" font-size="16" font-weight="700"><tspan fill="#4d9df6">B5</tspan><tspan fill="#ece9e2"> 影响力与偏差说明</tspan></text>
+    <line x1="1334" y1="380" x2="1598" y2="380" stroke="#33313c"/>
+    <circle cx="1338" cy="400" r="2.2" fill="#4d9df6"/><text x="1348" y="405" fill="#c6c2b9">双结果综合：零样本估分 + 语料定位</text>
+    <circle cx="1338" cy="424" r="2.2" fill="#4d9df6"/><text x="1348" y="429" fill="#c6c2b9">置信度门槛 → 界面影响力徽章</text>
+    <circle cx="1338" cy="448" r="2.2" fill="#4d9df6"/><text x="1348" y="453" fill="#c6c2b9">偏差说明：样本 / 口径 / 覆盖具体化</text>
+    <circle cx="1338" cy="472" r="2.2" fill="#4d9df6"/><text x="1348" y="477" fill="#c6c2b9">辅助取舍与方向调整</text>
+    <text x="1334" y="516" font-size="12.5" font-weight="600" fill="#7aa5f0">产出：影响力评估 · 偏差与取舍建议</text>
+    <rect x="1332" y="584" width="268" height="2" rx="1" fill="#4d9df6" opacity="0.55"/>
+    <circle cx="1592" cy="356" r="11" fill="rgba(107,176,125,0.15)" stroke="rgba(107,176,125,0.5)"/>
+    <text x="1592" y="360" font-size="11" fill="#6bb07d" text-anchor="middle">人</text>
+  </g>
+
+  <!-- forward arrows between stages -->
+  <line x1="360" y1="452" x2="374" y2="452" stroke="#4d9df6" stroke-width="2.5" marker-end="url(#ahAcc)"/>
+  <line x1="674" y1="452" x2="688" y2="452" stroke="#4d9df6" stroke-width="2.5" marker-end="url(#ahAcc)"/>
+  <line x1="988" y1="452" x2="1002" y2="452" stroke="#4d9df6" stroke-width="2.5" marker-end="url(#ahAcc)"/>
+  <line x1="1302" y1="452" x2="1316" y2="452" stroke="#4d9df6" stroke-width="2.5" marker-end="url(#ahAcc)"/>
+
+  <!-- feedback zone -->
+  <line x1="1570" y1="626" x2="146" y2="626" stroke="#d7a24a" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ahWarn)"/>
+  <rect x="250" y="597" width="282" height="24" rx="12" fill="rgba(215,162,74,0.12)" stroke="rgba(215,162,74,0.35)"/>
+  <text x="391" y="614" font-size="11.5" fill="#e5bd76" text-anchor="middle">① 数据缺失 → 自动回补重找</text>
+  <rect x="560" y="597" width="360" height="24" rx="12" fill="rgba(215,162,74,0.12)" stroke="rgba(215,162,74,0.35)"/>
+  <text x="740" y="614" font-size="11.5" fill="#e5bd76" text-anchor="middle">② 解析失败 → 自动切换通道（文档 / OCR / 图表 / 浏览器）</text>
+  <rect x="1000" y="597" width="310" height="24" rx="12" fill="rgba(215,162,74,0.12)" stroke="rgba(215,162,74,0.35)"/>
+  <text x="1155" y="614" font-size="11.5" fill="#e5bd76" text-anchor="middle">③ 低置信 / 冲突 → 人工复核</text>
+  <text x="1570" y="636" font-size="11" fill="#9a958c" text-anchor="end">虚线 = 质量回流</text>
+
+  <line x1="1570" y1="672" x2="146" y2="672" stroke="#6bb07d" stroke-width="1.8" stroke-dasharray="7 5" marker-end="url(#ahOk)"/>
+  <rect x="430" y="643" width="610" height="24" rx="12" fill="rgba(107,176,125,0.12)" stroke="rgba(107,176,125,0.35)"/>
+  <text x="735" y="660" font-size="11.5" fill="#8fcf9d" text-anchor="middle">结果回流：实验结论与置信度 → 驱动下一轮假设与计划（闭环迭代）</text>
+  <text x="1570" y="682" font-size="11" fill="#9a958c" text-anchor="end">人 = 人工介入点（评审 / 方案确认 / 暂停）</text>
+
+  <!-- ===== Band C: 平台支撑 ===== -->
+  <line x1="216" y1="746" x2="216" y2="724" stroke="#4d9df6" stroke-width="1.5" marker-end="url(#ahAcc)"/>
+  <line x1="608" y1="746" x2="608" y2="724" stroke="#4d9df6" stroke-width="1.5" marker-end="url(#ahAcc)"/>
+  <line x1="1000" y1="746" x2="1000" y2="724" stroke="#4d9df6" stroke-width="1.5" marker-end="url(#ahAcc)"/>
+  <line x1="1392" y1="746" x2="1392" y2="724" stroke="#4d9df6" stroke-width="1.5" marker-end="url(#ahAcc)"/>
+
+  <rect x="40" y="750" width="1600" height="204" rx="14" fill="#1e1d24" stroke="#33313c"/>
+  <rect x="64" y="766" width="380" height="30" rx="15" fill="#26252d" stroke="#33313c"/>
+  <text x="92" y="787" font-size="14" font-weight="700" fill="#ece9e2">③ 平台支撑：让业务闭环运转起来</text>
+
+  <g font-size="12">
+    <rect x="64" y="814" width="376" height="124" rx="10" fill="#23222a" stroke="#33313c"/>
+    <text x="78" y="840" font-size="14.5" font-weight="700" fill="#ece9e2">智能体运行时</text>
+    <line x1="78" y1="850" x2="426" y2="850" stroke="#33313c"/>
+    <circle cx="82" cy="866" r="2" fill="#4d9df6"/><text x="92" y="870" fill="#c6c2b9">OpenCode / Qoder 运行时可切换</text>
+    <circle cx="82" cy="886" r="2" fill="#4d9df6"/><text x="92" y="890" fill="#c6c2b9">模型无关：BYOK · Qwen 百炼</text>
+    <circle cx="82" cy="906" r="2" fill="#4d9df6"/><text x="92" y="910" fill="#c6c2b9">HTTP + SSE 会话流式 · 多会话</text>
+
+    <rect x="460" y="814" width="376" height="124" rx="10" fill="#23222a" stroke="#33313c"/>
+    <text x="474" y="840" font-size="14.5" font-weight="700" fill="#ece9e2">数据资产中心</text>
+    <line x1="474" y1="850" x2="822" y2="850" stroke="#33313c"/>
+    <circle cx="478" cy="866" r="2" fill="#4d9df6"/><text x="488" y="870" fill="#c6c2b9">SQLite + 文件 + JSONL 溯源 · 本地优先</text>
+    <circle cx="478" cy="886" r="2" fill="#4d9df6"/><text x="488" y="890" fill="#c6c2b9">事实长表 · 面板宽表 · 时空立方体</text>
+    <circle cx="478" cy="906" r="2" fill="#4d9df6"/><text x="488" y="910" fill="#c6c2b9">知识图谱（区域 × 指标）· 数据地图</text>
+
+    <rect x="856" y="814" width="376" height="124" rx="10" fill="#23222a" stroke="#33313c"/>
+    <text x="870" y="840" font-size="14.5" font-weight="700" fill="#ece9e2">技能与连接器</text>
+    <line x1="870" y1="850" x2="1218" y2="850" stroke="#33313c"/>
+    <circle cx="874" cy="866" r="2" fill="#4d9df6"/><text x="884" y="870" fill="#c6c2b9">经管技能包：6+1 实验流水线</text>
+    <circle cx="874" cy="886" r="2" fill="#4d9df6"/><text x="884" y="890" fill="#c6c2b9">数据连接器 · MCP 可扩展</text>
+    <circle cx="874" cy="906" r="2" fill="#4d9df6"/><text x="884" y="910" fill="#c6c2b9">解析通道：OCR · VLM · 浏览器</text>
+
+    <rect x="1252" y="814" width="376" height="124" rx="10" fill="#23222a" stroke="#33313c"/>
+    <text x="1266" y="840" font-size="14.5" font-weight="700" fill="#ece9e2">可信与人机协同</text>
+    <line x1="1266" y1="850" x2="1614" y2="850" stroke="#33313c"/>
+    <circle cx="1270" cy="866" r="2" fill="#4d9df6"/><text x="1280" y="870" fill="#c6c2b9">证据链票决 · 三级质检 · 溯源链</text>
+    <circle cx="1270" cy="886" r="2" fill="#4d9df6"/><text x="1280" y="890" fill="#c6c2b9">审批策略 allow / ask / deny</text>
+    <circle cx="1270" cy="906" r="2" fill="#4d9df6"/><text x="1280" y="910" fill="#c6c2b9">运行台账回放 · 计划可执行</text>
+  </g>
+
+  <!-- ===== Band D: 本地基座与接入 ===== -->
+  <rect x="40" y="978" width="1600" height="150" rx="14" fill="#1e1d24" stroke="#33313c"/>
+  <rect x="64" y="994" width="240" height="30" rx="15" fill="#26252d" stroke="#33313c"/>
+  <text x="92" y="1015" font-size="14" font-weight="700" fill="#ece9e2">④ 本地基座与接入</text>
+
+  <g font-size="12">
+    <rect x="64" y="1038" width="500" height="80" rx="10" fill="#23222a" stroke="#33313c"/>
+    <text x="78" y="1064" font-size="14.5" font-weight="700" fill="#ece9e2">本地优先</text>
+    <circle cx="82" cy="1082" r="2" fill="#4d9df6"/><text x="92" y="1086" fill="#c6c2b9">会话 / 数据 / 溯源均在本机 · 默认不外流</text>
+
+    <rect x="580" y="1038" width="500" height="80" rx="10" fill="#23222a" stroke="#33313c"/>
+    <text x="594" y="1064" font-size="14.5" font-weight="700" fill="#ece9e2">多通道接入</text>
+    <circle cx="598" cy="1082" r="2" fill="#4d9df6"/><text x="608" y="1086" fill="#c6c2b9">本地文件 / 数据库 / 数据接口</text>
+    <circle cx="598" cy="1102" r="2" fill="#4d9df6"/><text x="608" y="1106" fill="#c6c2b9">浏览器通道：公开网页与官方渠道</text>
+
+    <rect x="1096" y="1038" width="500" height="80" rx="10" fill="#23222a" stroke="#33313c"/>
+    <text x="1110" y="1064" font-size="14.5" font-weight="700" fill="#ece9e2">交付形态</text>
+    <circle cx="1114" cy="1082" r="2" fill="#4d9df6"/><text x="1124" y="1086" fill="#c6c2b9">桌面应用（Windows / macOS）</text>
+    <circle cx="1114" cy="1102" r="2" fill="#4d9df6"/><text x="1124" y="1106" fill="#c6c2b9">浏览器模式 · 局域网令牌网关</text>
+  </g>
+
+  <!-- footer -->
+  <text x="840" y="1166" font-size="12" fill="#6b6a70" text-anchor="middle">© 景明研环 · 数据 → 结论 全程可溯源 · 可复现</text>
+</svg>

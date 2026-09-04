@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for the domain-correctness gate (runtime/skills/core/domain-check).
+"""Tests for the domain-correctness gate (runtime/skills/08-经济实证/econ-run).
 
 Run: python scripts/dev/test_domain_check.py
 Stdlib unittest only — no pytest dependency.
@@ -14,7 +14,7 @@ sys.dont_write_bytecode = True  # never leave __pycache__ in the shipped skill d
 
 _MOD = (
     Path(__file__).resolve().parents[2]
-    / "runtime/skills/core/domain-check/domain_check.py"
+    / "runtime/skills/08-经济实证/econ-run/scripts/domain_check.py"
 )
 _spec = importlib.util.spec_from_file_location("domain_check", _MOD)
 assert _spec and _spec.loader

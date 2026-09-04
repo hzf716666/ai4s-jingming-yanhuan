@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as echarts from "echarts";
-import { Database, Network, ArrowUpRight, Loader2, Play, RefreshCw, FolderDown, X, Files } from "lucide-react";
+import { Database, Network, ArrowUpRight, Loader2, Play, Plus, Check, RefreshCw, FolderDown, X, Files } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useStartResearch } from "@/lib/useStartResearch";
 import { useStartReview } from "@/lib/useStartReview";
@@ -46,7 +46,6 @@ export function KnowledgeGraphPage() {
   const [hypotheses, setHypotheses] = useState<HypothesisSummary[]>([]);
   const [candidates, setCandidates] = useState<string[]>(loadCandidates);
   const [regenerating, setRegenerating] = useState(false);
-  const [regeneratingMsg, setRegeneratingMsg] = useState("");
   const [selectedNode, setSelectedNode] = useState<{ name: string; city?: string; circle?: string; industry?: string } | null>(null);
   const [dragOverCandidates, setDragOverCandidates] = useState(false);
   const [showCandidates, setShowCandidates] = useState(false);
@@ -79,7 +78,6 @@ export function KnowledgeGraphPage() {
   async function regenerateHypotheses() {
     if (regenerating) return;
     setRegenerating(true);
-    setRegeneratingMsg("正在重新生成一批新假设...");
     try {
       const resp = await fetch("http://127.0.0.1:8787/api/hypotheses/regenerate", {
         method: "POST",
@@ -90,12 +88,9 @@ export function KnowledgeGraphPage() {
       const d = await resp.json();
       if (d.hypotheses?.length) {
         setHypotheses(d.hypotheses);
-        setRegeneratingMsg(`已生成 ${d.hypotheses.length} 条新假设, 拖入右侧候选区`);
-      } else {
-        setRegeneratingMsg("生成完成但未返回新假设, 请检查 LLM 配置");
       }
-    } catch (err) {
-      setRegeneratingMsg("重新生成失败: " + (err instanceof Error ? err.message : String(err)));
+    } catch {
+      // 生成失败仅静默保留原假设(按钮回到可点状态)
     } finally {
       setRegenerating(false);
     }
@@ -152,9 +147,6 @@ export function KnowledgeGraphPage() {
                 重新生成
               </button>
             </div>
-            {regeneratingMsg && (
-              <p className="mt-1.5 rounded-md bg-accent/10 px-2 py-1.5 text-[11px] text-accent">{regeneratingMsg}</p>
-            )}
           </div>
           <div className="flex flex-col gap-2 px-3 pb-3">
             {hypotheses.length === 0 && <p className="px-2 py-6 text-center text-[11.5px] text-muted">暂无假设(未加载 hypotheses.json)</p>}
@@ -177,13 +169,22 @@ export function KnowledgeGraphPage() {
                 </div>
                 <div className="mt-2 flex items-center gap-1.5">
                   <button
-                    title="评审: 新建研究文件夹, AI 在对话中生成完整四档评审报告(概率+熵+五节合成+文献锚点), 你可在对话中采纳/否决/补充观点, 反馈进向量库"
+                    title="评审: 新建研究文件夹, AI 在对话中生成完整四档评审报告(概率+熵+影响力量化+五节合成+文献锚点), 你可在对话中采纳/否决/补充观点, 反馈进向量库"
                     onClick={() => startReview(h)}
                     disabled={reviewStarting === h.id}
                     className="flex items-center gap-1 rounded-md border border-accent/30 bg-accent/5 px-2 py-1 text-[11px] text-accent hover:bg-accent/15 disabled:opacity-50"
                   >
                     {reviewStarting === h.id ? <Loader2 size={11} className="animate-spin" /> : <Play size={11} />}
                     评审
+                  </button>
+                  <button
+                    title="加入候选（拖拽在应用端可能不生效，点这里同样能挑入候选栏）"
+                    onClick={() => addCandidate(h.id)}
+                    disabled={candidates.includes(h.id)}
+                    className="flex items-center gap-1 rounded-md border border-[#93785B]/30 bg-[#93785B]/5 px-2 py-1 text-[11px] text-[#93785B] hover:bg-[#93785B]/15 disabled:opacity-40"
+                  >
+                    {candidates.includes(h.id) ? <Check size={11} /> : <Plus size={11} />}
+                    {candidates.includes(h.id) ? "已入候选" : "加入候选"}
                   </button>
                 </div>
                 <button
@@ -333,7 +334,7 @@ function CandidatesPanel({
               </div>
               <div className="mt-2 flex items-center gap-1.5">
                 <button
-                  title="评审: 新建研究文件夹, AI 在对话中生成完整四档评审报告"
+                  title="评审: 新建研究文件夹, AI 在对话中生成完整四档评审报告(含影响力量化)"
                   onClick={() => onStartReview(h)}
                   disabled={reviewStarting === h.id}
                   className="flex items-center gap-1 rounded-md border border-accent/30 bg-accent/5 px-2 py-1 text-[11px] text-accent hover:bg-accent/15 disabled:opacity-50"
@@ -384,7 +385,7 @@ function ResearchGraph({ onOpenRecord, onSelectNode }: { onOpenRecord: (ind: str
       // 按类别分角
       const total = nodes.length;
       const angle = (i / total) * Math.PI * 2;
-      const R = 120 + ring * 85;
+      const R = 140 + ring * 100;
       return { ...n, x: Math.cos(angle) * R, y: Math.sin(angle) * R };
     });
     const visibleLinks = showDerived ? links : links.filter((l) => !l.edge_type.startsWith("co_"));

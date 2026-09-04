@@ -19,7 +19,6 @@ import {
   Settings,
   Trash2,
 } from "lucide-react";
-import type { Project } from "@jingming/shared";
 import { cn } from "@/lib/cn";
 import { rootSessionOf, useRuntimeStore, normalizeDir } from "@/lib/runtime";
 import { pickFolder, renameProject, type ProjectInfo } from "@/lib/tauri";
@@ -29,7 +28,6 @@ import {
   useOverlayTitlebar,
   useUiStore,
 } from "@/lib/store";
-import { useUpdateStore } from "@/lib/update";
 import { overlayTitlebarStyle } from "@/lib/titlebar";
 import { visibleSections, resolveSection } from "@/components/settings/sections";
 import { useIsMobile } from "@/lib/useIsMobile";
@@ -61,7 +59,7 @@ function initialCollapsedProjects(): string[] {
   }
 }
 
-export function Sidebar({ project }: { project: Project }) {
+export function Sidebar() {
   const { t } = useTranslation(["nav", "settings"]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -75,14 +73,12 @@ export function Sidebar({ project }: { project: Project }) {
   const sessions = useRuntimeStore((s) => s.sessions);
   const projects = useRuntimeStore((s) => s.projects);
   const workspace = useRuntimeStore((s) => s.workspace);
-  const hiddenExamples = useRuntimeStore((s) => s.hiddenExamples);
   const startDraft = useRuntimeStore((s) => s.startDraft);
   const startDraftInWorkspace = useRuntimeStore((s) => s.startDraftInWorkspace);
   const createProject = useRuntimeStore((s) => s.createProject);
   const importProject = useRuntimeStore((s) => s.importProject);
   const refreshProjects = useRuntimeStore((s) => s.refreshProjects);
   const deleteSession = useRuntimeStore((s) => s.deleteSession);
-  const hideExample = useRuntimeStore((s) => s.hideExample);
   // Which sessions are working right now — so a background session (or its
   // subagent) shows it's busy without opening it. A running subagent surfaces
   // on the top-level session at the root of its parent chain.
@@ -94,7 +90,6 @@ export function Sidebar({ project }: { project: Project }) {
   );
   const isAnyRunning = Object.keys(runningSessions).length > 0;
 
-  const showUpdateBadge = useUpdateStore((s) => s.showBadge);
   const {
     sidebarCollapsed,
     sidebarWidth,
@@ -251,14 +246,6 @@ export function Sidebar({ project }: { project: Project }) {
     ...byRecency.filter((p) => !p.pinned).slice(0, RECENT_LIMIT),
   ];
   const hiddenProjectCount = projects.length - visibleProjects.length;
-  const exampleRows: Row[] = project.sessions
-    .filter((e) => !hiddenExamples.includes(e.id))
-    .map((e) => ({
-      id: e.id,
-      title: e.title,
-      to: `/example/${e.id}`,
-      kind: "example" as const,
-    }));
 
   const [pendingDelete, setPendingDelete] = useState<Row | null>(null);
 
@@ -266,8 +253,7 @@ export function Sidebar({ project }: { project: Project }) {
     const row = pendingDelete;
     setPendingDelete(null);
     if (!row) return;
-    if (row.kind === "session") void deleteSession(row.id);
-    else hideExample(row.id);
+    void deleteSession(row.id);
     if (location.pathname === row.to) navigate("/live");
   };
 
@@ -286,7 +272,7 @@ export function Sidebar({ project }: { project: Project }) {
   const drawerOpen = isMobile ? !sidebarCollapsed : !(sidebarCollapsed && !inSettings);
 
   const sessionRow = (row: Row) => {
-    const running = row.kind === "session" && activeRoots.has(row.id);
+    const running = activeRoots.has(row.id);
     return (
     <div key={row.to} className="group relative">
       <NavLink
@@ -306,18 +292,10 @@ export function Sidebar({ project }: { project: Project }) {
           />
         ) : (
           <span
-            className={cn(
-              "h-1.5 w-1.5 shrink-0 rounded-full",
-              row.kind === "example" ? "bg-muted" : "bg-ok",
-            )}
+            className="h-1.5 w-1.5 shrink-0 rounded-full bg-ok"
           />
         )}
         <span className="flex-1 truncate">{row.title}</span>
-        {row.kind === "example" && (
-          <span className="shrink-0 rounded-full bg-surface-2 px-1.5 text-[10px] uppercase tracking-wide text-muted ring-1 ring-border">
-            {t("history.exampleTag")}
-          </span>
-        )}
       </NavLink>
       <button
         onClick={() => setPendingDelete(row)}
@@ -657,13 +635,12 @@ export function Sidebar({ project }: { project: Project }) {
           <div className="mt-3 px-2 py-1 text-xs font-medium uppercase tracking-wider text-muted">
             {t("history.heading")}
           </div>
-          {looseRows.length === 0 && exampleRows.length === 0 && (
+          {looseRows.length === 0 && (
             <div className="px-2 py-2 text-xs text-muted">
               {t("history.empty")}
             </div>
           )}
           {looseRows.map(sessionRow)}
-          {exampleRows.map(sessionRow)}
         </div>
 
         <div className="border-t border-border px-3 py-3">
@@ -675,12 +652,6 @@ export function Sidebar({ project }: { project: Project }) {
           >
             <Settings size={15} />
             <span>{t("sidebar.settings")}</span>
-            {showUpdateBadge && (
-              <span
-                aria-hidden="true"
-                className="ml-auto h-2 w-2 rounded-full bg-error shadow-[0_0_0_2px_var(--color-surface)]"
-              />
-            )}
           </button>
         </div>
         </>

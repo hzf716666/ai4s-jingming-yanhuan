@@ -44,7 +44,7 @@ function serve(dataset: RunRecord[]) {
   queryRuns.mockImplementation((q: RunQuery): Promise<RunPage> => {
     let rows = dataset;
     if (q.status) rows = rows.filter((r) => r.status === q.status);
-    if (q.surface) rows = rows.filter((r) => (r.surface ?? "local") === q.surface);
+    if (q.surface) rows = rows.filter((r) => (r.surface ?? "本地") === q.surface);
     if (q.search) {
       const s = q.search.toLowerCase();
       rows = rows.filter(
@@ -88,7 +88,7 @@ describe("RunsPage", () => {
   it("drafts the run recipe when Reproduce is clicked", async () => {
     useUiStore.setState({ composerDraft: null });
     renderPage();
-    await userEvent.click(await screen.findByRole("button", { name: /Reproduce/ }));
+    await userEvent.click(await screen.findByRole("button", { name: /复现/ }));
     const draft = useUiStore.getState().composerDraft;
     expect(draft).toContain("Reproduce run `run_ab12cd34`");
     expect(draft).toContain("python train.py --lr 3e-4");
@@ -97,7 +97,7 @@ describe("RunsPage", () => {
   it("loads the captured log on demand", async () => {
     readRunLog.mockResolvedValue("epoch 1\naccuracy 0.93\n");
     renderPage();
-    await userEvent.click(await screen.findByRole("button", { name: /Log/ }));
+    await userEvent.click(await screen.findByRole("button", { name: /日志/ }));
     expect(readRunLog).toHaveBeenCalledWith("cafe1234");
     expect(await screen.findByText(/accuracy 0.93/)).toBeInTheDocument();
   });
@@ -109,7 +109,7 @@ describe("RunsPage", () => {
     ]);
     renderPage();
     await screen.findByText("python train.py");
-    await userEvent.type(screen.getByPlaceholderText(/search/i), "evaluate");
+    await userEvent.type(screen.getByPlaceholderText(/搜索/), "evaluate");
     // Wait for the debounced query to drop the non-matching run.
     await waitFor(() => expect(screen.queryByText("python train.py")).not.toBeInTheDocument());
     expect(screen.getByText("python evaluate.py")).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("RunsPage", () => {
     ]);
     renderPage();
     await screen.findByText("python ok.py");
-    await userEvent.click(screen.getByRole("button", { name: /Failed/ }));
+    await userEvent.click(screen.getByRole("button", { name: /失败/ }));
     await waitFor(() => expect(screen.queryByText("python ok.py")).not.toBeInTheDocument());
     expect(screen.getByText("python bad.py")).toBeInTheDocument();
   });
@@ -157,6 +157,6 @@ describe("RunsPage", () => {
   it("explains the empty state", async () => {
     serve([]);
     renderPage();
-    expect(await screen.findByText(/No runs recorded yet/)).toBeInTheDocument();
+    expect(await screen.findByText(/尚无运行记录/)).toBeInTheDocument();
   });
 });

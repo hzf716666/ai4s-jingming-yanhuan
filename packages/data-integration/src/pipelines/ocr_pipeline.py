@@ -42,26 +42,46 @@ except ImportError:
 
 
 def _get_ocr_engine():
+    """按 paddleocr 版本兼容创建引擎。
+
+    2.x: 传入内嵌 det/rec/cls 模型目录; 3.x(已装 3.4/PaddleX): 不传模型目录让它走
+    PaddleX 官方模型缓存, 且 2.x 参数 raise ValueError。任一失败 → 记日志并返回 None
+    (扫描件由 structure_v2/vlm_ocr 后端覆盖, 本模块失败不应阻塞管线)。
+    """
     global _ocr_engine
-    if _ocr_engine is None:
+    if _ocr_engine is not None:
+        return _ocr_engine
+    try:
+        _ocr_engine = PaddleOCR(
+            use_angle_cls=True,
+            lang="ch",
+            show_log=False,
+            det_model_dir=str(_det_dir),
+            rec_model_dir=str(_rec_dir),
+            cls_model_dir=str(_cls_dir),
+        )
+        return _ocr_engine
+    except Exception:
+        # 2.x 参数/paddleocr 3.x(PaddleX)不兼容 或 模型文件缺失
+        pass
+    # 3.x 自动下载官方模型(PP-OCRv5)需可连通模型仓库; 本机网络受限 → 默认不尝试,
+    # 避免阻塞(扫描件由 structure_v2/vlm_ocr 后端覆盖)。显式 PADDLEOCR_V5=1 才尝试。
+    if os.environ.get("PADDLEOCR_V5") == "1":
         try:
             _ocr_engine = PaddleOCR(
-                use_angle_cls=True,
+                ocr_version="PP-OCRv5",
+                use_doc_orientation_classify=False,
+                use_textline_orientation=False,
                 lang="ch",
-                show_log=False,
-                det_model_dir=str(_det_dir),
-                rec_model_dir=str(_rec_dir),
-                cls_model_dir=str(_cls_dir),
+                device="cpu",
             )
-        except TypeError:
-            # Fallback for versions without show_log
-            _ocr_engine = PaddleOCR(
-                use_angle_cls=True,
-                lang="ch",
-                det_model_dir=str(_det_dir),
-                rec_model_dir=str(_rec_dir),
-                cls_model_dir=str(_cls_dir),
-            )
+            return _ocr_engine
+        except Exception as e:
+            print(f"  [ocr] PP-OCRv5 初始化失败: {str(e)[:120]}")
+    else:
+        print("  [ocr] 内嵌模型与 paddleocr 3.x 不兼容; 本任务扫描件走 structure_v2 后端"
+              " (或设 PADDLEOCR_V5=1 启用官方模型下载)")
+    _ocr_engine = None
     return _ocr_engine
 
 
@@ -161,6 +181,8 @@ def parse_pdf_ocr(file_path: str | Path, source_label: str = "",
         source_label = file_path.stem
 
     engine = _get_ocr_engine()
+    if engine is None:
+        return []
     records: list[Record] = []
 
     try:

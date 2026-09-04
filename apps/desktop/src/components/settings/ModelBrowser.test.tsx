@@ -21,22 +21,22 @@ describe("ModelBrowser", () => {
   it("filters by provider and searches the active filter", async () => {
     render(<ModelBrowser providers={providers} defaultModel={null} busy={false}
       onSelect={vi.fn()} onManageProviders={vi.fn()} />);
-    const filters = screen.getByRole("navigation", { name: "Model filters" });
+    const filters = screen.getByRole("navigation", { name: "模型筛选" });
     await userEvent.click(within(filters).getByRole("button", { name: /Ollama Cloud/ }));
     expect(screen.getByRole("button", { name: /^Qwen3 Coder/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /GPT-5.2/ })).not.toBeInTheDocument();
-    await userEvent.type(screen.getByRole("searchbox", { name: "Search models" }), "missing");
-    expect(screen.getByText(/No models match/)).toBeInTheDocument();
+    await userEvent.type(screen.getByRole("searchbox", { name: "搜索模型" }), "missing");
+    expect(screen.getByText(/没有模型匹配/)).toBeInTheDocument();
   });
 
   it("favorites without selecting and persists the result", async () => {
     const onSelect = vi.fn<(model: string) => Promise<boolean>>();
     render(<ModelBrowser providers={providers} defaultModel={null} busy={false}
       onSelect={onSelect} onManageProviders={vi.fn()} />);
-    await userEvent.click(screen.getByRole("button", { name: "Add o3 to favorites" }));
+    await userEvent.click(screen.getByRole("button", { name: "将 o3 添加到收藏" }));
     expect(onSelect).not.toHaveBeenCalled();
     expect(loadModelPreferences().favorites).toEqual(["openai/o3"]);
-    await userEvent.click(screen.getByRole("button", { name: /Favorites/ }));
+    await userEvent.click(screen.getByRole("button", { name: /^收藏/ }));
     expect(screen.getByRole("button", { name: /^o3/ })).toBeInTheDocument();
   });
 
@@ -45,12 +45,12 @@ describe("ModelBrowser", () => {
     render(<ModelBrowser providers={providers} defaultModel={null} busy={false}
       onSelect={onSelect} onManageProviders={vi.fn()} />);
 
-    const filters = screen.getByRole("navigation", { name: "Model filters" });
+    const filters = screen.getByRole("navigation", { name: "模型筛选" });
     const providerFilter = within(filters).getByRole("button", { name: /Ollama Cloud/ });
     providerFilter.focus();
     await userEvent.keyboard("{Enter}");
 
-    const favoriteButton = screen.getByRole("button", { name: "Add Qwen3 Coder to favorites" });
+    const favoriteButton = screen.getByRole("button", { name: "将 Qwen3 Coder 添加到收藏" });
     favoriteButton.focus();
     await userEvent.keyboard(" ");
     expect(loadModelPreferences().favorites).toEqual(["ollama/qwen3-coder"]);
@@ -68,7 +68,7 @@ describe("ModelBrowser", () => {
     render(<ModelBrowser providers={providers} defaultModel="openai/gpt-5.2" busy={false}
       onSelect={onSelect} onManageProviders={vi.fn()} />);
     await userEvent.click(screen.getByRole("button", { name: /^o3/ }));
-    expect(screen.getByText("Switching…")).toBeInTheDocument();
+    expect(screen.getByText("切换中…")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: /^Qwen3 Coder/ }));
     expect(onSelect).toHaveBeenCalledTimes(1);
     resolveSelection(true);
@@ -90,7 +90,7 @@ describe("ModelBrowser", () => {
       onSelect={onSelect} onManageProviders={vi.fn()} />);
 
     const modelRow = screen.getByRole("button", { name: /^o3/ });
-    const favoriteButton = screen.getByRole("button", { name: "Add o3 to favorites" });
+    const favoriteButton = screen.getByRole("button", { name: "将 o3 添加到收藏" });
     await userEvent.click(modelRow);
 
     expect(onSelect).toHaveBeenCalledWith("openai/o3");
@@ -103,11 +103,11 @@ describe("ModelBrowser", () => {
     const onManageProviders = vi.fn();
     const { rerender } = render(<ModelBrowser providers={providers} defaultModel="gone/model" busy={false}
       onSelect={vi.fn()} onManageProviders={onManageProviders} />);
-    expect(screen.getByText(/Configured model unavailable: gone\/model/)).toBeInTheDocument();
+    expect(screen.getByText(/已配置的模型不可用：gone\/model/)).toBeInTheDocument();
     rerender(<ModelBrowser providers={[]} defaultModel="gone/model" busy={false}
       onSelect={vi.fn()} onManageProviders={onManageProviders} />);
-    expect(screen.getByText(/Configured model unavailable: gone\/model/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Manage providers" })).toBeInTheDocument();
+    expect(screen.getByText(/已配置的模型不可用：gone\/model/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "管理供应商" })).toBeInTheDocument();
   });
 
   it("keeps focus on the clicked row through the pending switch (no drop to body)", async () => {
@@ -119,7 +119,7 @@ describe("ModelBrowser", () => {
     const row = screen.getByRole("button", { name: /^o3/ });
     row.focus();
     await userEvent.keyboard("{Enter}");
-    expect(screen.getByText("Switching…")).toBeInTheDocument();
+    expect(screen.getByText("切换中…")).toBeInTheDocument();
     // A DOM-disabled button leaves the tab order and browsers drop focus to
     // <body>, stranding keyboard users mid-switch — rows must stay enabled
     // and block interaction via aria-disabled + the click guard instead.
@@ -134,7 +134,7 @@ describe("ModelBrowser", () => {
   it("signals when no default model is configured", () => {
     render(<ModelBrowser providers={providers} defaultModel={null} busy={false}
       onSelect={vi.fn()} onManageProviders={vi.fn()} />);
-    expect(screen.getByText("Not set — pick a default model")).toBeInTheDocument();
+    expect(screen.getByText("未设置——选择一个默认模型")).toBeInTheDocument();
   });
 
   it("keeps the current model row keyboard-focusable without selecting it again", async () => {

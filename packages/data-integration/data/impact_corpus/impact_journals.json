@@ -1,0 +1,203 @@
+{
+  "note": "经管种子期刊清单(OpenAlex 按 ISSN 抓取; field 为语料分组用, 与实际 primary_topic 不一致时以 primary_topic.field 为准)",
+  "min_group": 30,
+  "journals": [
+    {
+      "name": "Academy of Management Journal",
+      "issns": [
+        "0001-4273",
+        "1930-3807"
+      ],
+      "field": "business",
+      "display_name": "Academy of Management Journal"
+    },
+    {
+      "name": "Academy of Management Review",
+      "issns": [
+        "0363-7425",
+        "1930-3807"
+      ],
+      "field": "business",
+      "display_name": "Academy of Management Review"
+    },
+    {
+      "name": "Administrative Science Quarterly",
+      "issns": [
+        "0001-8392",
+        "1930-3807"
+      ],
+      "field": "business",
+      "display_name": "Administrative Science Quarterly"
+    },
+    {
+      "name": "Strategic Management Journal",
+      "issns": [
+        "0143-2095",
+        "1097-0266"
+      ],
+      "field": "business",
+      "display_name": "Strategic Management Journal"
+    },
+    {
+      "name": "Journal of Applied Psychology",
+      "issns": [
+        "0021-9010",
+        "1939-1854"
+      ],
+      "field": "psychology",
+      "display_name": "Journal of Applied Psychology"
+    },
+    {
+      "name": "Journal of Management",
+      "issns": [
+        "0149-2063",
+        "1557-1211"
+      ],
+      "field": "business",
+      "display_name": "Journal of Management"
+    },
+    {
+      "name": "Journal of Management Studies",
+      "issns": [
+        "0022-2380",
+        "1467-6486"
+      ],
+      "field": "business",
+      "display_name": "Journal of Management Studies"
+    },
+    {
+      "name": "Journal of Organizational Behavior",
+      "issns": [
+        "0894-3796",
+        "1099-1379"
+      ],
+      "field": "psychology",
+      "display_name": "Journal of Organizational Behavior"
+    },
+    {
+      "name": "Human Resource Management",
+      "issns": [
+        "0090-4848",
+        "1099-050X"
+      ],
+      "field": "business",
+      "display_name": "Human Resource Management"
+    },
+    {
+      "name": "The Leadership Quarterly",
+      "issns": [
+        "1048-9843",
+        "1873-3409"
+      ],
+      "field": "psychology",
+      "display_name": "The Leadership Quarterly"
+    },
+    {
+      "name": "MIS Quarterly",
+      "issns": [
+        "0276-7783",
+        "2162-9730"
+      ],
+      "field": "business",
+      "display_name": "MIS Quarterly"
+    },
+    {
+      "name": "Information Systems Research",
+      "issns": [
+        "1047-7047",
+        "1526-5536"
+      ],
+      "field": "business",
+      "display_name": "Information Systems Research"
+    },
+    {
+      "name": "Management Science",
+      "issns": [
+        "0025-1909",
+        "1526-5501"
+      ],
+      "field": "business",
+      "display_name": "Management Science"
+    },
+    {
+      "name": "Operations Research",
+      "issns": [
+        "0030-364X",
+        "1526-5463"
+      ],
+      "field": "business",
+      "display_name": "Operations Research"
+    },
+    {
+      "name": "American Economic Review",
+      "issns": [
+        "0002-8282"
+      ],
+      "field": "economics",
+      "display_name": "American Economic Review"
+    },
+    {
+      "name": "The Quarterly Journal of Economics",
+      "issns": [
+        "0033-5533",
+        "1531-4650"
+      ],
+      "field": "economics",
+      "display_name": "The Quarterly Journal of Economics"
+    },
+    {
+      "name": "Journal of Political Economy",
+      "issns": [
+        "0022-3808",
+        "1537-534X"
+      ],
+      "field": "economics",
+      "display_name": "Journal of Political Economy"
+    },
+    {
+      "name": "Econometrica",
+      "issns": [
+        "0012-9682",
+        "1468-0262"
+      ],
+      "field": "economics",
+      "display_name": "Econometrica"
+    },
+    {
+      "name": "Journal of Finance",
+      "issns": [
+        "0022-1082",
+        "1540-6261"
+      ],
+      "field": "business",
+      "display_name": "The Journal of Finance"
+    },
+    {
+      "name": "Journal of Financial Economics",
+      "issns": [
+        "0304-405X",
+        "1879-0874"
+      ],
+      "field": "business",
+      "display_name": "Journal of Financial Economics"
+    },
+    {
+      "name": "Review of Financial Studies",
+      "issns": [
+        "0893-9454",
+        "1465-7368"
+      ],
+      "field": "business",
+      "display_name": "Review of Financial Studies"
+    },
+    {
+      "name": "Journal of International Business Studies",
+      "issns": [
+        "0047-2506",
+        "1478-6990"
+      ],
+      "field": "business",
+      "display_name": "Journal of International Business Studies"
+    }
+  ]
+}

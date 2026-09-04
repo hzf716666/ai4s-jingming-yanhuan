@@ -25,7 +25,7 @@ python tests/test_smoke.py
 | M1 | 需求理解 | SciEx |
 | M2 | 来源发现+质量评估 | Färber 2017 |
 | M3 | 多格式解析 (5 Pipeline) | 吴廷鑫 §2.3.5 |
-| M4 | 字段对齐+整合 | 张辉§5 + HLER+PIEVO + 陈杰杰p6 |
+| M4 | 字段对齐+整合 | 张辉§5 + HLER+PIEVO + 论文p6 |
 | M5 | 质量检查+闭环修正 | Casini-Perron + Lenz-Shoshani |
 | M6 | 结构化输出 | — |
 | M7 | GIS关联+可视化 | Lloyd 2019 + H3 |

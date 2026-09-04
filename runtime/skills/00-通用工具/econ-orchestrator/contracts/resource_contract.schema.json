@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contracts/resource_contract.schema.json",
+  "title": "Resource 契约（资源召回）",
+  "description": "按 OneSkills 架构文档 §4.2 实现。核心约束：调用方（编排/执行技能）不得直接读取 econ-resources 的 assets/ 目录，只能消费 matched_resources[*].content。",
+  "oneOf": [
+    {
+      "title": "resource_retrieval_request",
+      "type": "object",
+      "required": ["user_request", "content_request"],
+      "properties": {
+        "user_request": { "type": "string" },
+        "task_state_summary": { "type": "string" },
+        "content_request": { "type": "string", "description": "如：摘要 / 使用说明 / 完整内容 / 方法卡适用性" },
+        "filters": {
+          "type": "object",
+          "properties": {
+            "domain": { "type": "string", "enum": ["econ", "generic"] },
+            "keyword": { "type": "string" },
+            "asset_type": { "type": "string", "enum": ["datasources", "method_cards", "metrics_dictionary", "fkg", "causal_lexicon"] }
+          }
+        }
+      }
+    },
+    {
+      "title": "resource_retrieval_result",
+      "type": "object",
+      "required": ["status", "matched_resources"],
+      "properties": {
+        "status": { "type": "string", "enum": ["success", "partial", "failed"] },
+        "matched_resources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "name", "content"],
+            "properties": {
+              "type": { "type": "string" },
+              "path": { "type": "string", "description": "资源路径，仅标识用" },
+              "name": { "type": "string" },
+              "why_matched": { "type": "string" },
+              "limitations": { "type": "string" },
+              "content": { "type": "string", "description": "调用方唯一允许消费的内容载体" }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

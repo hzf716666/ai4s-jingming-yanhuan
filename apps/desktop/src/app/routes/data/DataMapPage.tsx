@@ -4,7 +4,6 @@ import "echarts-gl";
 import graphicGL from "echarts-gl/lib/util/graphicGL";
 import lines3DGLSL from "echarts-gl/lib/util/shader/lines3D.glsl.js";
 import Bars3DGeometry from "echarts-gl/lib/util/geometry/Bars3DGeometry";
-import { useUiStore } from "@/lib/store";
 import { cn } from "@/lib/cn";
 
 // ---------------------------------------------------------------------------
@@ -229,6 +228,8 @@ interface MapPoint {
   lon: number;
   lat: number;
   city?: string;
+  /** zone 数据的实际数据年份(接口按 ≤滑杆年份回退), 缺省=滑杆年份 */
+  year?: number;
 }
 
 interface GeoFeature {
@@ -338,6 +339,55 @@ const BAR_SIZE_KEYFRAMES: [number, number][] = [
 /** 各粒度的最大柱高（相对球半径） */
 const GRAN_MAX_H = { nation: 6, prov: 4.5, city: 3.5 } as const;
 
+/** HSL → hex（withAlpha/lighten 只认 # 开头的颜色，hsl 字符串会被当成灰色兜底） */
+function hslToHex(h: number, s: number, l: number): string {
+  s /= 100;
+  l /= 100;
+  const k = (n: number) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const c = l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+    return Math.round(255 * c)
+      .toString(16)
+      .padStart(2, "0");
+  };
+  return "#" + f(0) + f(8) + f(4);
+}
+
+/** 产业链配色：黄金角轮转，相邻两条链色相明显不同（20 条链内基本不撞色） */
+function chainColor(i: number): string {
+  return hslToHex(Math.round((i * 137.508) % 360), 82, 62);
+}
+
+/** 集群名里的产业关键词（长词在前，保证"高端装备制造"先于"装备"匹配） */
+const INDUSTRY_KEYWORDS = [
+  "先进无机非金属材料", "重大成套设备制造", "高端装备制造", "航空装备制造",
+  "移动应急装备", "城市矿产循环利用", "网络安全与信息化", "新型显示器件",
+  "高端纸基材料", "智能机电", "集成电路", "电子元器件", "生物医药",
+  "生物农业", "大健康", "香菇产业", "风机",
+];
+
+/** 从集群名提取产业：'咸宁市咸安区生物医药创新型产业集群' → '生物医药' */
+function industryOf(chainName: string): string {
+  for (const kw of INDUSTRY_KEYWORDS) {
+    if (chainName.includes(kw)) return kw;
+  }
+  return chainName.replace(/创新型产业集群$/, "");
+}
+
+/** 集群节点数值缩写(按单位先归一，再进 万/亿/万亿) */
+function formatNodeValue(v: number, unit: string): string {
+  let mag = v;
+  if (unit === "千元") mag = v * 1e3;
+  else if (unit === "万元") mag = v * 1e4;
+  else if (unit === "亿元") mag = v * 1e8;
+  const abs = Math.abs(mag);
+  if (abs >= 1e12) return (mag / 1e12).toFixed(2) + " 万亿";
+  if (abs >= 1e8) return (mag / 1e8).toFixed(1) + " 亿";
+  if (abs >= 1e4) return (mag / 1e4).toFixed(0) + " 万";
+  return String(Math.round(mag * 100) / 100);
+}
+
 /** echarts-gl globe 默认半径（页面未改 globeRadius） */
 const GLOBE_RADIUS = 100;
 
@@ -409,9 +459,9 @@ function buildFlatOption(d: number): Record<string, unknown> {
       minDistance: 2,
       maxDistance: 600,
       // echarts-gl 默认左键旋转、中键平移（componentViewControlMixin 的默认值）；
-      // 平面视图要像普通地图一样拖动移动，显式改成左键平移、中键旋转
+      // 平面视图要像普通地图一样拖动移动：左键平移、右键旋转（滚轮缩放）
       panMouseButton: "left",
-      rotateMouseButton: "middle",
+      rotateMouseButton: "right",
       panSensitivity: 1,
       rotateSensitivity: 1,
       zoomSensitivity: 1,
@@ -432,12 +482,16 @@ function granularityWeights(d: number): { wNation: number; wProv: number; wCity:
   return { wNation, wProv, wCity };
 }
 
-/** 园区数据按 city 聚合成市州（放大到省市级后柱状图粒度跟随） */
+/** 园区数据按 city 聚合成市州（放大到省市级后柱状图粒度跟随）。
+ *  zone_facts 混有两类行：湖北省各市的高新区（city 带"市"后缀，如 武汉市/咸宁市）
+ *  与全国省级/国家级汇总行（city=省名或国家名，如 甘肃/上海/美国/中国）。
+ *  市州柱只聚合成前者——否则甘肃、广东、美国会被当成"市"混进湖北档的柱体，
+ *  点击还会展示它们的省级数据。 */
 function aggregateCities(zones: MapPoint[]): MapPoint[] {
   const byCity = new Map<string, { v: number; pt: MapPoint }>();
   for (const z of zones) {
     const city = z.city;
-    if (!city) continue;
+    if (!city || !city.endsWith("市")) continue;
     const e = byCity.get(city);
     if (e) e.v += z.value;
     else byCity.set(city, { v: z.value, pt: z });
@@ -495,6 +549,19 @@ function normalizeProvinceName(name: string): string {
     .replace(/市$/, "");
 }
 
+/** 多指标柱体分离：让每个选中指标在"该地点"周围沿圆周错开，而不是叠在同一坐标。
+ *  radiusWorld 是渲染单位下的圆环半径（随柱体粗细 barSize 缩放）；
+ *  换算成经纬度偏移时，经度按 cos(lat) 收缩修正，保证高纬处呈相对圆形的散布
+ *  （否则会变成扁椭圆）。n<=1（只选一个指标）时不偏移，保持原位置。 */
+function circleOffset(lon: number, lat: number, ci: number, n: number, radiusWorld: number): [number, number] {
+  if (n <= 1) return [lon, lat];
+  const theta = (ci / n) * Math.PI * 2;
+  const latRad = (lat * Math.PI) / 180;
+  const k = 180 / (Math.PI * GLOBE_RADIUS); // 1 渲染单位 ≈ 多少度
+  const lonK = k / Math.max(0.25, Math.cos(latRad)); // 经度在高纬收缩, 保持圆
+  return [lon + Math.cos(theta) * radiusWorld * lonK, lat + Math.sin(theta) * radiusWorld * k];
+}
+
 export function DataMapPage() {
   const ref = useRef<HTMLDivElement>(null);
   const chartRef = useRef<echarts.ECharts | null>(null);
@@ -507,8 +574,10 @@ export function DataMapPage() {
   const firstOptRef = useRef(true);
   const borderRef = useRef<Record<string, unknown>[]>([]);
   const nameRef = useRef<Record<string, unknown>[]>([]);
+  const chainLayerRef = useRef<Record<string, unknown>[]>([]);
   const buildBarsRef = useRef<(d: number) => Record<string, unknown>[]>(() => []);
-  const theme = useUiStore((s) => s.theme);
+  // 单主题（深色）构建：主题固定为 dark，不再订阅 store 的主题状态
+  const theme = "dark";
   const [indicators, setIndicators] = useState<{ id: string; name: string; unit: string }[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set(["营业收入_千元"]));
   const [year, setYear] = useState(2024);
@@ -522,6 +591,15 @@ export function DataMapPage() {
   const [selectedPt, setSelectedPt] = useState<MapPoint | null>(null);
   const [barData, setBarData] = useState<Record<string, { prov: MapPoint[]; zones: MapPoint[] }>>({});
   const [geo, setGeo] = useState<Record<string, GeoFeature[]>>({});
+  // 产业链连线图层（同链集群跨区连线，读 /api/map/chains）
+  const [chains, setChains] = useState<
+    { from: string; lonFrom: number; latFrom: number; to: string; lonTo: number; latTo: number; chain: string; fromCluster?: string; toCluster?: string }[]
+  >([]);
+  // 默认不显示：连线是省内区县间的产业关联，全球/洲际视角下缩成一点无意义，
+  // 想看时手动点"产业链连线"开关（放大了才有细节）
+  const [showChains, setShowChains] = useState(false);
+  // 右侧产业链面板：被勾掉(隐藏)的链名集合，与链系列一一对应
+  const [hiddenChains, setHiddenChains] = useState<Set<string>>(new Set());
 
   // 平面模式唯一判定源：开关 + 档位(≥中国) + 地图数据就绪（geo3D 组件创建需要
   // 已注册的平面地图，未就绪时保持球面，系列与坐标系组件必须用同一个值）
@@ -553,13 +631,19 @@ export function DataMapPage() {
   }, []);
 
   useEffect(() => {
-    fetch(API + "/indicators?scope=province")
-      .then((r) => r.json())
-      .then((d) => {
-        setIndicators(d.indicators);
-        const biz = (d.indicators as { id: string }[]).find(
-          (i) => i.id === "营业收入_千元",
+    // 指标选择栏 = 省级(scope=province) ∪ 园区/国家级(scope=zone)。
+    // OECD 的 GERD 等国际指标只进 zone_facts, 之前只拉 province 导致它们不可见。
+    Promise.all([
+      fetch(API + "/indicators?scope=province").then((r) => r.json()),
+      fetch(API + "/indicators?scope=zone").then((r) => r.json()),
+    ])
+      .then(([p, z]) => {
+        const seen = new Set<string>();
+        const merged = [...(p.indicators ?? []), ...(z.indicators ?? [])].filter(
+          (i: { id: string }) => !seen.has(i.id) && !!seen.add(i.id),
         );
+        setIndicators(merged);
+        const biz = merged.find((i: { id: string }) => i.id === "营业收入_千元");
         if (biz) setSelected(new Set([biz.id]));
       })
       .catch(() => {});
@@ -582,6 +666,10 @@ export function DataMapPage() {
     ).then(([world, china, hubei, districts]) =>
       setGeo({ world, china, hubei, districts }),
     );
+    fetch(API + "/chains")
+      .then((r) => r.json())
+      .then((d) => setChains((d.chains ?? []) as []))
+      .catch(() => {});
   }, []);
 
   // 平面模式的档位地图注册（geo3D 用；geo 数据就绪后注册一次即可）
@@ -650,7 +738,7 @@ export function DataMapPage() {
         setZoomIdx(idx);
       }
       // 焦点区域粒度切换：视线中心落在哪个省，放大后就展开哪个省的下一级
-      // （仅球面模式有意义；平面模式视线垂直看向平面，不做命中判定）
+      // 球面模式做命中判定；平面模式数据只到湖北市州，深放大直接锚定湖北。
       if (!flatRef.current) {
         const china = geoRef.current;
         if (china?.length && typeof p.alpha === "number" && typeof p.beta === "number") {
@@ -683,6 +771,13 @@ export function DataMapPage() {
             }
           }
         }
+      } else {
+        // 平面模式：区域档以上只有湖北的市州/区县数据，焦点固定为湖北
+        const fk = idx >= 3 ? "湖北" : null;
+        if (fk !== focusKeyRef.current) {
+          focusKeyRef.current = fk;
+          setFocusName(fk);
+        }
       }
       // 相机状态实时同步到调试对象（不依赖 React 渲染）
       if (DEV) {
@@ -704,7 +799,7 @@ export function DataMapPage() {
 
     chart.on("click", (params) => {
       const p = params as {
-        data?: { name?: string; raw?: number; unit?: string; lon?: number; lat?: number; city?: string };
+        data?: { name?: string; raw?: number; unit?: string; lon?: number; lat?: number; city?: string; year?: number };
       };
       if (p?.data?.name && typeof p.data.raw === "number") {
         setSelectedPt({
@@ -714,18 +809,50 @@ export function DataMapPage() {
           lon: p.data.lon ?? 0,
           lat: p.data.lat ?? 0,
           city: p.data.city,
+          year: p.data.year,
         });
         // 点击柱体 → 球面模式把相机转向所点位置（alpha=纬度、beta=经度+90，
         // 与 GlobeView 的 targetCoord 同公式），这样点哪放大就看哪、焦点省
-        // 也随之更新。
+        // 也随之更新。注意 distance 必须带上当前实时值——viewControl 里没传的
+        // 字段会回退到初始 option（230），用户滚轮缩放过就会被打回默认。
         if (!flatRef.current && typeof p.data.lon === "number" && typeof p.data.lat === "number") {
-          chart.setOption({ globe: { viewControl: { alpha: p.data.lat, beta: p.data.lon + 90 } } });
+          chart.setOption({
+            globe: {
+              viewControl: {
+                alpha: p.data.lat,
+                beta: p.data.lon + 90,
+                distance: camRef.current.distance,
+              },
+            },
+          });
         }
-        // 平面模式：点击后把地图中心平移到所点位置(geo3D 的 center 属性)
+        // 平面模式：点击后把地图中心平移到所点位置。geo3D 的 viewControl.center
+        // 是"盒内世界坐标"（相机目标点），不是经纬度——直接塞 [lon,lat,0] 会把
+        // 相机目标甩到盒子外（中国范围 lon 已缩放到盒宽 ±65 内），导致聚焦往左偏。
+        // 必须用坐标系统本身的 dataToPoint 把经纬度投影到 box 空间再给 center。
+        // 同时把当前 alpha/beta/distance 一并带上，只平移、不重置用户的旋转与缩放。
         else if (flatRef.current && typeof p.data.lon === "number" && typeof p.data.lat === "number") {
+          let target: number[] = [p.data.lon, p.data.lat, 0];
+          try {
+            const ech = chart as unknown as {
+              getModel: () => { getComponent: (t: string) => unknown };
+            };
+            const geo3dModel = ech.getModel().getComponent("geo3D") as
+              | { coordinateSystem?: { dataToPoint?: (d: number[]) => number[] } }
+              | undefined;
+            const coordSys = geo3dModel?.coordinateSystem;
+            if (coordSys?.dataToPoint) target = coordSys.dataToPoint([p.data.lon, p.data.lat, 0]);
+          } catch {
+            /* 坐标系统未就绪时退回经纬度原值 */
+          }
           chart.setOption({
             geo3D: {
-              viewControl: { center: [p.data.lon, p.data.lat, 0] },
+              viewControl: {
+                center: target,
+                alpha: camRef.current.alpha,
+                beta: camRef.current.beta,
+                distance: camRef.current.distance,
+              },
             },
           });
         }
@@ -758,7 +885,7 @@ export function DataMapPage() {
                 ...(activeFlat
                   ? { geo3D: { boxHeight: 3 + flatBarHeight(d) } }
                   : { globe: { globeOuterRadius: GLOBE_RADIUS + maxBarHeight(d) } }),
-                series: [...borderRef.current, ...nameRef.current, ...buildBarsRef.current(d)],
+                series: [...borderRef.current, ...nameRef.current, ...chainLayerRef.current, ...buildBarsRef.current(d)],
               },
               { replaceMerge: ["series"] },
             );
@@ -846,6 +973,9 @@ export function DataMapPage() {
         const list = pts.filter((p) => opOf(p) > 0.01);
         if (!list.length) return;
         const max = Math.max(1, ...list.map((p) => p.value));
+        // 多指标时让每根柱子围绕"该地点"沿圆周错开，避免全区重叠成一个点
+        const nSel = selOrder.length;
+        const radiusWorld = barSize * 1.6; // 圆环半径随柱体粗细缩放
         out.push({
           type: "bar3D",
           coordinateSystem: coord,
@@ -853,15 +983,16 @@ export function DataMapPage() {
           barSize,
           data: list.map((p) => {
             const op = Math.min(1, Math.max(0, opOf(p)));
+            const [ox, oy] = circleOffset(p.lon, p.lat, ci, nSel, radiusWorld);
             return {
               name: p.name,
-              value: [p.lon, p.lat, Math.max(0.25, (Math.log10(1 + p.value) / Math.log10(1 + max)) * heightOf(maxH))],
+              value: [ox, oy, Math.max(0.25, (Math.log10(1 + p.value) / Math.log10(1 + max)) * heightOf(maxH))],
               raw: p.value,
               unit: p.unit,
               lon: p.lon,
               lat: p.lat,
               city: p.city,
-              // 同指标内按数值向白色混合：值越大越亮，与其它指标的主色相区分
+              year: p.year,
               itemStyle: { color: lighten(color, (p.value / max) * 0.55), opacity: op },
             };
           }),
@@ -877,18 +1008,28 @@ export function DataMapPage() {
               if (abs >= 1e4) return (raw / 1e4).toFixed(0) + " 万";
               return String(Math.round(raw * 100) / 100);
             },
-            fontSize: 9,
+            fontSize: 13,
             color: "#d5dbe3",
             textBorderColor: "rgba(0,0,0,0.55)",
             textBorderWidth: 2,
-            distance: 4,
+            distance: 6,
           },
         });
       };
-      // 全球/洲际：全国汇总单柱（平面模式不显示）
-      if (!flatActive && wNation > 0.01 && data.prov.length) {
-        const v = data.prov.reduce((s, p) => s + p.value, 0);
-        pushBars([{ name: "中国", value: v, unit: data.prov[0]?.unit ?? "", lon: 104, lat: 35 }], GRAN_MAX_H.nation, () => wNation);
+      // 全球/洲际：国家柱（平面模式不显示）。
+      // zone_facts 里 zone==city 的国家行（OECD 各国）直接成柱；
+      // 国内数据没有国家行，回退为省级行合计出的"中国"单柱。
+      // "全国"行是省级/园区数据的国内汇总（与中国柱同位重影），市名行留给市州档聚合。
+      if (!flatActive && wNation > 0.01) {
+        const nationPts = data.zones.filter(
+          (p) => p.city && p.city === p.name && p.name !== "全国",
+        );
+        if (nationPts.length) {
+          pushBars(nationPts, GRAN_MAX_H.nation, () => wNation);
+        } else if (data.prov.length) {
+          const v = data.prov.reduce((s, p) => s + p.value, 0);
+          pushBars([{ name: "中国", value: v, unit: data.prov[0]?.unit ?? "", lon: 104, lat: 35 }], GRAN_MAX_H.nation, () => wNation);
+        }
       }
       // 中国：省级粒度。深放大（wCity 淡入区）时非焦点省提前淡出；
       // 焦点省有市数据则让位给市柱，无市数据则保持显示（不突然变成别省的柱子）
@@ -1011,15 +1152,115 @@ export function DataMapPage() {
       }));
   }, [geo, zoomIdx, theme, flatActive]);
 
-  // 同步最新边界/名称系列到 ref（相机事件里重建柱子时需要带上）
+  // ---- 产业链连线层（球面+平面）：按"产业"分链（每条产业链一种颜色），随缩放档位淡入淡出 ----
+  // 数据库里每条边连接两个"产业集群"节点(chain_links.cluster_from/cluster_to,
+  // 高新区只是集群的坐标落点)，展示按产业关键词归并为一条链(生物医药/智能机电/…)，
+  // 节点画成集群圆点，避免"区县当节点"的错觉。
+  const chainNames = useMemo(
+    () => [...new Set(chains.map((c) => industryOf(c.fromCluster || c.chain)))],
+    [chains],
+  );
+  const chainSeries = useMemo<Record<string, unknown>[]>(() => {
+    if (!showChains || chains.length === 0) return [];
+    const alpha = zoomIdx < 2 ? 0 : zoomIdx === 2 ? 0.45 : zoomIdx === 3 ? 0.8 : 0.95;
+    if (alpha < 0.02) return [];
+    const coord = flatActive ? "geo3D" : "globe";
+    const out: Record<string, unknown>[] = [];
+    // 集群"本身数据"：选中指标 + 当前年份下，集群所在高新区的值(人数/营收等)；
+    // 数据没有匹配到就不标值，只标集群名
+    const sel0 = Array.from(selected)[0];
+    const zonePts: MapPoint[] = sel0 ? (barData[sel0 + "@" + year]?.zones ?? []) : [];
+    chainNames.forEach((industry, i) => {
+      if (hiddenChains.has(industry)) return;
+      const edges = chains.filter((c) => industryOf(c.fromCluster || c.chain) === industry);
+      const color = chainColor(i);
+      // 该产业链的产业集群节点（去重，集群名 → 落点坐标 + 可选指标值）
+      const nodes = new Map<string, { name: string; lon: number; lat: number; zv: number | null; zu: string }>();
+      for (const c of edges) {
+        const f = c.fromCluster || c.chain || c.from;
+        const t = c.toCluster;
+        if (f) {
+          const zp = zonePts.find((p) => p.name === c.from || p.city === c.from);
+          nodes.set(f, { name: f, lon: c.lonFrom, lat: c.latFrom, zv: zp?.value ?? null, zu: zp?.unit ?? "" });
+        }
+        if (t) {
+          const zp = zonePts.find((p) => p.name === c.to || p.city === c.to);
+          nodes.set(t, { name: t, lon: c.lonTo, lat: c.latTo, zv: zp?.value ?? null, zu: zp?.unit ?? "" });
+        }
+      }
+      out.push({
+        type: "lines3D",
+        // 平面模式用 geo3D（polyline 画平面上直线，弧线 curveness 仅球面生效）
+        coordinateSystem: coord,
+        polyline: true,
+        silent: true,
+        name: industry,
+        // 弧线(curveness>0)让"跨区产业链"呈拱形，与边界直线区分开来
+        lineStyle: { color: withAlpha(color, alpha), width: 1.7, opacity: 1, curveness: 0.25 },
+        // 流动微粒(集群A→集群B)表达有方向性
+        effect: { show: true, trailLength: 0.12, constantSpeed: 1.8, symbol: "circle", symbolSize: 1.3 },
+        data: edges.map((c) => ({
+          name: (c.fromCluster || c.chain || c.from) + " → " + (c.toCluster || c.to) + " · " + industry,
+          coords: [
+            [c.lonFrom, c.latFrom],
+            [c.lonTo, c.latTo],
+          ],
+        })),
+        animation: false,
+      });
+      out.push({
+        type: "scatter3D",
+        coordinateSystem: coord,
+        silent: false,
+        symbol: "circle",
+        symbolSize: 5,
+        name: industry,
+        itemStyle: { color: withAlpha(color, Math.min(1, alpha + 0.15)) },
+        // 集群节点标注：集群名（缩写），有该集群自身数据就追加一行数值
+        label: {
+          show: zoomIdx >= 3,
+          position: "top",
+          distance: 1,
+          fontSize: 10.5,
+          color: "#e8ecf3",
+          textBorderColor: "rgba(0,0,0,0.6)",
+          textBorderWidth: 1.5,
+          formatter: (p: { data?: { name?: string; zv?: number | null; zu?: string } }) => {
+            const d = p.data ?? {};
+            const nm = (d.name ?? "").replace(/创新型产业集群|产业集群/g, "");
+            const short = nm.length > 9 ? nm.slice(0, 8) + "…" : nm;
+            if (d.zv == null) return short;
+            return short + "\n" + formatNodeValue(d.zv, d.zu ?? "");
+          },
+        },
+        tooltip: {
+          show: true,
+          formatter: (p: { seriesName?: string; data?: { name?: string; zv?: number | null; zu?: string } }) =>
+            `${p.seriesName ?? ""}<br/>${p.data?.name ?? ""}` +
+            (p.data?.zv != null ? `<br/>${formatNodeValue(p.data.zv, p.data.zu ?? "")}` : ""),
+        },
+        // 产业集群 = 链节点（同一产业链内的点按集群名去重）
+        data: [...nodes.values()].map((n) => ({
+          name: n.name,
+          value: [n.lon, n.lat, 0],
+          zv: n.zv,
+          zu: n.zu,
+        })),
+      });
+    });
+    return out;
+  }, [chains, chainNames, showChains, hiddenChains, barData, year, selected, theme, flatActive, zoomIdx]);
+
+  // 同步最新边界/名称/链系列到 ref（相机事件里重建柱子时需要带上）
   // 同时记录系列当前的坐标系模式——rAF 重建必须与主 setOption 的组件一致，
   // 模式不匹配（切换中）时跳过重建，避免 geo3D 系列配上 globe 组件导致崩溃。
   const seriesModeRef = useRef<"globe" | "geo3D">("globe");
   useEffect(() => {
     borderRef.current = borderSeries;
     nameRef.current = nameSeries;
+    chainLayerRef.current = chainSeries;
     seriesModeRef.current = flatActive ? "geo3D" : "globe";
-  }, [borderSeries, nameSeries, flatActive]);
+  }, [borderSeries, nameSeries, chainSeries, flatActive]);
 
   // geo.china 同步到 ref（相机事件里做焦点省判定）
   useEffect(() => {
@@ -1033,7 +1274,7 @@ export function DataMapPage() {
     const chart = chartRef.current;
     if (!chart) return;
     const d = distRef.current;
-    const series = [...borderSeries, ...nameSeries, ...buildBars(d)];
+    const series = [...borderSeries, ...nameSeries, ...chainSeries, ...buildBars(d)];
     let comp: Record<string, unknown> | undefined;
     if (flatActive !== flatRef.current) {
       // 模式切换：清空后重建坐标系，相机回到各自默认位。
@@ -1049,10 +1290,8 @@ export function DataMapPage() {
       if (flatActive) {
         comp = { geo3D: buildFlatOption(d) };
       } else {
-        // 浅色主题下 --surface 是白/米白，白球配白底看不见——浅色改用 --surface-2
-        // （暖色主题是暖灰、light 是冷灰），随主题自适应
-        const sphereColor =
-          theme === "dark" ? withAlpha(cssVar("--surface"), 0.5) : withAlpha(cssVar("--surface-2"), 0.62);
+        // 深色主题下 --surface 是深板色，半透明即可作球面底色
+        const sphereColor = withAlpha(cssVar("--surface"), 0.5);
         comp = {
           globe: {
             shading: "color",
@@ -1066,6 +1305,9 @@ export function DataMapPage() {
               distance: camRef.current.distance,
               alpha: camRef.current.alpha,
               beta: camRef.current.beta,
+              // 右键旋转视角（绑定 rotate 后 echarts-gl 会自动 preventDefault
+              // 掉浏览器右键菜单）；球面 panSensitivity 本就为 0，只留旋转+滚轮缩放
+              rotateMouseButton: "right",
               autoRotate: zoomIdx === 0,
               autoRotateSpeed: 0.8,
               minDistance: 0.5,
@@ -1088,6 +1330,8 @@ export function DataMapPage() {
     chart.setOption(
       {
         backgroundColor: "transparent",
+        // 默认关闭 tooltip，仅产业链节点系列单独开启(避免柱体/边界弹原始坐标数组)
+        tooltip: { show: false },
         ...(comp ?? {}),
         series,
       },
@@ -1154,7 +1398,7 @@ export function DataMapPage() {
         n: s.data?.length ?? 0,
       }));
     }
-  }, [zoomIdx, theme, geo, selected, year, barData, borderSeries, nameSeries, flatActive]);
+  }, [zoomIdx, theme, geo, selected, year, barData, borderSeries, nameSeries, chainSeries, flatActive]);
 
   // 开发调试钩子：纯属性对象（每次渲染刷新），浏览器侧可直接读取
   if (DEV) {
@@ -1254,7 +1498,8 @@ export function DataMapPage() {
           </div>
           <div className="mt-1 text-xs text-muted">
             {selectedPt.city ? selectedPt.city + " · " : ""}
-            {year} 年
+            {selectedPt.year ?? year} 年
+            {selectedPt.year && selectedPt.year !== year ? "（该国最新可得年份）" : ""}
           </div>
         </div>
       )}
@@ -1263,7 +1508,7 @@ export function DataMapPage() {
       <div className="absolute left-4 top-4 flex items-center gap-2">
         <div className="rounded-input border border-border bg-surface-80 px-2.5 py-1 text-xs text-accent">
           {LEVELS[zoomIdx].label}
-          {zoomIdx >= 3 && focusName ? " · " + focusName : ""}
+          {zoomIdx >= 3 && focusName && focusName !== LEVELS[zoomIdx].label ? " · " + focusName : ""}
         </div>
         <button
           onClick={() => setFlat((v) => !v)}
@@ -1276,6 +1521,18 @@ export function DataMapPage() {
         >
           {flat && zoomIdx >= 2 ? "平面视图" : "球面视图"}
         </button>
+        {chains.length > 0 && (
+          <button
+            onClick={() => setShowChains((v) => !v)}
+            className={cn(
+              "rounded-input border px-2.5 py-1 text-xs transition-colors",
+              showChains ? "border-accent bg-accent-15 text-accent" : "border-border bg-surface-80 text-muted hover:text-text",
+            )}
+            title="显示/隐藏产业链跨区连线"
+          >
+            产业链连线
+          </button>
+        )}
       </div>
 
       {/* 时间轴 */}
@@ -1293,6 +1550,57 @@ export function DataMapPage() {
         />
         <span className="w-9 text-right text-xs font-semibold text-accent">{year}</span>
       </div>
+
+      {/* 产业链面板：右侧列出全部链(与地图连线同色)，勾选 = 只看该链 */}
+      {showChains && chainNames.length > 0 && (
+        <div className="absolute bottom-14 right-4 z-10 flex max-h-[46vh] w-60 flex-col rounded-lg border border-border bg-surface/95 shadow-md">
+          <div className="flex items-center justify-between border-b border-faint px-3 py-1.5">
+            <span className="text-[11.5px] font-semibold">产业链 ({chainNames.length})</span>
+            <div className="flex gap-2 text-[10.5px]">
+              <button className="text-accent hover:underline" onClick={() => setHiddenChains(new Set())}>全部显示</button>
+              <button className="text-muted hover:underline" onClick={() => setHiddenChains(new Set(chainNames))}>全部隐藏</button>
+            </div>
+          </div>
+          <div className="overflow-y-auto">
+            {chainNames.map((name, i) => {
+              const edges = chains.filter((c) => industryOf(c.fromCluster || c.chain) === name);
+              const clusters = new Set<string>();
+              for (const c of edges) {
+                if (c.fromCluster || c.chain) clusters.add(c.fromCluster || c.chain);
+                if (c.toCluster) clusters.add(c.toCluster);
+              }
+              const off = hiddenChains.has(name);
+              return (
+                <label
+                  key={name}
+                  title={`${name}\n${name}的产业集群节点：\n${[...clusters].join("、")}`}
+                  className={cn(
+                    "flex cursor-pointer items-center gap-2 px-3 py-1.5 text-[11.5px] hover:bg-surface-2",
+                    off ? "text-muted" : "text-text",
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    checked={!off}
+                    onChange={() =>
+                      setHiddenChains((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(name)) next.delete(name);
+                        else next.add(name);
+                        return next;
+                      })
+                    }
+                    className="shrink-0 accent-[var(--accent)]"
+                  />
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: chainColor(i) }} />
+                  <span className="min-w-0 flex-1 truncate">{name}</span>
+                  <span className="shrink-0 text-[10px] tabular-nums text-muted">{clusters.size} 节点 · {edges.length} 链</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* 底部指标多选栏：可全部取消，只展示纯地图 */}
       <div className="absolute inset-x-0 bottom-0 border-t border-border bg-surface-90 backdrop-blur">

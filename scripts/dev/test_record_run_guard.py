@@ -12,8 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 HELPERS = [
-    ROOT / "runtime/skills/core/remote-compute/record_run.py",
-    ROOT / "runtime/skills/core/modal-run/record_run.py",
+    ROOT / "runtime/skills/00-通用工具/云端计算/scripts/record_run.py",
 ]
 
 

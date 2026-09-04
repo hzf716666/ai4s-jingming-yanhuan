@@ -1,16 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
-import { useUiStore } from "@/lib/store";
+import { describe, expect, it } from "vitest";
 import { MoleculeView } from "./MoleculeView";
 import { TableChart } from "./TableChart";
 import { GenomeView } from "./GenomeView";
 import { DosView } from "./DosView";
 import { QCodeView } from "./QCodeView";
 import type { ParsedTable } from "@/lib/csv";
-
-// COPYCAT RULE: useUiStore is module-global; reset the locale after each test
-// so this suite never bleeds a non-English locale into other test files.
-afterEach(() => useUiStore.getState().setLocale("en"));
 
 const T: ParsedTable = {
   columns: ["month", "sales"],
@@ -41,68 +36,66 @@ const SPIN = [
 ].join("\n");
 
 describe("MoleculeView strings (i18n)", () => {
-  it("renders the per-value style labels, reset control, and empty state in English", async () => {
+  it("renders the per-value style labels, reset control, and empty state in Chinese", async () => {
     render(<MoleculeView filename="empty.smi" text={"   \n# comment\n"} />);
-    expect(await screen.findByText(/No chemical structures found/)).toBeInTheDocument();
+    expect(await screen.findByText(/未找到化学结构/)).toBeInTheDocument();
   });
 
-  it("renders the not-a-chemical-file message in English", () => {
+  it("renders the not-a-chemical-file message in Chinese", () => {
     render(<MoleculeView filename="notes.txt" text="hello" />);
-    expect(screen.getByText("Not a chemical structure file.")).toBeInTheDocument();
+    expect(screen.getByText("不是化学结构文件。")).toBeInTheDocument();
   });
 });
 
 describe("TableChart strings (i18n)", () => {
-  it("renders the per-value chart-type controls and the row# picker option in English", () => {
+  it("renders the per-value chart-type controls and the row# picker option in Chinese", () => {
     render(<TableChart table={T} />);
-    // Chart-type enum values (line/bar/scatter) are per-value keyed — English is
-    // byte-identical to the raw ChartType values.
-    for (const label of ["line", "bar", "scatter"]) {
+    for (const label of ["折线图", "柱状图", "散点图"]) {
       expect(screen.getByRole("button", { name: label })).toBeInTheDocument();
     }
-    expect(screen.getByText("row #")).toBeInTheDocument();
+    expect(screen.getByText("行号")).toBeInTheDocument();
   });
 
-  it("shows the no-numeric-columns message in English", () => {
+  it("shows the no-numeric-columns message in Chinese", () => {
     const empty: ParsedTable = { columns: ["a"], rows: [["x"]], truncated: false };
     render(<TableChart table={empty} />);
-    expect(screen.getByText("No numeric columns to chart.")).toBeInTheDocument();
+    expect(screen.getByText("没有可绘制的数值列。")).toBeInTheDocument();
   });
 });
 
 describe("GenomeView strings (i18n)", () => {
-  it("renders the zoom/reset controls and pluralized feature count in English", () => {
+  it("renders the zoom/reset controls and pluralized feature count in Chinese", () => {
     render(<GenomeView filename="ann.bed" text={BED} />);
-    expect(screen.getByLabelText("Zoom in")).toBeInTheDocument();
-    expect(screen.getByLabelText("Zoom out")).toBeInTheDocument();
-    expect(screen.getByLabelText("Reset view")).toBeInTheDocument();
-    expect(screen.getByText(/1 features/)).toBeInTheDocument();
+    expect(screen.getByLabelText("放大")).toBeInTheDocument();
+    expect(screen.getByLabelText("缩小")).toBeInTheDocument();
+    expect(screen.getByLabelText("重置视图")).toBeInTheDocument();
+    expect(screen.getByText(/1 个特征/)).toBeInTheDocument();
   });
 
-  it("renders the not-an-annotation-file message in English", () => {
+  it("renders the not-an-annotation-file message in Chinese", () => {
     render(<GenomeView filename="notes.txt" text="hello" />);
-    expect(screen.getByText("Not a genome annotation file.")).toBeInTheDocument();
+    expect(screen.getByText("不是基因组注释文件。")).toBeInTheDocument();
   });
 });
 
 describe("DosView strings (i18n)", () => {
-  it("renders the per-value axis-alignment toggle in English", () => {
+  it("renders the per-value axis-alignment toggle in Chinese", () => {
     render(<DosView filename="DOSCAR" bytes={bytesOf(SPIN)} />);
     expect(screen.getByRole("button", { name: "E − E_F" })).toBeInTheDocument();
   });
 });
 
 describe("QCodeView strings (i18n)", () => {
-  it("renders the codebook heading, exact-quote badge, and pluralized counts in English", () => {
+  it("renders the codebook heading, exact-quote badge, and pluralized counts in Chinese", () => {
     const DOC = JSON.stringify({
       sources: [{ id: "i1", title: "Interview 1", text: "I trust the doctor." }],
       codes: [{ name: "trust" }],
       annotations: [{ source: "i1", code: "trust", start: 2, end: 18 }],
     });
     render(<QCodeView filename="study.qcode" text={DOC} />);
-    expect(screen.getByText("Codebook")).toBeInTheDocument();
-    expect(screen.getByText("quotes are exact source spans")).toBeInTheDocument();
-    expect(screen.getByText(/1 source/)).toBeInTheDocument();
-    expect(screen.getByText(/1 code/)).toBeInTheDocument();
+    expect(screen.getByText("编码手册")).toBeInTheDocument();
+    expect(screen.getByText("引用为精确的原文片段")).toBeInTheDocument();
+    expect(screen.getByText(/1 个来源/)).toBeInTheDocument();
+    expect(screen.getByText(/1 个编码/)).toBeInTheDocument();
   });
 });

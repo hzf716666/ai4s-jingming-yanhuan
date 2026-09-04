@@ -1,0 +1,49 @@
+# 景明研环 论文版 figure style（经管论文用；与 jingming.mplstyle[应用统计卡] 分工）
+# 规范来源：science-plotting style-guide（serif/无网格/细框/单栏）+ okabe-ito 色盲安全
+# Apply:  import matplotlib.pyplot as plt; plt.style.use("…/jingming_paper.mplstyle")
+
+# --- 调色板：okabe-ito 色盲安全（组1 实际估计用黄#E69F00，对照组参照用灰） ---
+axes.prop_cycle: cycler('color', ['e69f00', '56b4e9', '009e73', 'f0e442', '0072b2', 'd55e00', 'cc79a7', '999999'])
+
+# --- 尺寸：单栏 3.35x2.55in（表格/报告 5.2x3.8），矢量优先 ---
+figure.figsize: 3.35, 2.55
+figure.dpi: 150
+savefig.dpi: 300
+savefig.bbox: tight
+figure.facecolor: white
+axes.facecolor: white
+
+# --- 墨迹：无网格、细深灰框、无上/右轴脊 ---
+text.color: 222222
+axes.labelcolor: 222222
+axes.edgecolor: 333333
+axes.linewidth: 0.7
+axes.grid: False
+axes.spines.top: False
+axes.spines.right: False
+xtick.color: 333333
+ytick.color: 333333
+xtick.labelcolor: 333333
+ytick.labelcolor: 333333
+xtick.direction: out
+ytick.direction: out
+
+# --- 线/标记 ---
+lines.linewidth: 1.6
+lines.solid_capstyle: round
+lines.markersize: 4.5
+patch.linewidth: 0.5
+
+# --- 排版：serif 论文风 ---
+font.family: serif
+font.serif: Times New Roman, STIXGeneral, DejaVu Serif
+mathtext.fontset: stix
+font.size: 9
+axes.titlesize: 9
+axes.titlelocation: left
+axes.labelsize: 9
+xtick.labelsize: 7.5
+ytick.labelsize: 7.5
+legend.fontsize: 7
+legend.frameon: False
+legend.handlelength: 1.6

@@ -34,3 +34,8 @@ pydantic>=2.0.0
 
 # === PDF rendering (scanned PDF generation / page-to-image) ===
 PyMuPDF>=1.23.0
+
+# === v2 可选后端(按需安装; 任一可用即可开启 structure_v2, 否则自动回退规则管线) ===
+# docling>=2.0        # pip install docling   (PDF→结构; 需 HF 模型缓存可达)
+# mineru>=3.0         # pip install mineru    (扫描件/公式专项, CLI)
+# 默认后端: vlm_ocr(DashScope qwen-vl*, 复用 dashscope 依赖, 无需额外安装)

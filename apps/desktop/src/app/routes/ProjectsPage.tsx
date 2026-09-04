@@ -5,12 +5,14 @@ import {
   ChevronDown,
   ChevronRight,
   Folder,
+  Loader2,
   MoreHorizontal,
   Pencil,
   Pin,
   Search,
 } from "lucide-react";
 import type { SessionMeta } from "@jingming/sdk";
+import type { ImpactScore } from "@jingming/shared";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/lib/cn";
 import { useRuntimeStore } from "@/lib/runtime";
@@ -47,6 +49,9 @@ async function fetchProjectProgress(path: string): Promise<ProjectProgressData |
 function ProjectProgress({ path }: { path: string }) {
   const [data, setData] = useState<ProjectProgressData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [paperScore, setPaperScore] = useState<ImpactScore | null>(null);
+  const [paperLoading, setPaperLoading] = useState(false);
+  const [paperMsg, setPaperMsg] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
     fetchProjectProgress(path).then((d) => {
@@ -59,6 +64,27 @@ function ProjectProgress({ path }: { path: string }) {
       cancelled = true;
     };
   }, [path]);
+  async function predictPaper() {
+    if (paperLoading) return;
+    setPaperLoading(true);
+    setPaperMsg(null);
+    try {
+      const r = await fetch("http://127.0.0.1:8787/api/impact/score_paper", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path }),
+      });
+      if (!r.ok) {
+        setPaperMsg(r.status === 404 ? "论文尚未生成(缺 paper/main.md)" : "预测失败 " + r.status);
+        return;
+      }
+      setPaperScore((await r.json()) as ImpactScore);
+    } catch {
+      setPaperMsg("数据面板 8787 不可达");
+    } finally {
+      setPaperLoading(false);
+    }
+  }
   if (loading) return null;
   if (!data || !data.is_research) return null;
   return (
@@ -88,6 +114,37 @@ function ProjectProgress({ path }: { path: string }) {
       <div className="mt-0.5 flex justify-between text-[9px] text-muted">
         <span>假设构建</span>
         <span>论文交付</span>
+      </div>
+      {/* 论文影响力预测: 论文生成(paper/main.md)后可点, 结果落盘 paper/impact_report.md */}
+      <div className="mt-1.5 flex items-center gap-1.5">
+        <button
+          title="论文影响力预测: 仅凭论文文本预测其若发表可能落到的同领域同期影响力分位(先验估计, 非质量裁决); 结果写入项目 paper/impact_report.md"
+          onClick={predictPaper}
+          disabled={paperLoading}
+          className="flex items-center gap-1 rounded-md border border-[#6C5CE7]/30 bg-[#6C5CE7]/5 px-2 py-1 text-[10px] text-[#6C5CE7] hover:bg-[#6C5CE7]/15 disabled:opacity-50"
+        >
+          {paperLoading ? <Loader2 size={10} className="animate-spin" /> : <Pencil size={10} />}
+          论文影响力预测
+        </button>
+        {paperScore && paperScore.percentile != null && (
+          <span
+            title={[
+              `P${Math.round(paperScore.percentile * 100)} · ${paperScore.confidence === "high" ? "高" : paperScore.confidence === "medium" ? "中" : "低"}置信(先验估计)`,
+              paperScore.p_absolute != null ? `通路A ${(paperScore.p_absolute * 100).toFixed(0)}` : "",
+              paperScore.p_pairwise != null ? `通路B ${(paperScore.p_pairwise * 100).toFixed(0)}` : "",
+              paperScore.field_used ? `领域 ${paperScore.field_used}` : "",
+              `报告已写入 paper/impact_report.md`,
+              ...paperScore.reasons,
+              ...(paperScore.baseline_papers?.length ? ["对比基线:", ...paperScore.baseline_papers.map((b) => `- ${b.title} (${b.year ?? "?"})`)] : []),
+            ]
+              .filter(Boolean)
+              .join("\n")}
+            className="rounded bg-[#6C5CE7]/10 px-1.5 py-0.5 text-[10px] font-semibold text-[#6C5CE7]"
+          >
+            P{Math.round(paperScore.percentile * 100)}·{paperScore.confidence === "high" ? "高" : paperScore.confidence === "medium" ? "中" : "低"}
+          </span>
+        )}
+        {paperMsg && <span className="text-[10px] text-muted">{paperMsg}</span>}
       </div>
     </div>
   );

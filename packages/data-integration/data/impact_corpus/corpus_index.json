@@ -1,0 +1,225 @@
+{
+  "total": 19970,
+  "with_abstract": 19970,
+  "groups": [
+    {
+      "field": "business",
+      "year": 2014,
+      "size": 1107,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2015,
+      "size": 1094,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2016,
+      "size": 1178,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2017,
+      "size": 1190,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2018,
+      "size": 1025,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2019,
+      "size": 1110,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2020,
+      "size": 1354,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2021,
+      "size": 1403,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2022,
+      "size": 1430,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2023,
+      "size": 1414,
+      "small": false
+    },
+    {
+      "field": "business",
+      "year": 2024,
+      "size": 1489,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2014,
+      "size": 372,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2015,
+      "size": 395,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2016,
+      "size": 812,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2017,
+      "size": 418,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2018,
+      "size": 326,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2019,
+      "size": 313,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2020,
+      "size": 345,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2021,
+      "size": 336,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2022,
+      "size": 346,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2023,
+      "size": 308,
+      "small": false
+    },
+    {
+      "field": "economics",
+      "year": 2024,
+      "size": 305,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2014,
+      "size": 174,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2015,
+      "size": 177,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2016,
+      "size": 146,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2017,
+      "size": 189,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2018,
+      "size": 165,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2019,
+      "size": 152,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2020,
+      "size": 155,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2021,
+      "size": 240,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2022,
+      "size": 157,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2023,
+      "size": 171,
+      "small": false
+    },
+    {
+      "field": "psychology",
+      "year": 2024,
+      "size": 174,
+      "small": false
+    }
+  ],
+  "min_group": 30,
+  "small_groups": [],
+  "fields": [
+    "business",
+    "economics",
+    "psychology"
+  ],
+  "years": [
+    2014,
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "updated_at": "2026-09-03 00:40:10"
+}

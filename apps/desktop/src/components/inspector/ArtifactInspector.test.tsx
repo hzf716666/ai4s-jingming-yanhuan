@@ -21,19 +21,19 @@ const data: ArtifactInspectorT = {
 describe("ArtifactInspector", () => {
   it("shows the Code tab by default and switches tabs", async () => {
     render(<ArtifactInspector data={data} onClose={() => {}} />);
-    expect(screen.getByText("Download script")).toBeInTheDocument();
+    expect(screen.getByText("下载脚本")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: "Execution Log" }));
+    await userEvent.click(screen.getByRole("button", { name: "执行日志" }));
     expect(screen.getByText("log line one")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: /Review/ }));
-    expect(screen.getByText(/Review passed/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /审查/ }));
+    expect(screen.getByText(/审查通过/)).toBeInTheDocument();
   });
 
   it("fires onClose from the close button", async () => {
     const onClose = vi.fn();
     render(<ArtifactInspector data={data} onClose={onClose} />);
-    await userEvent.click(screen.getByRole("button", { name: "Close inspector" }));
+    await userEvent.click(screen.getByRole("button", { name: "关闭检查器" }));
     expect(onClose).toHaveBeenCalledOnce();
   });
 });

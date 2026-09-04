@@ -24,11 +24,11 @@ describe("Composer attachments (desktop)", () => {
     const onSend = vi.fn();
     render(<Composer onSend={onSend} />);
 
-    fireEvent.click(screen.getByLabelText("Add files"));
+    fireEvent.click(screen.getByLabelText("添加文件"));
     await waitFor(() => expect(screen.getByText("data.csv")).toBeTruthy());
 
     // Chip is outside the textarea — typing text is independent of the file.
-    const input = screen.getByLabelText("Ask anything");
+    const input = screen.getByLabelText("尽情提问");
     fireEvent.change(input, { target: { value: "analyze this" } });
     fireEvent.keyDown(input, { key: "Enter" });
 
@@ -41,16 +41,16 @@ describe("Composer attachments (desktop)", () => {
 
   it("removes a chip via its X button without touching the text", async () => {
     render(<Composer onSend={vi.fn()} />);
-    fireEvent.click(screen.getByLabelText("Add files"));
+    fireEvent.click(screen.getByLabelText("添加文件"));
     await waitFor(() => expect(screen.getByText("data.csv")).toBeTruthy());
 
-    fireEvent.click(screen.getByLabelText("Remove data.csv"));
+    fireEvent.click(screen.getByLabelText("移除 data.csv"));
     expect(screen.queryByText("data.csv")).toBeNull();
   });
 
   it("turns an oversized paste into a workspace file chip, keeping the box clean", async () => {
     render(<Composer onSend={vi.fn()} />);
-    const input = screen.getByLabelText("Ask anything") as HTMLTextAreaElement;
+    const input = screen.getByLabelText("尽情提问") as HTMLTextAreaElement;
 
     fireEvent.paste(input, {
       clipboardData: { getData: () => "x".repeat(3000) },
@@ -65,7 +65,7 @@ describe("Composer attachments (desktop)", () => {
 
   it("turns a pasted image (screenshot) into an image file chip", async () => {
     render(<Composer onSend={vi.fn()} />);
-    const input = screen.getByLabelText("Ask anything") as HTMLTextAreaElement;
+    const input = screen.getByLabelText("尽情提问") as HTMLTextAreaElement;
 
     // A clipboard image item, as macOS/Windows/Linux webviews expose it.
     fireEvent.paste(input, {

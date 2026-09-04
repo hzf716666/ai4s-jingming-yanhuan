@@ -7,7 +7,7 @@ import { ModalCard } from "./ModalCard";
 describe("ModalCard", () => {
   it("renders the Modal compute card without crashing", () => {
     render(<ModalCard />);
-    expect(screen.getByText(/Cloud compute \(Modal\)/)).toBeInTheDocument();
-    expect(screen.getByText(/Available in the desktop app|Not installed|Ready/)).toBeInTheDocument();
+    expect(screen.getByText(/云计算（Modal）/)).toBeInTheDocument();
+    expect(screen.getByText(/该功能在桌面应用中可用|未安装|已就绪/)).toBeInTheDocument();
   });
 });

@@ -14,7 +14,7 @@ const DOC = JSON.stringify({
 describe("QCodeView", () => {
   it("renders the codebook, highlighted spans, and the exact-quote guarantee", () => {
     const { container } = render(<QCodeView filename="study.qcode" text={DOC} />);
-    expect(container.textContent).toContain("quotes are exact source spans");
+    expect(container.textContent).toContain("引用为精确的原文片段");
     // codebook shows both codes
     expect(screen.getByRole("button", { name: /trust/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /fear/ })).toBeInTheDocument();
@@ -26,6 +26,6 @@ describe("QCodeView", () => {
 
   it("shows a friendly error for a malformed coding file", () => {
     render(<QCodeView filename="bad.qcode" text="{ not json" />);
-    expect(screen.getByText(/Could not read this coding file/)).toBeInTheDocument();
+    expect(screen.getByText(/无法读取此编码文件/)).toBeInTheDocument();
   });
 });

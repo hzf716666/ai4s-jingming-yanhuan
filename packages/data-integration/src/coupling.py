@@ -49,7 +49,7 @@ def derive_coupling(records: list[Record]) -> list[Record]:
                     unit="%",
                     indicator="创新链强度_RD占比",
                     source="derived:coupling",
-                    note="formula=R&D经费/营业收入;ref=陈杰杰p6",
+                    note="formula=R&D经费/营业收入;ref=论文p6",
                 ))
 
         # 2. 产业链强度_工业实化率 = 工业总产值 / 营业收入
@@ -63,7 +63,7 @@ def derive_coupling(records: list[Record]) -> list[Record]:
                     unit="%",
                     indicator="产业链强度_工业实化率",
                     source="derived:coupling",
-                    note="formula=工业总产值/营业收入;ref=陈杰杰p6",
+                    note="formula=工业总产值/营业收入;ref=论文p6",
                 ))
 
         # 3. 双螺旋协同度 = (R&D/营收) × (工业/营收)
@@ -78,7 +78,7 @@ def derive_coupling(records: list[Record]) -> list[Record]:
                     unit="",
                     indicator="双螺旋协同度",
                     source="derived:coupling",
-                    note="formula=(R&D/营收)×(工业/营收);ref=陈杰杰p6",
+                    note="formula=(R&D/营收)×(工业/营收);ref=论文p6",
                 ))
 
         # 4. 技术转移转化率 = 技术合同成交额 / R&D
@@ -92,7 +92,7 @@ def derive_coupling(records: list[Record]) -> list[Record]:
                     unit="%",
                     indicator="技术转移转化率",
                     source="derived:coupling",
-                    note="formula=技术合同成交额/R&D;ref=陈杰杰p2+p6",
+                    note="formula=技术合同成交额/R&D;ref=论文p2+p6",
                 ))
 
         # 5. 企业主体地位 = 高企数 / 入统企业数
@@ -106,7 +106,7 @@ def derive_coupling(records: list[Record]) -> list[Record]:
                     unit="%",
                     indicator="企业主体地位",
                     source="derived:coupling",
-                    note="formula=高企数/入统企业数;ref=陈杰杰p6",
+                    note="formula=高企数/入统企业数;ref=论文p6",
                 ))
 
     return records + derived

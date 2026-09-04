@@ -7,6 +7,8 @@ import { useRuntimeStore } from "@/lib/runtime";
 import { writeWorkspaceFile, absoluteArtifactPath } from "@/lib/artifactFile";
 import { workspacePath, isTauri } from "@/lib/tauri";
 import { fetchRecords, type HypothesisSummary } from "@/lib/researchLib";
+import { fetchHypothesisImpact, impactBriefSection } from "@/lib/useImpactScore";
+import type { ImpactScore } from "@jingming/shared";
 
 export function useStartReview() {
   const navigate = useNavigate();
@@ -33,9 +35,10 @@ export function useStartReview() {
         }
       }
 
-      // 3) 写任务书(评审版) + 数据快照 + 反馈记录工具脚本
+      // 3) 先算影响力预测(客观信号, 超时/失败降级为 null), 写任务书 + 数据快照 + 反馈工具
+      const impact = await fetchHypothesisImpact(h);
       const [records] = await Promise.all([fetchRecords()]);
-      const brief = buildReviewBrief(h, new Date().toLocaleString("zh-CN"));
+      const brief = buildReviewBrief(h, new Date().toLocaleString("zh-CN"), impact);
       const projName = project.path.split(/[\\\\/]/).pop()!;
       const rel = (p: string) => `${projName}/${p}`;
       await writeWorkspaceFile(rel("README.md"), brief, "base");
@@ -49,10 +52,11 @@ export function useStartReview() {
       const runtime = store.getState();
       await runtime.startDraftInWorkspace(project.path);
       await runtime.sendPrompt(
-        `这是研究项目 ${h.id} 的评审任务书(README.md)。请用技能 hypothesis-review 对这条候选假设做完整四档评审:` +
+        `这是研究项目 ${h.id} 的评审任务书(README.md)。请用技能 econ-review 对这条候选假设做完整四档评审:` +
         `请阅读 README.md(含假设/研究问题/分析建议/预期发现/支撑证据)与 data/records.json 与 tools/record_feedback.py,` +
         `然后**在当前对话中输出一份完整 Markdown 评审报告**: ` +
-        `一句话结论(集成预测 Top/Top-/Good/Fair + 置信度 + 一致数) → 四档概率分布(表格 + \`\`\`tierchart\`\`\` JSON 块, 前端渲染仪表图) → ` +
+        `一句话结论(集成预测 Top/Top-/Good/Fair + 置信度 + 一致数) → **影响力量化小节**(README.md 中"影响力量化"一节的数据是客观信号, 用一两句呈现并与你的四档判断对比: 两者是否一致、差异如何解读; 若该节缺失则跳过不编造) → ` +
+        `四档概率分布(表格 + \`\`\`tierchart\`\`\` JSON 块, 前端渲染仪表图) → ` +
         `香农熵置信度分析 → 新颖性-有用性双透镜(1-5 分, 指出短板) → 强化建议(往上一档推的 2-4 条) → ` +
         `限制与注意事项 → 相关文献锚点(检索 5 篇最相关, 如可)。` +
         `报告要完整展现, 并落盘 review_report.md。` +
@@ -105,8 +109,8 @@ except Exception as e:
     print(f"记录失败(检查数据面板 8787 是否在线): {e}")
 `;
 
-/** 评审版任务书(在 buildBrief 之上增加评审要求, 并省略七阶段执行流程) */
-export function buildReviewBrief(h: HypothesisSummary, date: string): string {
+/** 评审版任务书(在 buildBrief 之上增加评审要求, 并省略七阶段执行流程; impact 为影响力量化信号) */
+export function buildReviewBrief(h: HypothesisSummary, date: string, impact: ImpactScore | null = null): string {
   return `# 研究评审任务书 — ${h.id}
 
 > 由知识图谱"完整评审报告"生成 · ${date}
@@ -134,9 +138,12 @@ ${h.expected_finding}
 
 ## 支撑证据
 
-${(h.evidence ?? []).map((e) => `- ${e.k}: ${e.v}`).join("\n")}
+${Array.isArray(h.evidence)
+  ? h.evidence.map((e) => (typeof e === "string" ? `- ${e}` : `- ${e.k}: ${e.v}`)).join("\n")
+  : h.evidence ? `- ${h.evidence}` : ""}
 
-## 评审要求(技能 hypothesis-review)
+${impactBriefSection(impact)}
+## 评审要求(技能 econ-review)
 
 1. 四档标签: **exceptional(Top 顶级) / strong(Top- 强顶) / fair(Good 中档) / limited(Fair 区域低档)**
 2. 输出完整 Markdown 评审报告(见对话指令), 并落盘 review_report.md

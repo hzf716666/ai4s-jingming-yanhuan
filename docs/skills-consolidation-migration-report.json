@@ -1,0 +1,344 @@
+{
+ "00-通用工具/econ-orchestrator": [
+  {
+   "old": "00-通用工具/科研编排主控",
+   "dest": "00-通用工具/econ-orchestrator/references/科研编排主控",
+   "skipped": true
+  },
+  {
+   "old": "00-通用工具/智能体进化",
+   "dest": "00-通用工具/econ-orchestrator/references/智能体进化",
+   "skipped": true
+  },
+  {
+   "old": "02-假设设计/自主科研流水线",
+   "dest": "00-通用工具/econ-orchestrator/references/自主科研流水线",
+   "skipped": true
+  },
+  {
+   "old": "00-通用工具/onescience-orchestrator",
+   "dest": "00-通用工具/econ-orchestrator/references/onescience-orchestrator",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/onescience-research-workflow",
+   "dest": "00-通用工具/econ-orchestrator/references/onescience-research-workflow",
+   "skipped": true
+  }
+ ],
+ "00-通用工具/云端计算": [
+  {
+   "old": "00-通用工具/onescience-cli",
+   "dest": "00-通用工具/云端计算/references/onescience-cli",
+   "skipped": true
+  },
+  {
+   "old": "00-通用工具/onescience-installer",
+   "dest": "00-通用工具/云端计算/references/onescience-installer",
+   "skipped": true
+  },
+  {
+   "old": "00-通用工具/onescience-runsite",
+   "dest": "00-通用工具/云端计算/references/onescience-runsite",
+   "skipped": true
+  },
+  {
+   "old": "00-通用工具/onescience-runtime",
+   "dest": "00-通用工具/云端计算/references/onescience-runtime",
+   "skipped": true
+  },
+  {
+   "old": "00-通用工具/超算平台助手",
+   "dest": "00-通用工具/云端计算/references/超算平台助手",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/云端GPU执行",
+   "dest": "00-通用工具/云端计算/references/云端GPU执行",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/远程计算作业",
+   "dest": "00-通用工具/云端计算/references/远程计算作业",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/资源规划",
+   "dest": "00-通用工具/云端计算/references/资源规划",
+   "skipped": true
+  }
+ ],
+ "00-通用工具/大文件安全读取": [
+  {
+   "old": "04-实验执行/大文件安全读取",
+   "dest": "00-通用工具/大文件安全读取/references/大文件安全读取",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-data": [
+  {
+   "old": "08-经济实证/econ-filter-subproblems",
+   "dest": "08-经济实证/econ-data/references/econ-filter-subproblems",
+   "skipped": true
+  },
+  {
+   "old": "08-经济实证/econ-data-fill",
+   "dest": "08-经济实证/econ-data/references/econ-data-fill",
+   "skipped": true
+  },
+  {
+   "old": "08-经济实证/econ-data-profile",
+   "dest": "08-经济实证/econ-data/references/econ-data-profile",
+   "skipped": true
+  },
+  {
+   "old": "03-数据工程/onescience-data-profile",
+   "dest": "08-经济实证/econ-data/references/onescience-data-profile",
+   "skipped": true
+  },
+  {
+   "old": "03-数据工程/onescience-dataset-builder",
+   "dest": "08-经济实证/econ-data/references/onescience-dataset-builder",
+   "skipped": true
+  },
+  {
+   "old": "03-数据工程/onescience-data-analyzer",
+   "dest": "08-经济实证/econ-data/references/onescience-data-analyzer",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-decompose": [
+  {
+   "old": "08-经济实证/econ-decompose-question",
+   "dest": "08-经济实证/econ-decompose/references/econ-decompose-question",
+   "skipped": true
+  },
+  {
+   "old": "08-经济实证/econ-literature",
+   "dest": "08-经济实证/econ-decompose/references/econ-literature",
+   "skipped": true
+  },
+  {
+   "old": "01-文献调研/文献收集",
+   "dest": "08-经济实证/econ-decompose/references/文献收集",
+   "skipped": true
+  },
+  {
+   "old": "01-文献调研/文献筛选",
+   "dest": "08-经济实证/econ-decompose/references/文献筛选",
+   "skipped": true
+  },
+  {
+   "old": "01-文献调研/文献检索方法",
+   "dest": "08-经济实证/econ-decompose/references/文献检索方法",
+   "skipped": true
+  },
+  {
+   "old": "01-文献调研/引用验证",
+   "dest": "08-经济实证/econ-decompose/references/引用验证",
+   "skipped": true
+  },
+  {
+   "old": "03-数据工程/知识抽取",
+   "dest": "08-经济实证/econ-decompose/references/知识抽取",
+   "skipped": true
+  },
+  {
+   "old": "03-数据工程/onescience-paper-repro",
+   "dest": "08-经济实证/econ-decompose/references/onescience-paper-repro",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-planner": [
+  {
+   "old": "02-假设设计/研究范围界定",
+   "dest": "08-经济实证/econ-planner/references/研究范围界定",
+   "skipped": true
+  },
+  {
+   "old": "02-假设设计/假设生成",
+   "dest": "08-经济实证/econ-planner/references/假设生成",
+   "skipped": true
+  },
+  {
+   "old": "02-假设设计/假设生成方法",
+   "dest": "08-经济实证/econ-planner/references/假设生成方法",
+   "skipped": true
+  },
+  {
+   "old": "02-假设设计/研究决策",
+   "dest": "08-经济实证/econ-planner/references/研究决策",
+   "skipped": true
+  },
+  {
+   "old": "01-文献调研/知识综合",
+   "dest": "08-经济实证/econ-planner/references/知识综合",
+   "skipped": true
+  },
+  {
+   "old": "01-文献调研/文献策略",
+   "dest": "08-经济实证/econ-planner/references/文献策略",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-resources": [
+  {
+   "old": "00-通用工具/onescience-primitives",
+   "dest": "08-经济实证/econ-resources/references/onescience-primitives",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-review": [
+  {
+   "old": "08-经济实证/hypothesis-review",
+   "dest": "08-经济实证/econ-review/references/hypothesis-review",
+   "skipped": true
+  },
+  {
+   "old": "08-经济实证/econ-stat-review",
+   "dest": "08-经济实证/econ-review/references/econ-stat-review",
+   "skipped": true
+  },
+  {
+   "old": "05-分析验证/统计检验报告",
+   "dest": "08-经济实证/econ-review/references/统计检验报告",
+   "skipped": true
+  },
+  {
+   "old": "05-分析验证/同行评审",
+   "dest": "08-经济实证/econ-review/references/同行评审",
+   "skipped": true
+  },
+  {
+   "old": "05-分析验证/质量把关",
+   "dest": "08-经济实证/econ-review/references/质量把关",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-run": [
+  {
+   "old": "08-经济实证/econ-run-experiment",
+   "dest": "08-经济实证/econ-run/references/econ-run-experiment",
+   "skipped": true
+  },
+  {
+   "old": "02-假设设计/实验方案设计",
+   "dest": "08-经济实证/econ-run/references/实验方案设计",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/代码生成",
+   "dest": "08-经济实证/econ-run/references/代码生成",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/实验执行",
+   "dest": "08-经济实证/econ-run/references/实验执行",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/迭代优化",
+   "dest": "08-经济实证/econ-run/references/迭代优化",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/领域正确性检查",
+   "dest": "08-经济实证/econ-run/references/领域正确性检查",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/onescience-coder",
+   "dest": "08-经济实证/econ-run/references/onescience-coder",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/onescience-infer",
+   "dest": "08-经济实证/econ-run/references/onescience-infer",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/onescience-trainer",
+   "dest": "08-经济实证/econ-run/references/onescience-trainer",
+   "skipped": true
+  },
+  {
+   "old": "04-实验执行/onescience-parallel",
+   "dest": "08-经济实证/econ-run/references/onescience-parallel",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-synthesis": [
+  {
+   "old": "08-经济实证/econ-synthesize-results",
+   "dest": "08-经济实证/econ-synthesis/references/econ-synthesize-results",
+   "skipped": true
+  },
+  {
+   "old": "05-分析验证/结果分析",
+   "dest": "08-经济实证/econ-synthesis/references/结果分析",
+   "skipped": true
+  },
+  {
+   "old": "05-分析验证/统计完整性检查",
+   "dest": "08-经济实证/econ-synthesis/references/统计完整性检查",
+   "skipped": true
+  },
+  {
+   "old": "05-分析验证/科学图表设计",
+   "dest": "08-经济实证/econ-synthesis/references/科学图表设计",
+   "skipped": true
+  },
+  {
+   "old": "05-分析验证/可追溯性审计",
+   "dest": "08-经济实证/econ-synthesis/references/可追溯性审计",
+   "skipped": true
+  }
+ ],
+ "08-经济实证/econ-write": [
+  {
+   "old": "08-经济实证/econ-write-paper",
+   "dest": "08-经济实证/econ-write/references/econ-write-paper",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/论文结构规划",
+   "dest": "08-经济实证/econ-write/references/论文结构规划",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/论文初稿",
+   "dest": "08-经济实证/econ-write/references/论文初稿",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/论文修订",
+   "dest": "08-经济实证/econ-write/references/论文修订",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/学术论文写作",
+   "dest": "08-经济实证/econ-write/references/学术论文写作",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/发表级图表规范",
+   "dest": "08-经济实证/econ-write/references/发表级图表规范",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/知识存档",
+   "dest": "08-经济实证/econ-write/references/知识存档",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/导出发布",
+   "dest": "08-经济实证/econ-write/references/导出发布",
+   "skipped": true
+  },
+  {
+   "old": "06-写作发表/onescience-modelscope-publish",
+   "dest": "08-经济实证/econ-write/references/onescience-modelscope-publish",
+   "skipped": true
+  }
+ ]
+}

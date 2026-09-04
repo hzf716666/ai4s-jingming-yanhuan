@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>景明研环 · 科技园区创新数据痛点与总体架构</title>
+<style>
+  :root{
+    --bg:#0b1220; --bg2:#0e1830; --panel:rgba(255,255,255,.045);
+    --line:rgba(148,163,184,.18); --txt:#e5eefc; --dim:#93a4bd; --dim2:#6b7d99;
+    --cyan:#38bdf8; --green:#34d399; --amber:#fbbf24; --red:#f87171; --violet:#a78bfa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(56,189,248,.10), transparent 60%),
+      radial-gradient(900px 500px at 90% 110%, rgba(52,211,153,.08), transparent 60%),
+      var(--bg);
+    color:var(--txt);
+    font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",system-ui,sans-serif;
+    overflow:hidden;
+  }
+  .slide{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;pointer-events:none;padding:56px 40px 76px;
+  }
+  .slide.active{opacity:1;visibility:visible;pointer-events:auto}
+  .wrap{width:min(1150px,94vw);max-height:100%}
+  .r{opacity:0;transform:translateY(26px)}
+  .slide.active .r{animation:rise .65s cubic-bezier(.2,.7,.3,1) both;animation-delay:calc(.12s + var(--i,0)*.12s)}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .kicker{font-size:14px;letter-spacing:.28em;color:var(--cyan);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:clamp(2rem,4.6vw,3.3rem);line-height:1.22;font-weight:800}
+  h2{font-size:clamp(1.35rem,2.6vw,2rem);font-weight:800}
+  .sub{color:var(--dim);margin-top:14px;font-size:clamp(.95rem,1.4vw,1.1rem);line-height:1.8}
+  .hint{color:var(--dim2);font-size:13px;margin-top:26px;letter-spacing:.1em}
+
+  .chips{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+  .chip{padding:9px 18px;border:1px solid var(--line);border-radius:999px;background:var(--panel);
+    color:var(--txt);font-size:14px;letter-spacing:.05em}
+  .chip.gt{border-color:rgba(52,211,153,.5);color:#a7f3d0;background:rgba(52,211,153,.10)}
+  .chip.hl{border-color:rgba(56,189,248,.55);color:#bae6fd;background:rgba(56,189,248,.12)}
+
+  .cards{display:grid;gap:16px;margin-top:24px}
+  .c3{grid-template-columns:repeat(3,1fr)} .c4{grid-template-columns:repeat(4,1fr)} .c2{grid-template-columns:repeat(2,1fr)}
+  .card{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:20px 20px 18px;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--c,var(--cyan)),transparent)}
+  .card h3{font-size:16.5px;margin-bottom:8px}
+  .card p{color:var(--dim);font-size:13px;line-height:1.75}
+  .card .num{position:absolute;top:14px;right:16px;font-size:26px;font-weight:800;color:rgba(56,189,248,.22)}
+
+  /* 痛点-解法 对照 */
+  .duo{display:grid;grid-template-columns:1fr 56px 1fr;gap:0;align-items:stretch;margin-top:22px}
+  .side{border-radius:16px;padding:22px;border:1px solid rgba(148,163,184,.2)}
+  .side.s-red{background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.35)}
+  .side.s-green{background:rgba(52,211,153,.07);border-color:rgba(52,211,153,.35)}
+  .side h3{font-size:17px;margin-bottom:12px}
+  .side.s-red h3{color:#fca5a5}
+  .side.s-green h3{color:#6ee7b7}
+  .side ul{list-style:none}
+  .side li{position:relative;padding:7px 0 7px 20px;font-size:13.5px;color:var(--dim);line-height:1.65}
+  .side.s-red li::before{content:"✕";position:absolute;left:0;color:var(--red);font-weight:800}
+  .side.s-green li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+  .side li b{color:var(--txt)}
+  .side .nums{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(148,163,184,.25);font-size:13.5px;color:#a7f3d0;line-height:1.8}
+  .side.s-red .nums{color:#fca5a5}
+  .duoarrow{display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--cyan);animation:nudge 1.1s ease-in-out infinite alternate}
+  @keyframes nudge{from{transform:translateX(-4px);opacity:.55}to{transform:translateX(4px);opacity:1}}
+  .punch{margin-top:20px;font-size:clamp(1rem,1.6vw,1.15rem);color:#f1f5fb;line-height:1.8}
+  .punch b{color:var(--amber)}
+
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;margin-top:24px}
+  .fbox{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:14px;
+    padding:15px 10px;text-align:center}
+  .fbox b{display:block;font-size:15px;margin-bottom:4px}
+  .fbox span{font-size:12px;color:var(--dim);display:block;line-height:1.5}
+  .farrow{flex:0 0 26px;color:var(--cyan);font-size:18px;text-align:center;animation:nudge 1.1s ease-in-out infinite alternate}
+  .fbox.hot{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.08)}
+  .fbox.gogreen{border-color:rgba(52,211,153,.55);background:rgba(52,211,153,.08)}
+
+  .checks{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+  .chk{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;
+    background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);font-size:13.5px}
+  .chk::before{content:"✓";color:var(--green);font-weight:800}
+
+  .tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+  .tier{border-radius:14px;padding:14px;border:1px solid var(--line);background:var(--panel)}
+  .tier .t1{font-size:12.5px;color:var(--dim);letter-spacing:.05em}
+  .tier b{display:block;font-size:15px;margin:4px 0 6px}
+  .tier .tt{font-size:12px;line-height:1.6;color:var(--dim)}
+  .strength{font-size:11px;border-radius:999px;padding:2px 8px;float:right}
+  .s-strong{background:rgba(52,211,153,.15);color:#6ee7b7}
+  .s-weak{background:rgba(148,163,184,.15);color:#a5b4cd}
+
+  .tl{position:relative;padding-left:46px;max-width:780px;margin-top:10px}
+  .tl-line{position:absolute;left:14px;top:8px;bottom:8px;width:3px;border-radius:3px;
+    background:linear-gradient(180deg,var(--cyan),var(--violet),var(--green));
+    transform-origin:top;transform:scaleY(0);transition:transform 1.6s .3s cubic-bezier(.2,.7,.3,1)}
+  .slide.active .tl-line{transform:scaleY(1)}
+  .tl-node{position:relative;padding:0 0 28px 22px}
+  .tl-node::before{content:"";position:absolute;left:-44px;top:3px;width:14px;height:14px;border-radius:50%;
+    background:var(--bg);border:3px solid var(--c,var(--cyan))}
+  .tl-node b{font-size:16px}
+  .tl-node p{color:var(--dim);font-size:13px;margin-top:4px;line-height:1.7}
+
+  .big-num{font-size:clamp(1.8rem,3.4vw,2.6rem);font-weight:800;color:var(--cyan);letter-spacing:.02em}
+  .big-num.g{color:var(--green)} .big-num.a{color:var(--amber)} .big-num.v{color:var(--violet)}
+
+  .q{display:inline-flex;width:34px;height:34px;border-radius:10px;align-items:center;justify-content:center;
+    font-weight:800;font-size:16px;margin-bottom:10px;background:rgba(248,113,113,.14);color:#fca5a5;border:1px solid rgba(248,113,113,.35)}
+  .q.g{background:rgba(52,211,153,.13);color:#6ee7b7;border-color:rgba(52,211,153,.35)}
+  .q.c{background:rgba(56,189,248,.13);color:#7dd3fc;border-color:rgba(56,189,248,.35)}
+  .q.v{background:rgba(167,139,250,.13);color:#c4b5fd;border-color:rgba(167,139,250,.35)}
+
+  .quote{border-left:3px solid var(--amber);background:var(--panel);border-radius:0 12px 12px 0;
+    padding:13px 18px;margin-top:12px;color:#fde68a;font-size:14.5px;line-height:1.7}
+  .quote small{display:block;color:var(--dim2);margin-top:5px;font-size:12px}
+
+  #nav{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:7px;z-index:50}
+  .dot{width:8px;height:8px;border-radius:50%;background:rgba(148,163,184,.35);cursor:pointer;transition:.25s;border:0}
+  .dot.on{background:var(--cyan);transform:scale(1.35)}
+  #counter{position:fixed;right:22px;bottom:14px;font-size:12.5px;color:var(--dim2);letter-spacing:.12em;z-index:50}
+  #bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--green));width:0;z-index:60;transition:width .4s ease;box-shadow:0 0 12px rgba(56,189,248,.6)}
+  #navbtn{position:fixed;top:50%;width:44px;height:70px;transform:translateY(-50%);
+    background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--dim);font-size:22px;
+    border-radius:10px;cursor:pointer;z-index:50;transition:.2s}
+  #navbtn:hover{color:var(--txt);border-color:rgba(56,189,248,.5)}
+  #prev{left:14px} #next{right:14px}
+
+  .foot{margin-top:24px;color:var(--dim2);font-size:12.5px;line-height:1.8}
+  .center{text-align:center}
+  @media (max-width:900px){
+    .c3,.c4{grid-template-columns:1fr 1fr}
+    .tiers{grid-template-columns:1fr 1fr}
+    .flow{flex-wrap:wrap}
+    .duo{grid-template-columns:1fr}
+    .duoarrow{transform:rotate(90deg);padding:6px 0}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<button id="prev" onclick="go(cur-1)">‹</button>
+<button id="next" onclick="go(cur+1)">›</button>
+
+<!-- 1 封面 -->
+<section class="slide">
+  <div class="wrap center">
+    <div class="kicker r" style="--i:0">景明研环 · 小而美：产业创新专属图谱驱动的研究基础设施</div>
+    <h1 class="r" style="--i:1">一个专属图谱，三个专属机制<br>专为产业创新研究而生的景明研环</h1>
+    <p class="sub r" style="--i:2">小而美的意思是：<b style="color:var(--amber)">每一片瓦都是为产业创新研究烧的</b>——构建一个专属图谱作为「大脑」，<br>围绕它长出三套专属机制，其他能力都为它服务。</p>
+    <div class="chips center" style="justify-content:center">
+      <span class="chip r" style="--i:3">本地优先</span>
+      <span class="chip r" style="--i:4">模型无关</span>
+      <span class="chip r" style="--i:5">可审计闭环</span>
+    </div>
+    <p class="hint r" style="--i:6">按 ← → 键翻页</p>
+  </div>
+</section>
+
+<!-- 2 三痛三解总览 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">总览 · 一个图谱 + 三个机制</div>
+    <h2 class="r" style="--i:1">三个专属亮点 · 全为产业创新研究而建</h2>
+    <p class="sub r" style="--i:2" style="margin-top:6px">小而美的意思是：<b style="color:var(--amber)">每一项都是项目真正做出来的、且专属到产业创新研究这一件事</b>——其它领域用不上、不该用、不能用。</p>
+    <div class="duo r" style="--i:3">
+      <div class="side s-green" style="background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.4)">
+        <h3 style="color:#c4b5fd"><span class="q v">★</span><b>亮点 1：专属产业创新研究知识图谱</b></h3>
+        <p style="color:var(--txt)"><b>7 类节点</b>（产业 / 园区 / 指标 / 数据文件 / 政策 / 文献 / 集群）· <b>592 节点 / 3625 边</b>· <b>12 类信号</b>· <b>HLER 8 字段 schema</b>——按产业创新研究的语义直接构建，<b>不是通用图谱 + 领域字典</b>。火炬统计覆盖园区、OECD 跨国对照、HLER 文献锚共同构成。</p>
+        <div class="nums" style="color:#c4b5fd">FKG 双集群融合 · Region 329 / Indicator 141</div>
+      </div>
+    </div>
+    <div class="duo r" style="--i:4;margin-top:14px">
+      <div class="side s-red">
+        <h3><span class="q">②</span>亮点 2：候选假设评审漏斗 · 把想法挡在开工前</h3>
+        <ul>
+          <li>从图谱拿到候选假设之后，<b>先评审再开工</b>——对应方向五问 Q4 识别困难、Q5 机制黑箱</li>
+          <li>四档评审：<b>exceptional → 顶级 / strong → 强顶 / fair → 中档增量 / limited → 回报不确定</b>，映射期刊档位（AMJ/AMR/ASQ 级……）</li>
+          <li>多模型并行打分 + 概率平均 + <b>香农熵置信度</b>（评委越一致，分越可信）</li>
+          <li>BGE-M3 本地向量库学用户偏好——否决过的假设下次不再生成</li>
+        </ul>
+        <div class="nums">对应痛点 · Q4 识别困难 · Q5 机制黑箱</div>
+      </div>
+      <div class="duoarrow">→</div>
+      <div class="side s-green">
+        <h3><span class="q g">✓</span>专属评审引擎 · 期刊档位映射 · 文献锚定</h3>
+        <ul>
+          <li><b>Pitch → 多模型并行 → 概率平均 → 熵置信度 → 期刊档位 → 文献锚定</b></li>
+          <li>评审启动时拉影响力分写入任务书"影响力量化"小节</li>
+          <li>评审通过才进项目，否则<b>连工作台都不开</b>——省下 1 GPU 小时 + 多轮 agent 会话</li>
+        </ul>
+        <div class="nums">亮点 · 四档徽章 + 概率条 + 熵 + Top 期刊映射 + 用户偏好记忆</div>
+      </div>
+    </div>
+    <div class="duo r" style="--i:5;margin-top:14px">
+      <div class="side s-red">
+        <h3><span class="q">③</span>亮点 3：研究项目级「数据快照 + 实验台账」工作台</h3>
+        <ul>
+          <li>评审通过 → <b>建独立项目目录 + 写数据快照</b>（那一瞬间的研究假设、引用的图谱节点、置信度、变量清单全部<b>冻结</b>）</li>
+          <li>七阶段流水线自动跑实验：<b>拆解 → 过滤 → 填补 → 盘点 → 实验 → 写作 → 评审</b></li>
+          <li>每一步落盘到工作台 = <b>一份带时间戳的科研档案</b>，可审计、可回放</li>
+        </ul>
+        <div class="nums">对应痛点 · 历史黑箱 · 三个月就忘当年为什么这么选</div>
+      </div>
+      <div class="duoarrow">→</div>
+      <div class="side s-green">
+        <h3><span class="q g">✓</span>项目工作台 · 图谱假设 → 数据快照 → 实验台账</h3>
+        <ul>
+          <li><b>每个研究都是独立档案</b>：项目目录 / 数据快照 / 七阶段落盘 / 实验台账</li>
+          <li>图谱管<b>「想什么」</b>，工作台管<b>「做出来什么」</b>，中间用<b>数据快照</b>无缝衔接</li>
+          <li>区别于"通用记事本 + LLM 对话"——每次研究都是<b>可被引用的科研档案</b></li>
+        </ul>
+        <div class="nums">亮点 · 项目目录 · 数据快照 · 七阶段落盘 · 实验台账</div>
+      </div>
+    </div>
+    <p class="foot r" style="--i:6">小而美的本意：图谱是「专属大脑」，评审漏斗是「专属闸门」，工作台是「专属档案室」——图谱管想什么、评审管该不该做、工作台管做出来什么。</p>
+        <h3><span class="q g">✓</span>证据约束的假设生成 · 四步锚定</h3>
+        <ul>
+          <li>图谱信号聚合 → <b>硬约束一票否决</b> → 向量检索</li>
+          <li><b>多轮评审</b>：置信度 / 新颖性 / 机制 / 识别四轴</li>
+          <li>候选假设档案：假设 + 数据 + 置信度 + 文献锚</li>
+        </ul>
+        <div class="nums">亮点 · 图谱 592 节点 / 3625 边 · 四轴评审引擎（BGE 校准）</div>
+      </div>
+    </div>
+    <div class="duo r" style="--i:5;margin-top:14px">
+      <div class="side s-red">
+        <h3><span class="q">③</span>成果不可预知</h3>
+        <ul>
+          <li><b>投稿黑箱</b>：等半年，被拒的理由靠猜</li>
+          <li><b>偏差不可自查</b>：多重检验下的巧合，审稿人一问就慌</li>
+          <li><b>无记忆</b>：上一轮为什么这么选，三个月就忘；复现断裂</li>
+        </ul>
+        <div class="nums">损失 · 价值不可预知 · 漏洞不可预知 · 历史不可追溯</div>
+      </div>
+      <div class="duoarrow">→</div>
+      <div class="side s-green">
+        <h3><span class="q g">✓</span>影响力预演 + 偏差自查 + 台账回放</h3>
+        <ul>
+          <li><b>影响力预测</b>：19,970 篇语料 · 500 对验证 · 零样本 · 同年同领域引用分位</li>
+          <li><b>偏差与可复现性说明</b>自动汇总核验；评审 / 统计硬核查</li>
+          <li><b>结果与置信度回流</b>驱动下一轮假设；运行台账回放</li>
+        </ul>
+        <div class="nums">亮点 · 把「后验」变成「预演」——投稿前先知道值多少分、哪里会被问</div>
+      </div>
+    </div>
+    <p class="foot r" style="--i:5">经济学复现讨论（Hamermesh 2007 · Vilhuber 2020 等）的共识：可复现性不是方法论问题，是数据链路的治理问题。</p>
+  </div>
+</section>
+
+<!-- 2b 方向性问题 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">研究问题先行</div>
+    <h2 class="r" style="--i:1">科技园区创新研究：这个方向，先看五个真问题</h2>
+    <div class="cards c3" style="gap:14px">
+      <div class="card r" style="--i:2;--c:var(--red)"><h3>Q1 单元错配</h3><p>园区跨行政区划——火炬「园区口径」与研究要的「城市/区县口径」对不上，<b>用城市数据代理园区</b>成了惯例（Hu 2007）</p></div>
+      <div class="card r" style="--i:3;--c:var(--red)"><h3>Q2 面板断档</h3><p>R&amp;D→专利滞后 2–3 年，要 5–8 年连续面板；火炬序列截面有限——<b>研究只能停在静态横截面</b></p></div>
+      <div class="card r" style="--i:4;--c:var(--red)"><h3>Q3 测度存疑</h3><p>专利量≠创新质量：补贴催生<b>申请虚增、质量下滑</b>（Dang &amp; Motohashi 2015）；专利只是中间品（Griliches 1979）——效率值被吹高</p></div>
+      <div class="card r" style="--i:5;--c:var(--red)"><h3>Q4 识别困难</h3><p>园区是<b>择优认定、非随机设立</b>——政策效应评估缺外生变异，工具变量在哪？（Wang 2013）</p></div>
+      <div class="card r" style="--i:6;--c:var(--red)"><h3>Q5 机制黑箱</h3><p>效率差异归因不清——人力资本 / 科技金融 / 制度环境，<b>哪一个是主导？</b>多维数据缺失</p></div>
+      <div class="card r" style="--i:7;--c:var(--cyan)"><h3>五问的根</h3><p>不是缺方法、缺工具，而是<b>研究单元（园区）的数据资产不可得、不可信</b>——所以项目先做数据底座，再谈识别与机制</p></div>
+    </div>
+    <p class="punch r" style="--i:8">立论顺序：<b>先有方向的问题，再有项目</b>——这个领域不缺计量方法，缺的是能让方法跑起来的「米」。</p>
+  </div>
+</section>
+
+<!-- 3 痛点1 → 解法1 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制一 · 数据深挖</div>
+    <h2 class="r" style="--i:1">数据进得来吗？</h2>
+    <div class="duo r" style="--i:2">
+      <div class="side s-red">
+        <h3><span class="q">✕</span>痛点 · 数据在搬不动的地方</h3>
+        <ul>
+          <li>统计年鉴大多是<b>扫描版</b>——看得见，转不出</li>
+          <li>公报的五年走势只给<b>一张图</b>，没有表</li>
+          <li>多级合并表头，少解析一层就取 <b>0 行</b></li>
+          <li>微观数据<b>申请制</b>：批了，格式还得再洗</li>
+        </ul>
+        <div class="nums">损失 · 时间不可追回</div>
+      </div>
+      <div class="duoarrow">→</div>
+      <div class="side s-green">
+        <h3><span class="q g">✓</span>解法 · 五管线解析</h3>
+        <ul>
+          <li><b>xlsx 多级表头 · PDF · 扫描 OCR · 图表逆向 · Word/PPT</b> 全通</li>
+          <li>字段对齐（同义词映射）· 单位对齐（换算）· 表头重解析</li>
+          <li>解析失败<b>自动切换通道</b>，schema 白名单防造数</li>
+        </ul>
+        <div class="nums">亮点 · 基准 1.0/1.0/1.0（40 条人工真值）· 真实缺陷 0 → 1954 条 · 图表取数 0.51% / 0.06%</div>
+      </div>
+    </div>
+    <p class="punch r" style="--i:3">最痛的不是「要花一周抄表」——是<b>你花了一周，只得到了 Excel，研究还没开始</b>。</p>
+  </div>
+</section>
+
+<!-- 4a 产业创新要哪些数据 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制一 · 深挖之一</div>
+    <h2 class="r" style="--i:1">科技园区创新研究的数据底座：四组，缺一块就断</h2>
+    <div class="cards c4" style="gap:14px">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><h3>① 园区创新投入</h3><p>园区 R&D 经费与人员 · 研发强度 · 科技经费筹集（火炬统计/公报）</p></div>
+      <div class="card r" style="--i:3;--c:var(--green)"><h3>② 园区创新产出</h3><p>专利（申请/授权双口径）· 技术合同成交额 · 高企营收与新产品收入</p></div>
+      <div class="card r" style="--i:4;--c:var(--violet)"><h3>③ 园区名录与载体</h3><p>高新区/开发区<b>名录</b>（时间、面积、企业数、主导产业）· 集群名单 · 孵化器</p></div>
+      <div class="card r" style="--i:5;--c:var(--amber)"><h3>④ 园区创新生态</h3><p>科技财政 · 政策工具 · 风投/科技贷款 · 人才与产业配套</p></div>
+    </div>
+    <p class="punch r" style="--i:6">它们没有一样是「现成的一列数字」——散落在<b>火炬统计、年鉴印刷件、公报图表和各园区名录</b>里；而园区知识生产函数（R&D→专利，滞后 2–3 年）、园区效率 DEA/SFA、集群空间计量，<b>都要同口径面板，缺一块就断</b>。</p>
+  </div>
+</section>
+
+<!-- 4b 四层壁垒 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制一 · 深挖之二</div>
+    <h2 class="r" style="--i:1">为什么进不来？四层壁垒，层层静默</h2>
+    <div class="cards c2" style="gap:14px">
+      <div class="card r" style="--i:2;--c:var(--red)"><h3>① 形态层</h3><p>年鉴=扫描件 · 公报指标只有<b>一张图</b> · 附件 Word/PPT 混排 —— 看得见，转不出</p></div>
+      <div class="card r" style="--i:3;--c:var(--red)"><h3>② 结构层</h3><p>多级/双层表头、跨页续表、单元格合并——<b>少解析一层就取 0 行</b>（真实事故：0 → 1954 条）</p></div>
+      <div class="card r" style="--i:4;--c:var(--red)"><h3>③ 制度层</h3><p><b>科技统计双轨制</b>（火炬中心 vs 统计局，口径、对象、频率不同）· 微观数据申请保密 · 数据滞后 1–2 年</p></div>
+      <div class="card r" style="--i:5;--c:var(--red)"><h3>④ 质量与计算层</h3><p>口径历史修订 · 序列断档（火炬仅两卷）· 园区名不标准（东湖高新区=光谷）· 要<b>逆向计算</b>：增速反推、占比×总量、单位换算</p></div>
+    </div>
+    <p class="punch r" style="--i:6">「进不来」不是技术问题——是<b>形态、结构、制度、质量</b>四层依次叠加；每一层都会<b>静默地</b>污染你的面板——跑完回归，你才知道它脏在哪。</p>
+  </div>
+</section>
+
+<!-- 4c 七层管线 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制一 · 深挖之三</div>
+    <h2 class="r" style="--i:1">怎么解析？七层管线：把「读到的字」变成「可信的事实」</h2>
+    <div class="cards c2" style="gap:12px">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><h3>① 结构感知</h3><p>文档路由 docling→mineru→vlm_ocr 自动切换 · 双层表头/跨页续表<b>重建</b> · 解析失败自动换通道</p></div>
+      <div class="card r" style="--i:3;--c:var(--cyan)"><h3>② 视觉取数</h3><p>图表逆向：VLM 整页取数 · temperature=0 · 低饱和度线图「非白像素占比」兜底 · 低置信进复核队列</p></div>
+      <div class="card r" style="--i:4;--c:var(--cyan)"><h3>③ OCR 纠错</h3><p>单字错被字段对齐弥合：规则别名 + 模糊匹配——「人统企业数→入统企业数」</p></div>
+      <div class="card r" style="--i:5;--c:var(--cyan)"><h3>④ 语义对齐</h3><p>schema 白名单<b>防造数</b> · 指标别名字典 · 单位换算（亿元/美元/PPP）· 园区名中英混排归一</p></div>
+      <div class="card r" style="--i:6;--c:var(--violet)"><h3>⑤ 量化逆向</h3><p>增速反推绝对量 · 占比×总量恢复 · <b>可加总性钩稽</b>：子单元之和≈总量，超限即标记</p></div>
+      <div class="card r" style="--i:7;--c:var(--green)"><h3>⑥ 证据裁决</h3><p>四档证据链显式分档 → 三级质检（异常/口径交叉/结构突变/可加总性）· 低置信<b>人工复核</b></p></div>
+    </div>
+    <div class="chips r" style="--i:8">
+      <span class="chip hl">⑦ 输出落地 · 七元组长表 + 面板宽表 + H3 时空立方体 + 数据字典 + JSONL 溯源链</span>
+    </div>
+    <p class="punch r" style="--i:9">每一层都不「相信」上一层——最终每个数字都能回答：<b>从哪来（来源页码）· 什么口径（标注）· 多可信（证据档位）</b>。基准：1.0/1.0/1.0（40 条 GT）· 图表 0.51%/0.06% · 0 → 1954。</p>
+  </div>
+</section>
+
+<!-- 4d 置信度评价 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制一 · 深挖之四</div>
+    <h2 class="r" style="--i:1">数据置信度怎么评？四个维度，合成一条「数据履历」</h2>
+    <div class="cards c4" style="gap:14px">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><h3>来源维度</h3><p>权威性与时效性：年鉴 &gt; 公报 &gt; 第三方数据库；发布年份越新越加分</p></div>
+      <div class="card r" style="--i:3;--c:var(--green)"><h3>一致性维度</h3><p>多源冲突度——四档证据链档位：一致强 / 取主流 / 不融合 / 单源弱</p></div>
+      <div class="card r" style="--i:4;--c:var(--amber)"><h3>解析通道维度</h3><p>文本层 &gt; 结构化表格 &gt; OCR &gt; 图表逆向；单字错风险单独记档</p></div>
+      <div class="card r" style="--i:5;--c:var(--violet)"><h3>口径完整性</h3><p>单位 / 数据年份 / 口径注解 / 可加总性钩稽是否通过——没通过就扣分</p></div>
+    </div>
+    <div class="flow r" style="--i:6">
+      <div class="fbox hot"><b>四维合成</b><span>逐条归因：哪个维度拉了后腿</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>三级质检</b><span>多维异常 · 口径交叉 · 结构突变 · 可加总性</span></div><div class="farrow">→</div>
+      <div class="fbox gogreen"><b>置信度四档</b><span>高 / 中 / 低 / 待复核</span></div>
+    </div>
+    <p class="punch r" style="--i:7">低置信不丢弃——进<b>人工复核队列</b>，或<b>带标注降级使用</b>；置信度随数据一路流转，每条都能回答「它为什么是这个置信度」。<b>口径注解 + as-of 数据年份</b>，让"口径交代清楚"变成默认能力。</p>
+  </div>
+</section>
+
+<!-- 环节②深挖 假设生成（页 5a/5b/5c 已含，不再单独对照页） -->
+
+<!-- 5a 假设的需求 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制二 · 深挖之一</div>
+    <h2 class="r" style="--i:1">科技园区创新研究的五个核心命题</h2>
+    <div class="cards c3" style="gap:14px">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><h3>① 园区知识生产函数</h3><p>园区 R&D → 专利 → 新产品：<b>知识生产函数</b>（滞后 2–3 年）——投多少，产出多少</p></div>
+      <div class="card r" style="--i:3;--c:var(--green)"><h3>② 园区创新效率</h3><p>哪些园区<b>投入不少、产出不高</b>——DEA/SFA 效率分解，找短板</p></div>
+      <div class="card r" style="--i:4;--c:var(--violet)"><h3>③ 园区集聚与溢出</h3><p>园区内企业密度、邻近高校院所 → <b>专利溢出</b>（空间权重矩阵）</p></div>
+      <div class="card r" style="--i:5;--c:var(--amber)"><h3>④ 高新区政策效应</h3><p>高新区认定、税收优惠、科技补贴 → R&D 与专利（<b>DID / 工具变量</b>）</p></div>
+      <div class="card r" style="--i:6;--c:var(--red)"><h3>⑤ 园区网络与异质</h3><p>园区协同网络位置、主体异质性 → 创新绩效分化</p></div>
+      <div class="card r" style="--i:7;--c:var(--cyan)"><h3>每一类都要先过四关</h3><p><b>变量可测 · 数据可得 · 识别可行 · 结论可复制</b>——缺一关，假设就只是感慨</p></div>
+    </div>
+    <p class="punch r" style="--i:8">产业创新研究不缺研究方向，缺的是「<b>变成可检验命题</b>」那一跳——跳过去是论文，跳不过去是感慨。</p>
+  </div>
+</section>
+
+<!-- 5b 假设的壁垒 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制二 · 深挖之二</div>
+    <h2 class="r" style="--i:1">假设为什么出不来？四道墙</h2>
+    <div class="cards c2" style="gap:14px">
+      <div class="card r" style="--i:2;--c:var(--red)"><h3>① 文献墙 · 新颖性不可判</h3><p>海量文献堆积，谁做过、做到什么程度——只剩一句「我感觉好像有人写过」，<b>重复劳动花一年</b></p></div>
+      <div class="card r" style="--i:3;--c:var(--red)"><h3>② 数据墙 · 变量与数据隔一层</h3><p>想研究人力资本流动，数据表里根本没这个变量——<b>想到的验证不了</b>，方向再好也是空的</p></div>
+      <div class="card r" style="--i:4;--c:var(--red)"><h3>③ 识别墙 · 内生性绕不过</h3><p>X 影响 Y 还是 Y 影响 X？工具变量在哪？——只能口头上喊「做了稳健性检验」</p></div>
+      <div class="card r" style="--i:5;--c:var(--red)"><h3>④ 主观墙 · 评审全凭感觉</h3><p>几个审稿人几个意见，「行不行」靠运气——<b>假设质量没有锚</b>，说服靠口才</p></div>
+    </div>
+    <p class="punch r" style="--i:6">真实瓶颈不是「想不出」，是<b>没法知道想得对不对</b>——没有数据可行域检查、没有新颖性参照、没有识别策略模板，假设的出生就是盲盒。</p>
+  </div>
+</section>
+
+<!-- 5c 假设的方案 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制二 · 深挖之三</div>
+    <h2 class="r" style="--i:1">假设生成怎么做？四步证据锚定</h2>
+    <div class="cards c2" style="gap:12px">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><h3>① 图谱找路 · 破数据墙</h3><p>指标 / 数据文件 / 集群连成网（592 节点 / 3625 边）——「哪些变量组合<b>有真数据支撑</b>」图谱先答</p></div>
+      <div class="card r" style="--i:3;--c:var(--amber)"><h3>② 硬约束否决 · 破可行墙</h3><p>样本不足 / 数据缺失 / 无法验证 / 文件冲突 / 与对象不符——<b>一票否决</b>，杜绝灵感型假设</p></div>
+      <div class="card r" style="--i:4;--c:var(--violet)"><h3>③ 证据召回 · 破文献墙</h3><p>向量语义检索（BGE-M3）召回文献与数据证据——先看<b>是否被做过</b>、证据站在哪边</p></div>
+      <div class="card r" style="--i:5;--c:var(--green)"><h3>④ 多轮评审 + 影响力预判 · 破主观墙</h3><p>评审引擎（置信度/新颖性/机制/识别）+ 影响力预测（19,970 篇语料、同领域同年归一化引用分位）——从「我感觉行」到<b>「证据说行」</b></p></div>
+    </div>
+    <div class="chips r" style="--i:6">
+      <span class="chip hl">输出 · 候选假设档案 = 假设 + 数据 + 置信度 + 可复现性检验 + 文献锚 —— 不冒充结论</span>
+    </div>
+    <p class="punch r" style="--i:7">四步，每一步都在回答同一个问题：<b>这个命题，凭什么值得检验？</b>——答案不再是谁的灵感，而是四份可回放的证据。</p>
+  </div>
+</section>
+
+<!-- 6a 成果的需求 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制三 · 深挖之一</div>
+    <h2 class="r" style="--i:1">研究成果端需要什么？四件事，谁都想要</h2>
+    <div class="cards c4">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><h3>① 影响力先知</h3><p>投出去之前，先知道它大概<b>值多少分</b>——同领域同年的引用位置</p></div>
+      <div class="card r" style="--i:3;--c:var(--amber)"><h3>② 偏差自查</h3><p>审稿人会问什么——多重检验、巧合、稳健性，<b>自己先答</b></p></div>
+      <div class="card r" style="--i:4;--c:var(--green)"><h3>③ 过程留痕</h3><p>每个推断可回放——「当年为什么这么选」<b>有记录</b></p></div>
+      <div class="card r" style="--i:5;--c:var(--violet)"><h3>④ 迭代有依据</h3><p>实验结果与置信度<b>回流</b>——下一轮假设不是从零重来</p></div>
+    </div>
+    <p class="punch r" style="--i:6">研究的最后一公里不是投稿，是<b>把「后验」变成「预演」</b>——写论文之前，就知道它会站在哪个句子被引用、哪里会被追问。</p>
+  </div>
+</section>
+
+<!-- 6b 成果的壁垒 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制三 · 深挖之二</div>
+    <h2 class="r" style="--i:1">为什么成果不可预知？三个「黑箱」</h2>
+    <div class="cards c3">
+      <div class="card r" style="--i:2;--c:var(--red)"><h3>① 投稿黑箱</h3><p>一投半年到一年，被拒的理由靠猜——是分量不够，还是没人关心？<b>试错成本以年计</b></p></div>
+      <div class="card r" style="--i:3;--c:var(--red)"><h3>② 偏差黑箱</h3><p>跑出显著性就高兴——多重检验下可能是<b>巧合</b>；审稿人问稳健性，答不出「哪里不稳健」</p></div>
+      <div class="card r" style="--i:4;--c:var(--red)"><h3>③ 历史黑箱</h3><p>上一轮为什么这样选、数据哪里改过——<b>三个月就忘</b>；想复现、想被引用，链条早就断了</p></div>
+    </div>
+    <p class="punch r" style="--i:5">三个黑箱，是审稿与引用体系惩罚最狠的三件事：<b>价值不可预知 · 漏洞不可预知 · 历史不可追溯</b>——而这三种不可预知，恰恰全靠「运气」承担。</p>
+  </div>
+</section>
+
+<!-- 6c 成果的方案 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">机制三 · 深挖之三</div>
+    <h2 class="r" style="--i:1">方案 · 三步闭环：预演 → 自查 → 回放</h2>
+    <div class="cards c3">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><h3>① 影响力预测 · 预演</h3><p>19,970 篇经管语料 · 500 对验证集 · 双通路 0.6/0.4 融合 · <b>同领域同年归一化引用分位</b> · 零样本上线——投稿前先预演出影响力</p></div>
+      <div class="card r" style="--i:3;--c:var(--green)"><h3>② 评审引擎 + 偏差自查</h3><p>四档评审（BGE-M3 向量库 0.40 校准）：置信度 / 新颖性 / 机制 / 识别四轴；偏差与可复现性说明<b>自动汇总核验</b>——统计检验闭环、稳健性、数据+AI 协同</p></div>
+      <div class="card r" style="--i:4;--c:var(--violet)"><h3>③ 回流 + 台账回放</h3><p>实验结果与置信度<b>回流</b>驱动下一轮假设；运行台账——每一步可回放，审计如看日志，复现不再断链</p></div>
+    </div>
+    <p class="punch r" style="--i:5">三个「黑箱」被三个工程接住：<b>价值有预判 · 偏差有自查 · 历史有回放</b>——研究成果第一次可以「先演一遍，再上场」。</p>
+  </div>
+</section>
+
+<!-- 6 成绩单 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">亮点 · 用数字说话</div>
+    <h2 class="r" style="--i:1">硬核成绩单：每一行都是对人工真值打过分的结果</h2>
+    <div class="cards c3" style="gap:14px">
+      <div class="card r" style="--i:2;--c:var(--green)"><div class="big-num g">1.0 / 1.0 / 1.0</div><h3 style="margin-top:8px">数据抽取基准 · 三场景满分</h3><p>键召回 / 值精度 / 单位准确，<b>40 条人工真值全部命中</b>——机器没有抄错一行。</p></div>
+      <div class="card r" style="--i:3;--c:var(--cyan)"><div class="big-num">0.51%</div><h3 style="margin-top:8px">图表逆向取数 · 平均绝对偏差</h3><p>公报图形里的指标也能抽：柱图 5/5 命中偏差 0.51%，线图 <b>0.06%</b>——比人手目测更稳。</p></div>
+      <div class="card r" style="--i:4;--c:var(--amber)"><div class="big-num a">0 → 1954</div><h3 style="margin-top:8px">真实缺陷 · 多级表头修复</h3><p>少一层结构就整表取 0 行的坑，我们自己踩出来并修复——<b>坏结果被当作成绩写进基准</b>。</p></div>
+      <div class="card r" style="--i:5;--c:var(--cyan)"><div class="big-num v">63 源 · 1.1万+ 行</div><h3 style="margin-top:8px">数据资产实盘</h3><p>63 个数据源入中心，面板事实记录 <b>1.1 万+ 行</b>；OECD MSTI/ANBERD 自动下载→入库。</p></div>
+      <div class="card r" style="--i:6;--c:var(--violet)"><div class="big-num">592 / 3625</div><h3 style="margin-top:8px">知识图谱实量</h3><p>FKG 双集群融合图谱：Region 329 节点 / Indicator 141 节点，边 3625 条——假设生成是图上找路。</p></div>
+      <div class="card r" style="--i:7;--c:var(--green)"><div class="big-num g">19,970 篇</div><h3 style="margin-top:8px">影响力预测 · 零样本上线</h3><p>经管语料 19,970 篇、验证集 500 对、双通路 0.6/0.4 融合、同领域同年归一化引用分位——<b>无微调</b>。</p></div>
+    </div>
+    <div class="chips r" style="--i:8">
+      <span class="chip gt">工程质量 · 44 项测试全绿，80 条抽取链路端到端跑通</span>
+    </div>
+  </div>
+</section>
+
+<!-- 7 架构 L1 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">总体架构 · 第一层</div>
+    <h2 class="r" style="--i:1">用户需求输入 → 字段清单与检索条件</h2>
+    <div class="flow r" style="--i:2">
+      <div class="fbox"><b>用户需求</b><span>自然语言 · 口语化</span></div><div class="farrow">→</div>
+      <div class="fbox hot"><b>自动翻译</b><span>需求 → 结构化</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>字段清单</b><span>主题 / 时间 / 空间 / 参数 / 元数据</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>检索条件</b><span>报告模式 · 表格结构 · 多来源 · 评分模式</span></div>
+    </div>
+    <div class="cards c3" style="margin-top:22px">
+      <div class="card r" style="--i:3;--c:var(--cyan)"><h3>字段清单（五类）</h3><p>主题类（研究主题、集群归属）· 时间类（时间、时间段）· 空间类（空间维度、行政区划代码）· 参数类（规模/产出/创新/收入/交易类指标）· 元数据类（单位、来源、口径、注记、置信度）</p></div>
+      <div class="card r" style="--i:4;--c:var(--cyan)"><h3>检索条件</h3><p>报告模式（方法/有数据/量级）· 表格结构 · 多来源交叉 · 优先权威性/完整性/可得性评分</p></div>
+      <div class="card r" style="--i:5;--c:var(--green)"><h3>输出</h3><p>结构化<b>字段清单</b> + 结构化<b>检索条件</b>，直接驱动第二层查找</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 架构 L2 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">总体架构 · 第二层</div>
+    <h2 class="r" style="--i:1">多源查找与严格筛选</h2>
+    <div class="chips r" style="--i:2">
+      <span class="chip">火炬统计 · 科技年鉴</span><span class="chip">政府统计公报</span><span class="chip">园区/集群名录</span>
+      <span class="chip">国际组织数据库</span><span class="chip">国家数据平台</span><span class="chip">开放数据</span><span class="chip">学术数据库</span>
+    </div>
+    <div class="flow r" style="--i:3">
+      <div class="fbox"><b>后选来源处理</b><span>格式解析</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>位置定位</b><span>页面 / 表格 / 图表定位</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>数字回归确认</b><span>数值可追溯</span></div>
+    </div>
+    <div class="checks r" style="--i:4">
+      <span class="chk">格式解析成功</span><span class="chk">位置定位精准</span><span class="chk">数字回归确认</span>
+    </div>
+    <div class="cards c3" style="margin-top:18px">
+      <div class="card r" style="--i:5;--c:var(--violet)"><h3>七维度打分</h3><p>权威性 · 时效性 · 可获得性 · 覆盖度 · 结构清晰度 · 量纲一致 · 口径一致 —— 每个候选来源带质量分</p></div>
+      <div class="card r" style="--i:6;--c:var(--green)"><h3>输出一 · 候选数据集</h3><p>带质量分进入处理层，劣质来源被量化剔除</p></div>
+      <div class="card r" style="--i:7;--c:var(--green)"><h3>输出二 · 筛查报告</h3><p>每个被剔除项<b>注明原因</b>，不是「静默丢弃」</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 架构 L3 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">总体架构 · 第三层（核心）</div>
+    <h2 class="r" style="--i:1">多重处理与数据整合</h2>
+    <div class="flow r" style="--i:2">
+      <div class="fbox"><b>多源头数据</b><span>文本 / 表格 / 图像</span></div><div class="farrow">→</div>
+      <div class="fbox hot"><b>结构化处理与对齐</b><span>JSON/CSV 转换 · 字段对齐 · 单位换算 · 实体对齐 · 异常检测</span></div>
+    </div>
+    <div class="tiers r" style="--i:3">
+      <div class="tier"><span class="strength s-strong">强</span><div class="t1">第一档</div><b>一致</b><div class="tt">多源头同一数据，数字一致</div></div>
+      <div class="tier"><span class="strength s-weak">弱</span><div class="t1">第二档</div><b>剔除高群</b><div class="tt">多源头不一致，取主流口径</div></div>
+      <div class="tier"><span class="strength s-strong">强</span><div class="t1">第三档</div><b>全不一致</b><div class="tt">互不一致，无法融合，明确标注</div></div>
+      <div class="tier"><span class="strength s-weak">弱</span><div class="t1">第四档</div><b>单源</b><div class="tt">唯一来源，数字单独标注</div></div>
+    </div>
+    <div class="cards c3" style="margin-top:16px">
+      <div class="card r" style="--i:4;--c:var(--amber)"><h3>裁决整合</h3><p>单位缺失 → 查字典+上下文推断 · 表头错位 → 重新解析+字段对齐 · 值错位 → 视觉重建+人工核验 · 口径复用 → 注解+误差展示</p></div>
+      <div class="card r" style="--i:5;--c:var(--green)"><h3>输出 · 四件套</h3><p>可溯源的事实长表 · 可复检的报表 · 时空立方体 · 数据字典</p></div>
+      <div class="card r" style="--i:6;--c:var(--green)"><h3>附带 · 质量报告</h3><p>异常与质量报告持续留档，随数据一同交付</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 架构 L4 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">总体架构 · 第四层</div>
+    <h2 class="r" style="--i:1">假设生成与实验方案设计</h2>
+    <div class="flow r" style="--i:2">
+      <div class="fbox"><b>图谱信号聚合</b><span>指标 · 数据文件 · 集群</span></div><div class="farrow">→</div>
+      <div class="fbox hot"><b>硬约束否决</b><span>样本不足 / 数据缺失 / 无法验证 / 文件冲突 / 与对象不符</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>候选假设生成</b><span>低置信度独立标注</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>向量语义检索</b><span>证据召回</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>多轮评审</b><span>人工复核节点</span></div>
+    </div>
+    <div class="cards c3" style="margin-top:22px">
+      <div class="card r" style="--i:3;--c:var(--cyan)"><h3>硬约束 = 一票否决</h3><p>样本过少、数据不可得、无法验证、文件冲突、与研究对象不符 —— 不进入候选，杜绝「灵感型」假设</p></div>
+      <div class="card r" style="--i:4;--c:var(--violet)"><h3>低置信度也保留</h3><p>带数据与可复现性说明的假设单独成档，供研究者判断，不冒充结论</p></div>
+      <div class="card r" style="--i:5;--c:var(--green)"><h3>最终假设</h3><p>附可复现性检验（统计/回归检验），进入实验规划层</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 架构 L5 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">总体架构 · 第五层</div>
+    <h2 class="r" style="--i:1">实验规划、反馈迭代与研究结果</h2>
+    <div class="flow r" style="--i:2">
+      <div class="fbox"><b>①拆解</b><span>明确研究问题</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>②过滤</b><span>数据清洗整理</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>③填补</b><span>缺失处理</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>④盘点</b><span>变量统计描述</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>⑤实验</b><span>实证检验</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>⑥写作</b><span>整合初稿</span></div>
+    </div>
+    <div class="flow r" style="--i:3">
+      <div class="fbox"><b>⑦评审</b><span>多方位评审</span></div><div class="farrow">→</div>
+      <div class="fbox"><b>⑧结果与图表</b><span>可追溯产出</span></div><div class="farrow">→</div>
+      <div class="fbox gogreen"><b>影响力分析 · 偏差说明</b><span>可复现性闭环（统计/回归检验）· 稳健性与偏差 · 数据+AI 协同 · 自动汇总核验</span></div>
+    </div>
+    <div class="chips r" style="--i:4">
+      <span class="chip gt">实验结果与置信度回流 → 驱动下一轮假设与计划</span>
+      <span class="chip gt">人工确认 · 审批策略 allow/ask/deny · 运行台账回放</span>
+    </div>
+  </div>
+</section>
+
+<!-- 12 架构总览 -->
+<section class="slide">
+  <div class="wrap">
+    <div class="kicker r">总体架构 · 一张图</div>
+    <h2 class="r" style="--i:1">五层业务闭环，全程可审计</h2>
+    <div class="tl r" style="--i:2">
+      <div class="tl-line"></div>
+      <div class="tl-node" style="--c:var(--cyan)"><b>L1 需求输入</b><p>自然语言 → 自动翻译 → 字段清单 + 检索条件（结构化）</p></div>
+      <div class="tl-node" style="--c:#60a5fa"><b>L2 多源查找与严格筛选</b><p>多源头数据 → 格式/位置/数字三硬检 → 七维度质量评分 → 候选集 + 筛查报告</p></div>
+      <div class="tl-node" style="--c:var(--violet)"><b>L3 多重处理与数据整合</b><p>结构化对齐 → 四档证据链 → 裁决整合（字典/重解析/人工核验/口径注解）→ 事实长表 + 时空立方体 + 数据字典</p></div>
+      <div class="tl-node" style="--c:var(--green)"><b>L4 假设生成与实验方案设计</b><p>图谱信号聚合 → 硬约束否决 → 候选假设 → 向量检索 → 多轮评审 → 最终假设（附可复现性检验）</p></div>
+      <div class="tl-node" style="--c:var(--amber)"><b>L5 实验规划、反馈迭代与研究结果</b><p>八步流水线（拆解→过滤→填补→盘点→实验→写作→评审→结果）→ 影响力分析与偏差说明 → 回流下一轮</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 价值 -->
+<section class="slide">
+  <div class="wrap center">
+    <div class="kicker r">总 结</div>
+    <h2 class="r" style="--i:1">把园区创新研究，从「手工信任」变成「可审计信任」</h2>
+    <div class="cards c4" style="margin-top:28px">
+      <div class="card r" style="--i:2;--c:var(--cyan)"><div class="big-num">时间 ↑</div><h3 style="margin-top:10px">花在数据上的时间变少</h3><p>获取与治理自动化，研究者回归研究本身</p></div>
+      <div class="card r" style="--i:3;--c:var(--green)"><div class="big-num g">依据 ✓</div><h3 style="margin-top:10px">结论的依据可见</h3><p>证据链、置信度、筛查报告逐条可查</p></div>
+      <div class="card r" style="--i:4;--c:var(--amber)"><div class="big-num a">错误 ✕</div><h3 style="margin-top:10px">错误在进入结果前被拦</h3><p>三级质检与人工复核节点前置拦截</p></div>
+      <div class="card r" style="--i:5;--c:var(--violet)"><div class="big-num v">复算 ⟳</div><h3 style="margin-top:10px">成果可以复算</h3><p>溯源链 + 台账回放，每一步都可重放</p></div>
+    </div>
+    <p class="sub r" style="--i:6">三个环节，三个答案：数据<b style="color:var(--green)">可信</b> · 假设<b style="color:var(--green)">有据</b> · 成果<b style="color:var(--green)">可预演</b>。</p>
+    <div class="foot r" style="--i:7">研究与方法参照 · Hamermesh 2007 (CJE) · Camerer 2016 (Science) · Berry &amp; Coffman 2017 (AER P&amp;P) · Höffler 2017 (AER P&amp;P) · Vilhuber 2020 (HDSR) ｜ 平台数字为内部基准（见 PROGRESS.md，可复算）</div>
+  </div>
+</section>
+
+<!-- 14 结尾 -->
+<section class="slide">
+  <div class="wrap center">
+    <div class="kicker r">谢 谢</div>
+    <h1 class="r" style="--i:0;font-size:clamp(2rem,4.4vw,3rem)">景明研环</h1>
+    <p class="sub r" style="--i:1">产业创新研究（科技园区）的「数据可信基础设施」</p>
+    <div class="chips center" style="justify-content:center;margin-top:28px">
+      <span class="chip r" style="--i:2">本地优先 · 默认不外流</span>
+      <span class="chip r" style="--i:3">模型无关 · 运行时可切换</span>
+      <span class="chip r" style="--i:4">从需求到结论 · 全程可审计</span>
+    </div>
+    <p class="hint r" style="--i:5">汇报完毕 · 欢迎提问</p>
+  </div>
+</section>
+
+<div id="nav"></div>
+<div id="counter"></div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const nav=document.getElementById('nav');
+  const bar=document.getElementById('bar');
+  const counter=document.getElementById('counter');
+  let cur=0;
+  slides.forEach((s,i)=>{
+    const d=document.createElement('button');
+    d.className='dot';d.onclick=()=>go(i);nav.appendChild(d);
+  });
+  const dots=[...nav.children];
+  function go(n){
+    if(n<0||n>=slides.length)return;
+    slides[cur].classList.remove('active');dots[cur].classList.remove('on');
+    cur=n;
+    slides[cur].classList.add('active');dots[cur].classList.add('on');
+    bar.style.width=(100*(cur+1)/slides.length)+'%';
+    counter.textContent=(cur+1)+' / '+slides.length;
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(cur+1);}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1);}
+    if(e.key==='Home')go(0);if(e.key==='End')go(slides.length-1);
+  });
+  let tx=null;
+  document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;
+    if(dx<-50)go(cur+1);if(dx>50)go(cur-1);tx=null;
+  },{passive:true});
+  go(0);
+})();
+</script>
+</body>
+</html>

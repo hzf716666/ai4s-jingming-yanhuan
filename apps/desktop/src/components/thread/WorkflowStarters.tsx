@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ChevronRight, FileSearch, FlaskConical, Globe2, LineChart } from "lucide-react";
+import { ChevronRight, FileSearch, FlaskConical, LineChart, TrendingUp } from "lucide-react";
 import { installExample, isTauri } from "@/lib/tauri";
 import { toast } from "@/lib/toast";
 
@@ -20,40 +20,44 @@ export const WORKFLOW_STARTERS: WorkflowStarter[] = [
     id: "demo",
     icon: <FlaskConical size={17} strokeWidth={1.75} />,
     prompt:
-      "Run a complete demo analysis end to end: simulate a small dose–response dataset in Python, " +
-      "analyze it (fit + summary statistics), save one publication-quality figure as demo_analysis/figure1.png, " +
-      "and write demo_analysis/report.md summarizing the findings — every number in the report must come from " +
-      "the code you ran. Keep all files in the workspace.",
+      "Run a complete demo econometric analysis end to end: simulate a small regional×year panel " +
+      "(e.g. 20 regions × 10 years with an R&D-intensity measure and an outcome variable) in Python, " +
+      "explore it, fit a two-way fixed-effects model with clustered standard errors, save one " +
+      "publication-quality figure as demo_analysis/figure1.png, and write demo_analysis/report.md " +
+      "summarizing the findings — every number in the report must come from the code you ran. " +
+      "Keep all files in the workspace.",
   },
   {
     id: "analyze",
     icon: <LineChart size={17} strokeWidth={1.75} />,
     prompt:
-      "Analyze the data file I added to the workspace end to end: explore it, run the analysis in code, " +
-      "save at least one figure as a PNG, and write report.md with the findings — every number traced to " +
-      "the code that produced it. Ask me which file to use if there is more than one candidate.",
+      "Analyze the data file I added to the workspace end to end (panel or indicator data): explore it, " +
+      "run the econometric analysis in code, save at least one figure as a PNG, and write report.md with " +
+      "the findings — every number traced to the code that produced it. Ask me which file to use if " +
+      "there is more than one candidate.",
   },
   {
     id: "audit",
     icon: <FileSearch size={17} strokeWidth={1.75} />,
     prompt:
       "Use the traceability-review skill to audit the report or manuscript in my workspace: resolve every " +
-      "citation, flag numbers with no traceable source, and check figures against the code that generated them. " +
+      "citation (literature references and data sources), flag numbers with no traceable source, and " +
+      "check figures against the code that generated them. " +
       "Ask me which document to audit if there is more than one candidate.",
   },
   {
-    id: "example-climate",
-    icon: <Globe2 size={17} strokeWidth={1.75} />,
+    id: "example-gerd",
+    icon: <TrendingUp size={17} strokeWidth={1.75} />,
     prompt:
-      "Analyze the real climate dataset at climate-trends/data/gistemp_global_means.csv " +
-      "(NASA GISTEMP v4 global land–ocean temperature anomalies in °C vs the 1951–1980 mean; " +
-      "the header is on line 2 and missing values are `***` — see climate-trends/README.md). " +
-      "Load the annual J-D series, quantify the warming rate (°C/decade) over the full record and " +
-      "over 1975–present, compare decadal means, save one publication-quality figure as " +
-      "climate-trends/warming_trend.png, and write climate-trends/report.md citing the dataset " +
-      "source — every number must come from the code you ran.",
+      "Analyze the real OECD R&D dataset at gerd-trends/data/msti_gerd_multicountry.csv — MSTI GERD " +
+      "(gross domestic expenditure on R&D) for China, Germany, Japan and the United States, 2019–2024, " +
+      "with four unit measures including percentage of GDP and US dollars per person at PPP — see " +
+      "gerd-trends/README.md). Load the annual series, quantify changes in R&D intensity (% of GDP) and " +
+      "per-capita spending over the period, compare levels and growth across the four countries, save one " +
+      "publication-quality figure as gerd-trends/gerd_trends.png, and write gerd-trends/report.md citing " +
+      "the dataset source — every number must come from the code you ran.",
     prepare: async () => {
-      if (isTauri) await installExample("climate-trends");
+      if (isTauri) await installExample("gerd-trends");
     },
   },
 ];
@@ -72,9 +76,9 @@ export function WorkflowStarters({ onPick }: { onPick: (prompt: string) => void 
     demo: { title: t("starters.demo.title"), description: t("starters.demo.description") },
     analyze: { title: t("starters.analyze.title"), description: t("starters.analyze.description") },
     audit: { title: t("starters.audit.title"), description: t("starters.audit.description") },
-    "example-climate": {
-      title: t("starters.example-climate.title"),
-      description: t("starters.example-climate.description"),
+    "example-gerd": {
+      title: t("starters.example-gerd.title"),
+      description: t("starters.example-gerd.description"),
     },
   };
   return (

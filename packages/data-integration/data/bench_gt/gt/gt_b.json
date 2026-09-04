@@ -1,0 +1,105 @@
+{
+  "scene": "B-1-3",
+  "source": "E:/tb/B中国火炬统计年鉴/B中国火炬统计年鉴/第1部分 国家高新技术产业开发区/1-3_各高新区企业主要经济指标.xlsx",
+  "data_year_note": "2025卷(2024年数据)推定, 截面表无年份列故 GT.time 留空(分析侧按 file_year 兜底)",
+  "annotated_by": "openpyxl 直接读值 + 表头结构人工核验",
+  "annotated_at": "2026-09-02",
+  "records": [
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "工商注册企业数",
+      "value": 645505,
+      "unit": "个",
+      "source_hint": "1-3.xlsx 第6行 第3列"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "入统企业数",
+      "value": 24934,
+      "unit": "个",
+      "source_hint": "1-3.xlsx 第6行 第4列"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "高新技术企业数",
+      "value": 18301,
+      "unit": "个",
+      "source_hint": "1-3.xlsx 第6行 第5列"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "年末从业人员",
+      "value": 3122930,
+      "unit": "人",
+      "source_hint": "1-3.xlsx 第6行 第6列"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "营业收入",
+      "value": 10302209262,
+      "unit": "千元",
+      "source_hint": "1-3.xlsx 第6行 第7列"
+    },
+    {
+      "time": "",
+      "space": "北京中关村",
+      "indicator": "工业总产值",
+      "value": 1436700178,
+      "unit": "千元",
+      "source_hint": "1-3.xlsx 第6行 第8列"
+    },
+    {
+      "time": "",
+      "space": "天津滨海",
+      "indicator": "入统企业数",
+      "value": 5181,
+      "unit": "个",
+      "source_hint": "1-3.xlsx 第7行 第4列"
+    },
+    {
+      "time": "",
+      "space": "天津滨海",
+      "indicator": "营业收入",
+      "value": 637730491,
+      "unit": "千元",
+      "source_hint": "1-3.xlsx 第7行 第7列"
+    },
+    {
+      "time": "",
+      "space": "石家庄",
+      "indicator": "营业收入",
+      "value": 375371547,
+      "unit": "千元",
+      "source_hint": "1-3.xlsx 第8行 第7列"
+    },
+    {
+      "time": "",
+      "space": "保定",
+      "indicator": "年末从业人员",
+      "value": 142574,
+      "unit": "人",
+      "source_hint": "1-3.xlsx 第10行 第6列"
+    },
+    {
+      "time": "",
+      "space": "合计",
+      "indicator": "入统企业数",
+      "value": 230131,
+      "unit": "个",
+      "source_hint": "1-3.xlsx 第5行 第4列"
+    },
+    {
+      "time": "",
+      "space": "合计",
+      "indicator": "营业收入",
+      "value": 55975504229,
+      "unit": "千元",
+      "source_hint": "1-3.xlsx 第5行 第7列"
+    }
+  ]
+}

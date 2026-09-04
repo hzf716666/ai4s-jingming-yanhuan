@@ -1,14 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type {
   ArtifactInspector as ArtifactInspectorT,
   NotebookInspector as NotebookInspectorT,
   FilePreviewInspector as FilePreviewInspectorT,
   PdfInspector as PdfInspectorT,
 } from "@jingming/shared";
-import { useUiStore } from "@/lib/store";
 import { ArtifactInspector } from "./ArtifactInspector";
 import { NotebookInspector } from "./NotebookInspector";
 import { FilePreviewInspector } from "./FilePreviewInspector";
@@ -26,10 +25,6 @@ vi.mock("@/lib/provenance", () => ({
   readEnvLockfile: vi.fn(),
 }));
 
-// COPYCAT RULE: useUiStore is module-global; reset the locale after each test
-// so this suite never bleeds a non-English locale into other test files.
-afterEach(() => useUiStore.getState().setLocale("en"));
-
 describe("ArtifactInspector strings (i18n)", () => {
   const data: ArtifactInspectorT = {
     variant: "artifact",
@@ -41,37 +36,37 @@ describe("ArtifactInspector strings (i18n)", () => {
     language: "python",
   };
 
-  it("renders the header controls and tab labels in English", () => {
+  it("renders the header controls and tab labels in Chinese", () => {
     render(<ArtifactInspector data={data} onClose={() => {}} />);
-    expect(screen.getByLabelText("Previous version")).toBeInTheDocument();
-    expect(screen.getByLabelText("Next version")).toBeInTheDocument();
-    expect(screen.getByLabelText("Download")).toBeInTheDocument();
-    expect(screen.getByLabelText("Close inspector")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Code" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Execution Log" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Messages" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Environment" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Review" })).toBeInTheDocument();
-    expect(screen.getByText("Download script")).toBeInTheDocument();
-    expect(screen.getByText("Inputs")).toBeInTheDocument();
+    expect(screen.getByLabelText("上一个版本")).toBeInTheDocument();
+    expect(screen.getByLabelText("下一个版本")).toBeInTheDocument();
+    expect(screen.getByLabelText("下载")).toBeInTheDocument();
+    expect(screen.getByLabelText("关闭检查器")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "代码" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "执行日志" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "消息" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "环境" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "审查" })).toBeInTheDocument();
+    expect(screen.getByText("下载脚本")).toBeInTheDocument();
+    expect(screen.getByText("输入")).toBeInTheDocument();
   });
 
-  it("renders the empty and not-yet-reviewed states for each tab in English", async () => {
+  it("renders the empty and not-yet-reviewed states for each tab in Chinese", async () => {
     render(<ArtifactInspector data={data} onClose={() => {}} />);
-    await userEvent.click(screen.getByRole("button", { name: "Execution Log" }));
-    expect(screen.getByText("No execution log.")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Messages" }));
-    expect(screen.getByText("No messages for this version.")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Environment" }));
-    expect(screen.getByText("No environment info.")).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Review" }));
-    expect(screen.getByText("v1 has not passed review yet.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "执行日志" }));
+    expect(screen.getByText("无执行日志。")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "消息" }));
+    expect(screen.getByText("此版本没有消息。")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "环境" }));
+    expect(screen.getByText("无环境信息。")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "审查" }));
+    expect(screen.getByText("v1 尚未通过审查。")).toBeInTheDocument();
   });
 
-  it("renders the review-passed state in English", async () => {
+  it("renders the review-passed state in Chinese", async () => {
     render(<ArtifactInspector data={{ ...data, reviewPassed: true }} onClose={() => {}} />);
-    await userEvent.click(screen.getByRole("button", { name: "Review" }));
-    expect(screen.getByText("Review passed — v1 traces to code and inputs.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "审查" }));
+    expect(screen.getByText("审查通过 — v1 可追溯到代码和输入。")).toBeInTheDocument();
   });
 });
 
@@ -85,15 +80,15 @@ describe("NotebookInspector strings (i18n)", () => {
     cells: [],
   };
 
-  it("renders the header, live badge, and input affordances in English", () => {
+  it("renders the header, live badge, and input affordances in Chinese", () => {
     render(<NotebookInspector data={data} onClose={() => {}} />);
-    expect(screen.getByText("Notebook")).toBeInTheDocument();
-    expect(screen.getByText("Shared with the agent")).toBeInTheDocument();
-    expect(screen.getByText("Live")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Type an expression and press Enter")).toBeInTheDocument();
-    expect(screen.getByLabelText("Notebook expression")).toBeInTheDocument();
-    expect(screen.getByLabelText("Run expression")).toBeInTheDocument();
-    expect(screen.getByLabelText("Close inspector")).toBeInTheDocument();
+    expect(screen.getByText("笔记本")).toBeInTheDocument();
+    expect(screen.getByText("与代理共享")).toBeInTheDocument();
+    expect(screen.getByText("实时")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入表达式并按 Enter")).toBeInTheDocument();
+    expect(screen.getByLabelText("笔记本表达式")).toBeInTheDocument();
+    expect(screen.getByLabelText("运行表达式")).toBeInTheDocument();
+    expect(screen.getByLabelText("关闭检查器")).toBeInTheDocument();
   });
 });
 
@@ -106,25 +101,25 @@ describe("FilePreviewInspector strings (i18n)", () => {
       artifact: "script",
     };
     render(<FilePreviewInspector data={data} onClose={() => {}} />);
-    expect(screen.getByText("script")).toBeInTheDocument();
-    expect(screen.getByLabelText("History")).toBeInTheDocument();
-    expect(screen.getByLabelText("Open externally")).toBeInTheDocument();
-    expect(screen.getByLabelText("Close inspector")).toBeInTheDocument();
+    expect(screen.getByText("脚本")).toBeInTheDocument();
+    expect(screen.getByLabelText("历史记录")).toBeInTheDocument();
+    expect(screen.getByLabelText("在外部打开")).toBeInTheDocument();
+    expect(screen.getByLabelText("关闭检查器")).toBeInTheDocument();
     // No Tauri sidecar in tests — the csv read comes back empty, so the file
-    // preview falls back to the "available in the desktop app" note.
-    expect(await screen.findByText("Preview is available in the desktop app.")).toBeInTheDocument();
+    // preview falls back to the "该功能在桌面应用中可用" note.
+    expect(await screen.findByText("预览功能在桌面应用中可用。")).toBeInTheDocument();
   });
 });
 
 describe("PdfInspector strings (i18n)", () => {
-  it("renders the Close-inspector control in English", () => {
+  it("renders the Close-inspector control in Chinese", () => {
     const data: PdfInspectorT = {
       variant: "pdf",
       title: "review.pdf",
-      doc: { title: "Review", sections: [] },
+      doc: { title: "审查", sections: [] },
     };
     render(<PdfInspector data={data} onClose={() => {}} />);
-    expect(screen.getByLabelText("Close inspector")).toBeInTheDocument();
+    expect(screen.getByLabelText("关闭检查器")).toBeInTheDocument();
   });
 });
 
@@ -136,44 +131,44 @@ describe("ProvenancePanel strings (i18n)", () => {
         <ProvenancePanel path="fig/plot.py" />
       </MemoryRouter>,
     );
-    expect(screen.getByText("Loading history…")).toBeInTheDocument();
+    expect(screen.getByText("正在加载历史记录…")).toBeInTheDocument();
   });
 
-  it("splits the empty-state sentence around the file path in English", async () => {
+  it("splits the empty-state sentence around the file path in Chinese", async () => {
     listProvenance.mockResolvedValueOnce([]);
     render(
       <MemoryRouter>
         <ProvenancePanel path="does/not/exist.py" />
       </MemoryRouter>,
     );
-    expect(await screen.findByText(/No versions recorded yet\. Each time the agent writes/)).toBeInTheDocument();
+    expect(await screen.findByText(/尚无记录的版本。每次代理写入/)).toBeInTheDocument();
     expect(
-      screen.getByText(/, a version is added here with the code, model, and conversation that produced it\./),
+      screen.getByText(/，都会在此添加一个包含代码、模型和对话的新版本。$/),
     ).toBeInTheDocument();
   });
 });
 
 describe("TablePreview strings (i18n)", () => {
-  it("pluralizes the truncated-rows note in English", () => {
+  it("renders the truncated-rows note in Chinese", () => {
     render(<TablePreview table={{ columns: ["a"], rows: [["1"]], truncated: true }} />);
-    expect(screen.getByText("Showing the first 1 row")).toBeInTheDocument();
+    expect(screen.getByText("显示前 1 行")).toBeInTheDocument();
   });
 
   it("uses the plural form for more than one row", () => {
     render(<TablePreview table={{ columns: ["a"], rows: [["1"], ["2"], ["3"]], truncated: true }} />);
-    expect(screen.getByText("Showing the first 3 rows")).toBeInTheDocument();
+    expect(screen.getByText("显示前 3 行")).toBeInTheDocument();
   });
 });
 
 describe("MaximizePaneButton strings (i18n)", () => {
-  it("toggles the aria-label between Maximize panel and Restore panel in English", async () => {
+  it("toggles the aria-label between Maximize panel and Restore panel in Chinese", async () => {
     render(<MaximizePaneButton />);
-    expect(screen.getByLabelText("Maximize panel")).toBeInTheDocument();
-    await userEvent.click(screen.getByLabelText("Maximize panel"));
-    expect(screen.getByLabelText("Restore panel")).toBeInTheDocument();
+    expect(screen.getByLabelText("最大化面板")).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("最大化面板"));
+    expect(screen.getByLabelText("恢复面板")).toBeInTheDocument();
     // Toggle back off so this test doesn't leak maximized state (module-global
     // store) into whichever test runs next.
-    await userEvent.click(screen.getByLabelText("Restore panel"));
-    expect(screen.getByLabelText("Maximize panel")).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("恢复面板"));
+    expect(screen.getByLabelText("最大化面板")).toBeInTheDocument();
   });
 });

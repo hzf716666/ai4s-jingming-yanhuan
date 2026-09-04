@@ -21,7 +21,7 @@ describe("FigureBlock", () => {
 
   it("opens an existing pin's note in a popover", async () => {
     render(<FigureBlock block={block} />);
-    await userEvent.click(screen.getByRole("button", { name: /Annotation 1/ }));
+    await userEvent.click(screen.getByRole("button", { name: /注释 1/ }));
     expect(await screen.findByText("these labels are hard to see")).toBeInTheDocument();
   });
 
@@ -30,9 +30,9 @@ describe("FigureBlock", () => {
     render(<FigureBlock block={block} onComment={onComment} />);
 
     await userEvent.click(screen.getByAltText("atlas_fig1a.png"));
-    const input = await screen.findByLabelText("Annotation note");
+    const input = await screen.findByLabelText("注释内容");
     await userEvent.type(input, "add a scale bar");
-    await userEvent.click(screen.getByRole("button", { name: "Send" }));
+    await userEvent.click(screen.getByRole("button", { name: "发送" }));
 
     expect(onComment).toHaveBeenCalledOnce();
     expect(onComment.mock.calls[0][0]).toMatchObject({ index: 2, note: "add a scale bar" });

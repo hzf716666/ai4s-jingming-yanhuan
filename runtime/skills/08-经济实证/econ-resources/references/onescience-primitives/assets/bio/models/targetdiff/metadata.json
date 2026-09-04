@@ -1,0 +1,17 @@
+{
+  "name": "targetdiff",
+  "type": "model",
+  "domain": "biology",
+  "version": "1.0.0",
+  "visibility": "public",
+  "created_at": "2026-07-06",
+  "updated_at": "2026-07-06",
+  "description": "TargetDiff 是 OneScience 中的蛋白口袋条件三维配体扩散模型资源。`ScorePosNet3D` 由模型配置和蛋白/配体特征维度构造，联合建模连续坐标与离散原子类型，提供前向预测、`get_diffusion_loss`、`likelihood_estimation`、`fetch_embedding` 和 `sample_diffusion`；属性预测由独立的 `PropPredNet` 或 `PropPredNetEnc` 承担。该资源用于按真实张量接口构建训练和采样代码。",
+  "tags": [
+    "target-conditioned-generation",
+    "molecule-generation",
+    "protein-ligand",
+    "diffusion",
+    "property-prediction"
+  ]
+}

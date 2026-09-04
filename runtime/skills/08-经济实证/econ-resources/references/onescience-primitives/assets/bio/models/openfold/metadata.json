@@ -1,0 +1,17 @@
+{
+  "name": "openfold",
+  "type": "model",
+  "domain": "biology",
+  "version": "1.0.0",
+  "visibility": "public",
+  "created_at": "2026-06-29",
+  "updated_at": "2026-06-29",
+  "description": "OpenFold 是 OneScience 中的 PyTorch AlphaFold2 风格结构模型资源。`AlphaFold(config)` 根据 `config.globals` 与 `config.model` 构造输入嵌入、recycling、template、Extra MSA、Evoformer、StructureModule 和辅助头；`forward(batch)` 接收末维为 recycling 轮次的 OpenFold 特征字典，返回 atom37 坐标、mask、仿射表示及 MSA、pair、single 等结果。该资源用于基于源码接口构建训练或推理代码，不依赖 pretrained 示例脚本。",
+  "tags": [
+    "protein",
+    "structure-prediction",
+    "alphafold2-style",
+    "msa",
+    "template-modeling"
+  ]
+}

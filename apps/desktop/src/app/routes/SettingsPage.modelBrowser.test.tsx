@@ -74,15 +74,15 @@ describe("Settings model browser integration", () => {
   });
 
   it("shows the connect prompt when the runtime errors before any model switch happened", async () => {
-    // First boot with a dead sidecar: status "error", defaultModel null,
+    // First boot with a dead sidecar: status "错误", defaultModel null,
     // modelSwitchError null. The browser must NOT appear (the old page-local
     // sentinel compared null === null here and showed an empty browser).
     useRuntimeStore.setState({ status: "error", defaultModel: null, modelSwitchError: null });
 
     await renderSettings();
 
-    expect(screen.getByText("Connect the runtime to configure models.")).toBeInTheDocument();
-    expect(screen.queryByText("No models available.")).not.toBeInTheDocument();
+    expect(screen.getByText("连接运行时以配置模型。")).toBeInTheDocument();
+    expect(screen.queryByText("没有可用模型。")).not.toBeInTheDocument();
   });
 
   it("keeps the browser up through an immediately-rejected retry after a failed switch", async () => {
@@ -100,12 +100,12 @@ describe("Settings model browser integration", () => {
     await userEvent.click(screen.getByRole("button", { name: /^o3/ }));
     await waitFor(() => expect(deadSwitch).toHaveBeenCalledTimes(1));
     act(() => useRuntimeStore.setState({ status: "error", switching: false }));
-    expect(screen.getByRole("searchbox", { name: "Search models" })).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: "搜索模型" })).toBeInTheDocument();
 
     // Retrying while the server is still down must not collapse the surface.
     await userEvent.click(screen.getByRole("button", { name: /^o3/ }));
     await waitFor(() => expect(deadSwitch).toHaveBeenCalledTimes(2));
-    expect(screen.getByRole("searchbox", { name: "Search models" })).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: "搜索模型" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^o3/ })).toBeInTheDocument();
   });
 
@@ -120,9 +120,9 @@ describe("Settings model browser integration", () => {
 
     await renderSettings();
 
-    expect(screen.getByText("Loading the model catalog…")).toBeInTheDocument();
-    expect(screen.queryByText(/Configured model unavailable/)).not.toBeInTheDocument();
-    expect(screen.queryByText("No models available.")).not.toBeInTheDocument();
+    expect(screen.getByText("正在加载模型目录…")).toBeInTheDocument();
+    expect(screen.queryByText(/已配置的模型不可用/)).not.toBeInTheDocument();
+    expect(screen.queryByText("没有可用模型。")).not.toBeInTheDocument();
     await act(async () => resolveProviders(providers));
     expect(await screen.findByRole("button", { name: /^o3/ })).toBeInTheDocument();
   });
@@ -137,7 +137,7 @@ describe("Settings model browser integration", () => {
     await renderSettings();
 
     expect(await screen.findByRole("button", { name: /^o3/ })).toBeInTheDocument();
-    expect(screen.queryByText("The model catalog is currently unavailable.")).not.toBeInTheDocument();
+    expect(screen.queryByText("模型目录当前不可用。")).not.toBeInTheDocument();
   });
 
   it("drops the cached catalog when the server URL changes (no stale models from the old runtime)", async () => {
@@ -154,17 +154,17 @@ describe("Settings model browser integration", () => {
     vi.spyOn(runtime, "getClient").mockReturnValue(catalogClient());
     await renderSettings();
     await screen.findByRole("button", { name: /^o3/ });
-    await userEvent.click(screen.getByRole("button", { name: "Manage" }));
+    await userEvent.click(screen.getByRole("button", { name: "管理" }));
 
     act(() => useRuntimeStore.setState({ status: "offline", switching: false }));
 
     // The old wiring disabled the toggle and rendered an empty body — a
     // stuck-open blank panel the user could not close until reconnect.
-    expect(screen.getByText("Connect the runtime to manage providers.")).toBeInTheDocument();
-    const collapse = screen.getByRole("button", { name: "Collapse" });
+    expect(screen.getByText("连接运行时以管理提供商。")).toBeInTheDocument();
+    const collapse = screen.getByRole("button", { name: "收起" });
     expect(collapse).toBeEnabled();
     await userEvent.click(collapse);
-    expect(screen.queryByText("Connect the runtime to manage providers.")).not.toBeInTheDocument();
+    expect(screen.queryByText("连接运行时以管理提供商。")).not.toBeInTheDocument();
   });
 
   it("shows a localized unavailable state when the initial provider refresh fails", async () => {
@@ -174,8 +174,8 @@ describe("Settings model browser integration", () => {
 
     await renderSettings();
 
-    expect(await screen.findByText("The model catalog is currently unavailable.")).toBeInTheDocument();
-    expect(screen.queryByText("No models available.")).not.toBeInTheDocument();
+    expect(await screen.findByText("模型目录当前不可用。")).toBeInTheDocument();
+    expect(screen.queryByText("没有可用模型。")).not.toBeInTheDocument();
   });
 
   it("retains the last successful model list when a later provider refresh fails", async () => {
@@ -190,18 +190,18 @@ describe("Settings model browser integration", () => {
 
     await waitFor(() => expect(listProviders).toHaveBeenCalledTimes(2));
     expect(screen.getByRole("button", { name: /^o3/ })).toBeInTheDocument();
-    expect(screen.queryByText("The model catalog is currently unavailable.")).not.toBeInTheDocument();
+    expect(screen.queryByText("模型目录当前不可用。")).not.toBeInTheDocument();
   });
 
   it("hides a cached model snapshot after an ordinary runtime disconnect", async () => {
     vi.spyOn(runtime, "getClient").mockReturnValue(catalogClient());
     await renderSettings();
-    expect(await screen.findByRole("searchbox", { name: "Search models" })).toBeInTheDocument();
+    expect(await screen.findByRole("searchbox", { name: "搜索模型" })).toBeInTheDocument();
 
     act(() => useRuntimeStore.setState({ status: "offline", switching: false }));
 
-    expect(await screen.findByText("Connect the runtime to configure models.")).toBeInTheDocument();
-    expect(screen.queryByRole("searchbox", { name: "Search models" })).not.toBeInTheDocument();
+    expect(await screen.findByText("连接运行时以配置模型。")).toBeInTheDocument();
+    expect(screen.queryByRole("searchbox", { name: "搜索模型" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^o3/ })).not.toBeInTheDocument();
   });
 
@@ -239,23 +239,23 @@ describe("Settings model browser integration", () => {
       switching: true,
       status: "connecting",
     });
-    expect(screen.getByRole("searchbox", { name: "Search models" })).toBeInTheDocument();
-    expect(screen.getByText("Switching…")).toBeInTheDocument();
-    expect(within(screen.getByRole("button", { name: /^o3/ })).getByText("Current default")).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: "搜索模型" })).toBeInTheDocument();
+    expect(screen.getByText("切换中…")).toBeInTheDocument();
+    expect(within(screen.getByRole("button", { name: /^o3/ })).getByText("当前默认")).toBeInTheDocument();
 
     await act(async () => exhaustReconnect());
 
-    await waitFor(() => expect(screen.getByText("Could not set the model: reconnect failed")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("无法设置模型: reconnect failed")).toBeInTheDocument());
     expect(useRuntimeStore.getState().defaultModel).toBe("openai/o3");
     const currentRow = screen.getByRole("button", { name: /^o3/ });
-    expect(within(currentRow).getByText("Current default")).toBeInTheDocument();
+    expect(within(currentRow).getByText("当前默认")).toBeInTheDocument();
     expect(currentRow).toBeEnabled();
     expect(screen.getByRole("button", { name: /^GPT-5.2/ })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Add o3 to favorites" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "将 o3 添加到收藏" })).toBeEnabled();
     expect(loadModelPreferences().recent).toEqual(["openai/gpt-5.2"]);
 
     act(() => useRuntimeStore.setState({ status: "offline", switching: false }));
-    expect(await screen.findByText("Connect the runtime to configure models.")).toBeInTheDocument();
-    expect(screen.queryByRole("searchbox", { name: "Search models" })).not.toBeInTheDocument();
+    expect(await screen.findByText("连接运行时以配置模型。")).toBeInTheDocument();
+    expect(screen.queryByRole("searchbox", { name: "搜索模型" })).not.toBeInTheDocument();
   });
 });

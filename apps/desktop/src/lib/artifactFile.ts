@@ -73,6 +73,17 @@ export async function revealExternalPath(absPath: string): Promise<void> {
   await invoke("reveal_external_path", { path: absPath });
 }
 
+/** Open an http(s) URL in the OS default browser(证据溯源: 链回数据来源网页). */
+export async function openExternalUrl(url: string): Promise<void> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  try {
+    await invoke("open_url", { url });
+  } catch {
+    // 浏览器模式(web)没有 open_url 命令 → 直接新窗口打开
+    window.open(url, "_blank", "noopener");
+  }
+}
+
 /** Reveal a root-relative file/dir in the OS file manager (Finder / Explorer /
  *  Linux file manager). Desktop only; no-op in the browser. */
 export async function revealArtifact(path: string, root?: FileRoot): Promise<void> {

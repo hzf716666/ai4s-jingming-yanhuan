@@ -206,7 +206,7 @@ fn auth_has_provider(text: &str, provider_id: &str) -> bool {
 /// profile's global skills dir (`<xdg-config>/opencode/skills/`), which OpenCode
 /// scans regardless of project detection: `skills/` is the external jingming-skills
 /// pack, `skills-office/` Anthropic's document skills (docx/pdf/pptx/xlsx),
-/// `skills-core/` the first-party skills from `runtime/skills/core`. The
+/// `skills-00/` the first-party econ skills (runtime/skills/00-通用工具). The
 /// workspace's own `.opencode/skills/` stays reserved for skills the user
 /// installs. Runs before every sidecar start so app upgrades refresh the packs.
 fn deploy_bundled_skills(app: &AppHandle) {
@@ -220,13 +220,6 @@ fn deploy_bundled_skills(app: &AppHandle) {
         "skills",
         "skills-office",
         "skills-00",
-        "skills-01",
-        "skills-02",
-        "skills-03",
-        "skills-04",
-        "skills-05",
-        "skills-06",
-        "skills-07",
         "skills-08",
     ] {
         let src = match app

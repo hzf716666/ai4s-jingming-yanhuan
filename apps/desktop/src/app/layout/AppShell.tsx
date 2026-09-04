@@ -6,13 +6,11 @@ import { cn } from "@/lib/cn";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { CommandPalette } from "@/components/command-palette/CommandPalette";
 import { Toaster } from "@/components/ui/Toaster";
-import { mockProject } from "@/lib/mock";
 import { useRuntimeStore } from "@/lib/runtime";
 import { ensureSetupProgressListener } from "@/lib/setup";
 import { useOverlayTitlebar, useUiStore } from "@/lib/store";
 import { overlayTitlebarStyle } from "@/lib/titlebar";
 import { ensureJupyter, isTauri, openExternal, watchFullscreen } from "@/lib/tauri";
-import { useUpdateStore } from "@/lib/update";
 import { isGatewayWeb, gatewayToken, setUnauthorizedHandler } from "@/lib/webMode";
 import { QoderGate } from "@/components/onboarding/QoderGate";
 import { WebTokenGate } from "@/components/web/WebTokenGate";
@@ -56,9 +54,6 @@ export function AppShell() {
     // One app-lifetime listener for uv provisioning progress, so a running
     // download's live output survives navigating between pages.
     ensureSetupProgressListener();
-    if (!import.meta.env.TEST) {
-      void useUpdateStore.getState().maybeAutoCheck();
-    }
   }, [webReady, qoderReady]);
 
   // Web client: if the gateway rejects the token (rotated/revoked), drop back
@@ -131,7 +126,7 @@ export function AppShell() {
     // The window background lives on <main>, not the shell: under vibrancy
     // the area behind the (translucent) sidebar must stay transparent.
     <div className="flex h-screen w-screen overflow-hidden text-text">
-      <Sidebar project={mockProject} />
+      <Sidebar />
       {/* Mobile: dim + close the overlay drawer by tapping outside it. */}
       {isMobile && !sidebarCollapsed && (
         <div

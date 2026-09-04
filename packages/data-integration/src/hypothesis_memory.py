@@ -29,7 +29,9 @@ _LOCK = threading.RLock()
 _DB_PATH: Path | None = None
 _DIM = 1024  # 目标维数: BGE-M3(XLMRoberta, hidden 1024) 与 DashScope text-embedding-v3 相同
 _FALLBACK_DIM = 32  # 无模型可用时的 hash 词袋维数
-_COSINE_THRESHOLD = 0.45  # 低于该相似度不视为"可学习的上下文"
+_COSINE_THRESHOLD = 0.40  # 离线校准: 相关对 [0.52, 0.76] / 不相关 [0.27, 0.32] / 分离度 0.198
+# 原 0.45 偏严, 会过滤掉"VC/专利比与集群数量"(0.520) 这种弱相关
+# 调到 0.40 既保留中等相关, 又不漏入完全无关项(最大不相关 0.32 < 0.40)
 _EMBED_MODEL = "text-embedding-v3"
 
 # BGE-M3 本地模型(本地优先: 离线可用, 语义质量与 API 同维; 用环境变量可指向任意机器上的权重目录)
@@ -39,6 +41,12 @@ BGE_M3_PATH = os.environ.get(
 )
 _bge_model = None  # 懒加载单例(sentence_transformers 加载一次后复用)
 _bge_failed = False
+_bge_lock = threading.RLock()  # 模型加载互斥(多个线程首载竞争)
+_warmup_done = False  # 预热(后台加载 BGE)是否完成; 未完成时调用方可跳过向量召回
+
+# 进程内嵌入缓存: BGE-M3 CPU 编码约 5.8s/条, 同一文本常见重复编码(regenerate upsert + recall 查询)
+_EMBED_CACHE: dict[str, tuple[list[float], int, str]] = {}
+_EMBED_CACHE_MAX = 300  # 上限: 防无限增长(缓存向量内存)
 
 
 def init(db_path: str | Path | None = None) -> None:
@@ -99,17 +107,20 @@ def _embedding_available() -> bool:
 
 
 def _bge_embed(texts: list[str]) -> tuple[list[list[float]], str]:
-    """本地 BGE-M3 批量嵌入(懒加载单例, 失败返回空列表). """
+    """本地 BGE-M3 批量嵌入(懒加载单例, 失败返回空列表). 加载互斥防多线程重复加载. """
     global _bge_model, _bge_failed
     if _bge_failed:
         return [], "bge-failed"
     if _bge_model is None:
-        try:
-            from sentence_transformers import SentenceTransformer
-            _bge_model = SentenceTransformer(BGE_M3_PATH)
-        except Exception:
-            _bge_failed = True
-            return [], "bge-failed"
+        with _bge_lock:
+            if _bge_model is None and not _bge_failed:
+                try:
+                    from sentence_transformers import SentenceTransformer
+                    _bge_model = SentenceTransformer(BGE_M3_PATH)
+                except Exception:
+                    _bge_failed = True
+    if _bge_failed or _bge_model is None:
+        return [], "bge-failed"
     try:
         vecs = _bge_model.encode(texts, normalize_embeddings=True)
         return [[float(x) for x in v] for v in vecs], "bge-m3"
@@ -117,12 +128,48 @@ def _bge_embed(texts: list[str]) -> tuple[list[list[float]], str]:
         return [], "bge-err"
 
 
+def start_warmup() -> None:
+    """启动后台预热 BGE-M3(不阻塞): 首次 regenerate 不再卡在模型加载上. """
+    global _warmup_done
+    if _warmup_done or _bge_failed:
+        return
+
+    def _run():
+        global _warmup_done
+        try:
+            _embed("预热探针: 湖北省 创新集群 专利 风险投资 研发强度")
+        except Exception:
+            pass
+        finally:
+            _warmup_done = True
+
+    threading.Thread(target=_run, daemon=True).start()
+
+
+def warmup_done() -> bool:
+    """向量模型是否已就绪. 任一条件即返回 True:
+    1. 后台预热线程已结束(_warmup_done=True); 或
+    2. BGE 模型加载失败(_bge_failed=True, 此时调用方应跳过向量召回); 或
+    3. BGE 模型已成功加载(_bge_model is not None).
+    第 3 条用于消除 race: BGE 已可用但后台线程还没设 _warmup_done=True 的窗口期.
+    """
+    return _warmup_done or _bge_failed or (_bge_model is not None)
+
+
 def _embed(text: str) -> tuple[list[float], int, str]:
-    """返回 (向量, 维数, provider). 优先级: 本地 BGE-M3(离线语义) → DashScope(API) → hash 回退. """
+    """返回 (向量, 维数, provider). 优先级: 本地 BGE-M3(离线语义) → DashScope(API) → hash 回退.
+    进程内缓存: 同文本重复编码直接命中(BGE-M3 CPU ~5.8s/条, 命中即近 0 成本). """
+    key = text[:6000]
+    hit = _EMBED_CACHE.get(key)
+    if hit:
+        return hit
     # 1) 本地 BGE-M3: 首选, 离线可用
-    vecs, provider = _bge_embed([text[:6000]])
+    vecs, provider = _bge_embed([key])
     if vecs:
-        return vecs[0], len(vecs[0]), provider
+        res = (vecs[0], len(vecs[0]), provider)
+        if len(_EMBED_CACHE) < _EMBED_CACHE_MAX:
+            _EMBED_CACHE[key] = res
+        return res
     # 2) DashScope API(需 key)
     if _embedding_available():
         try:
@@ -130,14 +177,21 @@ def _embed(text: str) -> tuple[list[float], int, str]:
             from dashscope.text_embedding import TextEmbedding
 
             dashscope.api_key = os.environ["DASHSCOPE_API_KEY"]
-            resp = TextEmbedding.call(model=_EMBED_MODEL, input=[text[:6000]])
+            resp = TextEmbedding.call(model=_EMBED_MODEL, input=[key])
             if resp and resp.status_code == 200:
                 emb = resp.output["embeddings"][0]["embedding"]
-                return [float(x) for x in emb], len(emb), "dashscope"
+                res = ([float(x) for x in emb], len(emb), "dashscope")
+                if len(_EMBED_CACHE) < _EMBED_CACHE_MAX:
+                    _EMBED_CACHE[key] = res
+                return res
         except Exception:
             pass
     # 3) hash 词袋兜底
-    return _hash_bag(text), _FALLBACK_DIM, "hash-fallback"
+    hb = _hash_bag(text)
+    res = (hb, _FALLBACK_DIM, "hash-fallback")
+    if len(_EMBED_CACHE) < _EMBED_CACHE_MAX:
+        _EMBED_CACHE[key] = res
+    return res
 
 
 def _hash_bag(text: str) -> list[float]:
@@ -185,11 +239,19 @@ def _cosine(a: list[float], b: list[float]) -> float:
 # ---------------- 写入 ----------------
 
 def upsert_hypothesis(h: dict[str, Any]) -> str:
-    """假设入库(覆盖式). 返回 hypothesis.id. """
+    """假设入库(覆盖式). 文本未变时跳过重新编码(BGE-M3 CPU 慢, 但向量已正确). 返回 hypothesis.id. """
     hid = str(h.get("id") or "")
     if not hid:
         return ""
     text = _hypothesis_text(h)
+    # 已存在且文本相同 → 无需重编码(避免 regenerate 每轮 ~5.8s/条 的全量成本)
+    with _LOCK, _conn() as c:
+        row = c.execute(
+            "SELECT text, vector, dim, meta FROM embeddings WHERE kind='hypothesis' AND ref_id=?",
+            (hid,),
+        ).fetchone()
+        if row and row["text"] == text:
+            return hid
     vec, dim, provider = _embed(text)
     with _LOCK, _conn() as c:
         c.execute("DELETE FROM embeddings WHERE kind='hypothesis' AND ref_id=?", (hid,))
@@ -265,12 +327,18 @@ def recall(query_text: str, kind: str | None = None, top_k: int = 4,
     return scored[:top_k]
 
 
-def list_feedback(limit: int = 50) -> list[dict[str, Any]]:
-    """历史评价列表(前端"AI 学到的偏好"展示). """
+def list_feedback(limit: int = 50, verdict: str | None = None) -> list[dict[str, Any]]:
+    """历史评价列表(前端"AI 学到的偏好"展示). verdict 可选过滤: 'adopt' | 'reject' | None(全部). """
+    where = ""
+    params: list[Any] = []
+    if verdict in ("adopt", "reject"):
+        where = " WHERE verdict=?"
+        params.append(verdict)
+    params.append(limit)
     with _conn() as c:
         rows = c.execute(
-            "SELECT id, hypothesis_id, verdict, note, created_at FROM feedback ORDER BY id DESC LIMIT ?",
-            (limit,),
+            f"SELECT id, hypothesis_id, verdict, note, created_at FROM feedback{where} ORDER BY id DESC LIMIT ?",
+            params,
         ).fetchall()
     return [dict(r) for r in rows]
 
@@ -295,11 +363,16 @@ def _hypothesis_text(h: dict[str, Any]) -> str:
         h.get("expected_finding", ""),
     ]
     ev = h.get("evidence") or []
-    for e in ev[:5]:
-        if isinstance(e, dict):
-            parts.append(str(e.get("k", "")) + ": " + str(e.get("v", "")))
-        else:
-            parts.append(str(e))
+    # 兼容历史脏数据: evidence 可能是 str(旧版未规范化) → 当整段文本
+    if isinstance(ev, str):
+        if ev.strip():
+            parts.append(ev)
+    else:
+        for e in ev[:5]:
+            if isinstance(e, dict):
+                parts.append(str(e.get("k", "")) + ": " + str(e.get("v", "")))
+            else:
+                parts.append(str(e))
     return "\n".join(p for p in parts if p)
 
 

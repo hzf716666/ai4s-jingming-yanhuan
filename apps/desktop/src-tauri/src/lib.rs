@@ -27,7 +27,6 @@ mod tools;
 mod macos;
 #[cfg(target_os = "windows")]
 mod windows;
-mod updates;
 mod uv;
 mod voice;
 
@@ -93,8 +92,25 @@ pub fn run() {
                     x: 240,
                     y: 90,
                 }));
+                let _ = window.unminimize();
                 let _ = window.show();
                 let _ = window.set_focus();
+                // The minimize-to-(-32000,-32000) state can land *after* setup
+                // finishes (single-instance restore / WebView2 init), making the
+                // position/show above no-ops and the app look like it never
+                // opened. Re-assert visibility once the window has settled.
+                {
+                    let w = window.clone();
+                    std::thread::spawn(move || {
+                        std::thread::sleep(std::time::Duration::from_millis(3000));
+                        let _ = w.unminimize();
+                        let _ = w.show();
+                        let _ = w.set_focus();
+                        let _ = w.set_position(tauri::Position::Physical(
+                            tauri::PhysicalPosition { x: 240, y: 90 },
+                        ));
+                    });
+                }
             }
 
             Ok(())
@@ -217,7 +233,6 @@ pub fn run() {
             preview_server::preview_url,
             large_file::probe_large_file,
             tools::detect_tools,
-            updates::latest_release,
             debug_log::log_debug,
             voice::transcribe_audio,
             voice::voice_status,

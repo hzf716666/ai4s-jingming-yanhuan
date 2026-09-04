@@ -63,7 +63,7 @@ describe("VoiceButton", () => {
     render(<VoiceButton onTranscribed={vi.fn()} />);
     const btn = screen.getByRole("button");
     expect(btn).toBeInTheDocument();
-    expect(btn.getAttribute("aria-label")).toContain("Start");
+    expect(btn.getAttribute("aria-label")).toContain("开始语音输入");
   });
 
   it("shows recording state with duration counter", () => {

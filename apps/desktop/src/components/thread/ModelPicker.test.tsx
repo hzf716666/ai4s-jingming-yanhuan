@@ -24,7 +24,7 @@ const renderPicker = () =>
     </MemoryRouter>,
   );
 
-const chip = () => screen.getByRole("button", { name: /switch model/i });
+const chip = () => screen.getByRole("button", { name: /切换模型/ });
 
 describe("ModelPicker", () => {
   const initial = useRuntimeStore.getState();
@@ -68,7 +68,7 @@ describe("ModelPicker", () => {
     renderPicker();
     await user.click(chip());
     const dialog = screen.getByRole("dialog");
-    await user.click(within(dialog).getByText(/reasoning effort/i)); // expand Advanced
+    await user.click(within(dialog).getByText(/推理强度/)); // expand Advanced
     const slider = within(dialog).getByRole("slider");
     expect(slider).toHaveAttribute("aria-valuemax", "2"); // low / medium / high → 0..2
 
@@ -82,7 +82,7 @@ describe("ModelPicker", () => {
     renderPicker();
     await user.click(chip());
     const dialog = screen.getByRole("dialog");
-    await user.click(within(dialog).getByText(/reasoning effort/i));
+    await user.click(within(dialog).getByText(/推理强度/));
     const slider = within(dialog).getByRole("slider");
     fireEvent.keyDown(slider, { key: "Home" }); // lowest = low
     expect(useRuntimeStore.getState().reasoningVariant).toBe("low");
@@ -95,7 +95,7 @@ describe("ModelPicker", () => {
     const user = userEvent.setup();
     renderPicker();
     await user.click(chip());
-    expect(within(screen.getByRole("dialog")).queryByText(/reasoning effort/i)).toBeNull();
+    expect(within(screen.getByRole("dialog")).queryByText(/推理强度/)).toBeNull();
   });
 
   it("switches the default model and closes for a model with no reasoning levels", async () => {

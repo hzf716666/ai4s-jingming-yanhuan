@@ -1,0 +1,17 @@
+{
+  "name": "genscore",
+  "type": "model",
+  "domain": "biology",
+  "version": "1.0.0",
+  "visibility": "public",
+  "created_at": "2026-07-06",
+  "updated_at": "2026-07-06",
+  "description": "GenScore 是 OneScience 中的蛋白-配体图打分模型资源。`GenScore` 组合配体与靶点图编码器，将两侧节点表征展开为有效节点对，并返回混合密度参数 `pi`、`sigma`、`mu`、距离、原子类型、键类型和 batch 索引；源码同时提供 GraphTransformer、GatedGCN 以及高层 `scoring` 接口。模型前向并不直接等同于最终标量分数，训练与推理代码应按损失或评估函数完成后处理。",
+  "tags": [
+    "protein-ligand-scoring",
+    "binding-affinity",
+    "virtual-screening",
+    "graph-model",
+    "contribution-analysis"
+  ]
+}

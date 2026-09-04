@@ -23,12 +23,14 @@ from .map_api import router as map_router
 from .records_api import router as records_router
 from .hypotheses_api import router as hypotheses_router
 from .progress_api import router as progress_router
+from .impact_api import router as impact_router
 
 app = FastAPI(title="Data Extraction API", version="1.0.0")
 app.include_router(map_router)
 app.include_router(records_router)
 app.include_router(hypotheses_router)
 app.include_router(progress_router)
+app.include_router(impact_router)
 
 # CORS — allow all for local dev
 app.add_middleware(
@@ -46,10 +48,16 @@ def _startup():
     # 自动同步下载的数据文件(OECD 等下载目录) → fact_records(面板)/zone_facts(地图)
     try:
         import subprocess, sys as _sys, os
-        sync = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts", "sync_oecd_to_panel.py")
+        base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sync = os.path.join(base, "scripts", "sync_oecd_to_panel.py")
         if os.path.exists(sync):
-            r = subprocess.run([_sys.executable, sync], capture_output=True, text=True, timeout=120)
+            r = subprocess.run([_sys.executable, sync], capture_output=True, text=True, timeout=300)
             print("[auto-sync]", (r.stdout or r.stderr).strip()[-200:])
+        # 各研究项目 data/records.json(工作台 AI 采集产物) → 面板/地图/图谱(幂等增量)
+        proj = os.path.join(base, "scripts", "sync_project_data_to_panel.py")
+        if os.path.exists(proj):
+            r2 = subprocess.run([_sys.executable, proj], capture_output=True, text=True, timeout=300)
+            print("[project-ingest]", (r2.stdout or r2.stderr).strip()[-300:])
     except Exception as e:
         print("[auto-sync] skipped:", e)
 
